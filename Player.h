@@ -2,6 +2,9 @@
 #include "GameObject.h"
 #include "Input.h"
 #include "Collider.h"
+
+#include <optional>
+
 class Player :
     public GameObject
 {
@@ -13,8 +16,25 @@ public:
     void Draw();
 public:
     Collider collider_;
+
+
+private:
+    void UpdateState();
+
+
 private:
     Vector3 velocisity_;
     Vector3 acceleration_;
     Input* input_;
+
+
+    enum class State{
+        kNormal,
+        kJump
+    };
+
+    State state_ = State::kNormal;
+
+    std::optional<State> stateRequest_ = std::nullopt;
+
 };

@@ -6,7 +6,6 @@
 
 #include <optional>
 #include <vector>
-
 #include<numbers>
 
 #include "Collider.h"
@@ -32,7 +31,7 @@ public:
 	std::vector<WorldTransform> GetSpikeWorld() { return WallWorlds_; }
 
 	// マップ中心座標取得
-	const Vector3& GetMapCenter() {
+	const Vector3 GetMapCenter() {
 		return {
 			worldTransform_.matWorld_.m[3][0],
 			worldTransform_.matWorld_.m[3][1],
@@ -40,11 +39,10 @@ public:
 		};
 	}
 
-	//
+	//プレイヤーのWorldTransform
 	const WorldTransform& GetPlayerW() { return playerWorld_; }
 
-	const bool& GetIsRotating() { return isRotating; }
-
+	//コライダー取得
 	std::vector<Collider> GetCollider() { return colliders_; }
 		
 #pragma endregion
@@ -60,11 +58,11 @@ private://メンバ関数
 
 
 #pragma region 状態初期化関数
-
+	//Normal状態の初期化
 	void InitializeStateNormal();
-
+	//右回転処理初期化
 	void InitializeStateRightRotation();
-
+	//左回転処理初期化
 	void InitializeStateLeftRotation();
 
 #pragma endregion
@@ -79,10 +77,9 @@ private://メンバ関数
 
 #pragma endregion
 
-
-
+	
 private://変数
-	Input* input = nullptr;
+	Input* input_ = nullptr;
 
 	// タイルサイズ
 	static const int mapTileNumX_ = 11;
@@ -138,10 +135,13 @@ private://変数
 
 
 #pragma region 回転処理
+	//１/２Π
 	const float HalfPI_ = (float)std::numbers::pi / 2.0f;
 
+	//イージングT
 	float t_ = 0;
 
+	//１Fの加算量
 	const float addT_ = 1.0f / 30.0f;
 
 	//回転構造体
@@ -150,6 +150,7 @@ private://変数
 		float endT;
 	};
 
+	//回転処理に使う
 	RotationEasing rotateE_;
 
 #pragma endregion
