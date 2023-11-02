@@ -26,27 +26,29 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	for (int tileY = 0; tileY < mapTileNumY_; tileY++) {
 		for (int tileX = 0; tileX < mapTileNumX_; tileX++) {
 			if (mapTile_[tileY][tileX] == Block) {
-				WorldTransform world;
-				world.Initialize();
-				world.translation_ = { tileWide_ * tileX, -tileWide_ * tileY, 0 };
+				std::unique_ptr<WorldTransform> world;
+				world = std::make_unique<WorldTransform>();
+				world->Initialize();
+				world->translation_ = { tileWide_ * tileX, -tileWide_ * tileY, 0 };
 
 				// 親子関係設定
-				world.SetParent(&worldTransform_);
+				world->SetParent(&worldTransform_);
 				
 				// ベクトル差分を代入
-				Vector3 subPos = Subtract(world.translation_, worldTransform_.translation_);
+				Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
 
 				// 座標代入
-				world.translation_ = subPos;
+				world->translation_ = subPos;
 
-				world.UpdateMatrix();
+				world->UpdateMatrix();
 
 				//Collider
-				Collider collider;
+				std::unique_ptr<Collider> collider;
+				collider = std::make_unique<Collider>();
 				
-				WallWorlds_.push_back(world);
-				collider.Initialize(&WallWorlds_[colliderAcceces], "blockTile", viewProjection_, directionalLight_);
-				colliders_.push_back(collider);
+				WallWorlds_.emplace_back(std::move(world));
+				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
+				colliders_.push_back(std::move(collider));
 				colliderAcceces++;
 			}
 
@@ -83,26 +85,26 @@ void Map::Update() {
 	StateUpdate();
 
 	worldTransform_.UpdateMatrix();
-	for (WorldTransform world : WallWorlds_) {
-		world.UpdateMatrix();
+	for (auto& world : WallWorlds_) {
+		world->UpdateMatrix();
 	}
-	for (Collider collider : colliders_) {
-		collider.AdjustmentScale();
+	for (auto& collider : colliders_) {
+		collider->AdjustmentScale();
 	}
 }
 
 void Map::Draw() {
 
 	// 壁描画
-	for (WorldTransform world : WallWorlds_) {
-		GameObject::Draw(world);
+	for (auto& world : WallWorlds_) {
+		GameObject::Draw(*world);
 	}
 
 	// 描画
 	GameObject::Draw(worldTransform_);
 
-	for (Collider collider : colliders_) {
-		/*collider.Draw();*/
+	for (auto& collider : colliders_) {
+		collider->Draw();
 	}
 }
 

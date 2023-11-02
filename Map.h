@@ -29,7 +29,7 @@ public:
 	
 
 	// マップの壁一つ
-	std::vector<WorldTransform> GetSpikeWorld() { return WallWorlds_; }
+	std::vector<std::unique_ptr<WorldTransform>>& GetSpikeWorld() { return WallWorlds_; }
 
 	// マップ中心座標取得
 	const Vector3& GetMapCenter() {
@@ -45,7 +45,7 @@ public:
 
 	const bool& GetIsRotating() { return isRotating; }
 
-	std::vector<Collider> GetCollider() { return colliders_; }
+	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
 		
 #pragma endregion
 
@@ -112,10 +112,10 @@ private://変数
 	};
 
 	// マップチップ別のワールド
-	std::vector<WorldTransform> WallWorlds_;
+	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;
 
 	// マップチップ別のコライダー
-	std::vector<Collider> colliders_;
+	std::vector<std::unique_ptr<Collider>> colliders_;
 
 	// プレイヤーのワールド
 	WorldTransform playerWorld_;
