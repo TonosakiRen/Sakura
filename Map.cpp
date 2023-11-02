@@ -8,7 +8,7 @@ bool Map::isRotating = false;
 
 void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight) {
 
-	input = Input::GetInstance();
+	input_ = Input::GetInstance();
 	
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
@@ -170,10 +170,10 @@ void Map::InitializeStateLeftRotation() {
 
 void Map::UpdateStateNormal() {
 
-	if (input->PushKey(DIK_E)) {
+	if (input_->PushKey(DIK_E)) {
 		stateRequest_ = State::kRightRotation;
 	}
-	if (input->PushKey(DIK_Q)) {
+	if (input_->PushKey(DIK_Q)) {
 		stateRequest_ = State::kLeftRotation;
 	}
 }
@@ -213,3 +213,5 @@ void Map::UpdateStateLeftRotation() {
 		stateRequest_ = State::kNormal;
 	}
 }
+
+
