@@ -24,6 +24,7 @@ void Collider::Initialize(WorldTransform* objectWorldTransform, const std::strin
 	worldTransform_.SetParent(objectWorldTransform);
 	worldTransform_.scale_ = initialScale;
 	worldTransform_.translation_ = initialPos;
+	cube_.SetEnableLighting(false);
 	name_ = name;
 	cube_.Initialize(viewProjection, directionalLight);
 }
@@ -47,6 +48,7 @@ void Collider::Initialize(const std::string name, ViewProjection* viewProjection
 	worldTransform_.Initialize();
 	name_ = name;
 	cube_.Initialize(viewProjection, directionalLight);
+	cube_.SetEnableLighting(false);
 }
 
 bool Collider::Collision(Collider& colliderB, Vector3& minAxis, float& minOverlap)

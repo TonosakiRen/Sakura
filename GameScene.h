@@ -11,6 +11,7 @@
 #include "Skydome.h"
 #include "Floor.h"
 #include "Player.h"
+#include "Map.h"
 
 #include <optional>
 class GameScene
@@ -42,10 +43,13 @@ private:
 	WorldTransform spriteTransform_;
 
 	std::unique_ptr<Skydome> skydome_;
-	std::unique_ptr<Floor> floor_;
+	
 	std::unique_ptr<GameObject> sphere_;
 
 	std::unique_ptr<Player> player_;
+
+	std::unique_ptr<Map> map_;
+
 
 	//Scene
 	enum class Scene {
@@ -55,8 +59,8 @@ private:
 		SceneNum
 	};
 
-	Scene scene_ = Scene::Title;
-	Scene nextScene = Scene::Title;
+	Scene scene_ = Scene::InGame;
+	Scene nextScene = Scene::InGame;
 	static void (GameScene::* SceneInitializeTable[])();
 	static void (GameScene::* SceneUpdateTable[])();
 	std::optional<Scene> sceneRequest_ = std::nullopt;

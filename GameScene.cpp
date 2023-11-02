@@ -39,13 +39,16 @@ void GameScene::Initialize() {
 
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize("skydome", &viewProjection_, &directionalLight_);
-	floor_ = std::make_unique<Floor>();
-	floor_->Initialize("floor", &viewProjection_, &directionalLight_);
+
 	sphere_ = std::make_unique<GameObject>();
 	sphere_->Initialize("sphere", &viewProjection_, &directionalLight_);
 
+	map_ = std::make_unique<Map>();
+	map_->Initialize("player", &viewProjection_, &directionalLight_);
+
 	player_ = std::make_unique<Player>();
-	player_->Initialize("player", &viewProjection_, &directionalLight_);
+	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+
 }
 
 void GameScene::Update(){
@@ -91,10 +94,11 @@ void GameScene::InGameUpdate() {
 	if (input_->TriggerKey(DIK_P)) {
 		sceneRequest_ = Scene::Title;
 	}
+
 	skydome_->Update();
-	floor_->Update();
+	map_->Update();
 	player_->Update();
-	player_->Collision(floor_->collider_);
+	/*player_->Collision(floor_->collider_);*/
 }
 
 void GameScene::ModelDraw()
@@ -105,7 +109,7 @@ void GameScene::ModelDraw()
 		break;
 	case GameScene::Scene::InGame:
 		skydome_->Draw();
-		floor_->Draw();
+		map_->Draw();
 		player_->Draw();
 		break;
 	default:

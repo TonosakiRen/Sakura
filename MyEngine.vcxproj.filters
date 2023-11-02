@@ -14,6 +14,9 @@
     <Filter Include="Game">
       <UniqueIdentifier>{826581d2-6f69-46b8-8d95-da7acb670207}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Map">
+      <UniqueIdentifier>{1f6dcb8f-5ebd-46c4-b368-424574154796}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -129,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Game\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Game\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

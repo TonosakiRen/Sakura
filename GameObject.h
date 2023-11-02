@@ -24,6 +24,9 @@ public:
 	void SetDirectionalLight(DirectionalLight* directionalLight) {
 		directionalLight_ = directionalLight;
 	}
+	void SetEnableLighting(bool enableLighting){
+		material_.enableLighting_ = enableLighting;
+	}
 protected:
 	WorldTransform worldTransform_;
 	Material material_;

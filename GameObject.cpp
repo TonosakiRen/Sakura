@@ -51,9 +51,17 @@ void GameObject::Draw(Vector4 color, uint32_t textureHandle)
 
 void GameObject::Draw(const WorldTransform& worldTransform, Vector4 color)
 {
-	material_.color_ = color;
-	material_.UpdateMaterial();
-	model_.Draw(worldTransform, *viewProjection_, *directionalLight_, material_, 0);
+	if (loadObj_ == true) {
+		material_.color_ = color;
+		material_.UpdateMaterial();
+		model_.Draw(worldTransform, *viewProjection_, *directionalLight_, material_);
+	}
+	else {
+		material_.color_ = color;
+		material_.UpdateMaterial();
+		model_.Draw(worldTransform, *viewProjection_, *directionalLight_, material_, 0);
+	}
+	
 }
 
 void GameObject::UpdateMaterial(Vector4 color)
