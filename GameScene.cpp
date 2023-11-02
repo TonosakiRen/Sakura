@@ -49,6 +49,12 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
+	//カメラの座標をマップの中心点に合わせる
+	Vector3 mapCenterV3 = map_->GetMapCenter();
+	viewProjection_.translation_.x = mapCenterV3.x;
+	viewProjection_.translation_.y = mapCenterV3.y;
+
+
 }
 
 void GameScene::Update(){
@@ -98,7 +104,9 @@ void GameScene::InGameUpdate() {
 	skydome_->Update();
 	map_->Update();
 	player_->Update();
-	/*player_->Collision(floor_->collider_);*/
+	for (Collider collider : map_->GetCollider()) {
+		player_->Collision(collider);
+	}
 }
 
 void GameScene::ModelDraw()

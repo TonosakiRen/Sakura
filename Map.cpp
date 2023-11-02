@@ -20,6 +20,8 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	worldTransform_.translation_ = centerPos;
 	worldTransform_.UpdateMatrix();
 
+	//Collider初期化のための変数
+	uint32_t colliderAcceces = 0;
 	// マップタイルによる座標設定
 	for (int tileY = 0; tileY < mapTileNumY_; tileY++) {
 		for (int tileX = 0; tileX < mapTileNumX_; tileX++) {
@@ -41,11 +43,11 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 				//Collider
 				Collider collider;
-				collider.Initialize(&world,"blockTile", viewProjection_, directionalLight_);
-
 				
-				worlds_.push_back(world);
+				WallWorlds_.push_back(world);
+				collider.Initialize(&WallWorlds_[colliderAcceces], "blockTile", viewProjection_, directionalLight_);
 				colliders_.push_back(collider);
+				colliderAcceces++;
 			}
 
 			if (mapTile_[tileY][tileX] == Player) {
@@ -81,20 +83,27 @@ void Map::Update() {
 	StateUpdate();
 
 	worldTransform_.UpdateMatrix();
-	for (WorldTransform world : worlds_) {
+	for (WorldTransform world : WallWorlds_) {
 		world.UpdateMatrix();
+	}
+	for (Collider collider : colliders_) {
+		collider.AdjustmentScale();
 	}
 }
 
 void Map::Draw() {
 
 	// 壁描画
-	for (WorldTransform world : worlds_) {
+	for (WorldTransform world : WallWorlds_) {
 		GameObject::Draw(world);
 	}
 
 	// 描画
 	GameObject::Draw(worldTransform_);
+
+	for (Collider collider : colliders_) {
+		/*collider.Draw();*/
+	}
 }
 
 void Map::RequestProcessing() {

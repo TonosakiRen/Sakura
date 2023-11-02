@@ -26,8 +26,10 @@ public:
 
 #pragma region ゲッター
 
+	
+
 	// マップの壁一つ
-	std::vector<WorldTransform> GetSpikeWorld() { return worlds_; }
+	std::vector<WorldTransform> GetSpikeWorld() { return WallWorlds_; }
 
 	// マップ中心座標取得
 	const Vector3& GetMapCenter() {
@@ -110,7 +112,7 @@ private://変数
 	};
 
 	// マップチップ別のワールド
-	std::vector<WorldTransform> worlds_;
+	std::vector<WorldTransform> WallWorlds_;
 
 	// マップチップ別のコライダー
 	std::vector<Collider> colliders_;
