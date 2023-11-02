@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ImGuiManager.h"
 #include "Map.h"
+
 void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld)
 {
 	GameObject::Initialize(name,viewProjection, directionalLight);
@@ -15,6 +16,11 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 
 void Player::Update()
 {
+	ImGui::Begin("player");
+	ImGui::DragFloat3("pos", &worldTransform_.translation_.x, 0.01f);
+	ImGui::End();
+
+
 	// マップが動いていないの処理
 	if (!Map::isRotating) {
 		Vector3 move = { 0.0f,0.0f,0.0f };
@@ -36,7 +42,7 @@ void Player::Update()
 			velocisity_.y = 1.0f;
 		}
 
-		move = move * NormalizeMakeRotateMatrix(worldTransform_.matWorld_);
+		move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 
 		worldTransform_.translation_ += move;
 

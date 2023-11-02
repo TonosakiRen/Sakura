@@ -105,7 +105,7 @@ void GameScene::InGameUpdate() {
 	map_->Update();
 	player_->Update();
 	for (Collider collider : map_->GetCollider()) {
-		player_->Collision(collider);
+		//player_->Collision(collider);
 	}
 }
 
