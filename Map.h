@@ -7,6 +7,8 @@
 #include <optional>
 #include <vector>
 #include<numbers>
+#include<list>
+
 
 #include "Collider.h"
 
@@ -25,7 +27,7 @@ public:
 
 #pragma region ゲッター
 
-	
+
 
 	// マップの壁一つ
 	std::vector<std::unique_ptr<WorldTransform>>& GetSpikeWorld() { return WallWorlds_; }
@@ -44,7 +46,7 @@ public:
 
 
 	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
-		
+
 #pragma endregion
 
 private://メンバ関数
@@ -77,13 +79,13 @@ private://メンバ関数
 
 #pragma endregion
 
-	
+
 private://変数
 	Input* input_ = nullptr;
 
 	// タイルサイズ
-	static const int mapTileNumX_ = 11;
-	static const int mapTileNumY_ = 11;
+	int mapTileNumX_ = 1;
+	int mapTileNumY_ = 1;
 
 	// 蒲田の四角のサイズ
 	const float tileWide_ = 2.0f;
@@ -94,19 +96,11 @@ private://変数
 		Player,
 	};
 
-	const int mapTile_[mapTileNumY_][mapTileNumX_] = {
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	};
+	const char* map1Pass = "Resources/mapChips/Stage1.txt";
+
+	std::list<std::list<int>> mapData_;
+
+	
 
 	// マップチップ別のワールド
 	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;

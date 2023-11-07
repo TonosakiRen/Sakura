@@ -4,6 +4,94 @@
 #include "ImGuiManager.h"
 #include <stdio.h>
 
+#include <stdio.h>
+#include<ctype.h>
+#include<list>
+#include<cassert>
+
+std::list<std::list<int>> LoadMapData(const char* fileName) {
+	//返すデータの作成
+	std::list<std::list<int>>mapData;
+
+	//ファイルの読み込み
+	FILE* fp;
+	int err = fopen_s(&fp, fileName, "r");
+
+
+	//読み込めなかったら返す
+	if (err != 0) {
+
+		assert("%s は見つかりませんでした!zako!");
+	}
+	else {
+
+		//取得した文字いれる変数
+		char c;
+		//仮使用
+		std::list<int> data;
+		//	EOFまでファイルから文字を1文字ずつ読み込む
+		while ((c = fgetc(fp)) != EOF) {
+
+			//次の行へ
+			if (c == '}') {
+				//今までの行の数字のリストを代入
+				mapData.push_back(data);
+				//全削除
+				data.clear();
+
+				continue;
+			}
+
+			//数字か否か
+			if (isdigit(c)) {
+
+				//各数字に直す
+				int num = 0;
+				if (c == '0') {
+					num = 0;
+				}
+				else if (c == '1') {
+					num = 1;
+				}
+				else if (c == '2') {
+					num = 2;
+				}
+				else if (c == '3') {
+					num = 3;
+				}
+				else if (c == '4') {
+					num = 4;
+				}
+				else if (c == '5') {
+					num = 5;
+				}
+				else if (c == '6') {
+					num = 6;
+				}
+				else if (c == '7') {
+					num = 7;
+				}
+				else if (c == '8') {
+					num = 8;
+				}
+				else if (c == '9') {
+					num = 9;
+				}
+
+				//データ型に挿入
+				data.push_back(num);
+			}
+		}
+	}
+
+	//ファイルを閉じる
+	fclose(fp);
+
+
+	return mapData;
+}
+
+
 bool Map::isRotating = false;
 
 void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight) {
@@ -12,6 +100,17 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
+
+	//マップデータを読み込み
+	mapData_ = LoadMapData(map1Pass);
+	//xに一番多いサイズ取得
+	for (auto& mapdataX : mapData_) {
+		if (mapTileNumX_ < (int)mapdataX.size()) {
+			mapTileNumX_ = (int)mapdataX.size();
+		}
+	}
+	mapTileNumY_ = (int)mapData_.size();
+
 
 	// 回転中心点の検索
 	Vector3 centerPos = { mapTileNumX_ - tileWide_ / 2, -mapTileNumY_ + tileWide_ / 2, 0 };
@@ -22,6 +121,62 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 	//Collider初期化のための変数
 	uint32_t colliderAcceces = 0;
+
+	
+	int containerNumberY = 0;
+	for (auto& mapDataY : mapData_) {
+		int containerNumberX = 0;
+		for (auto& mapDataX : mapDataY) {
+			if (mapDataX == Block) {
+				std::unique_ptr<WorldTransform> world;
+				world = std::make_unique<WorldTransform>();
+				world->Initialize();
+				world->translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+
+				// 親子関係設定
+				world->SetParent(&worldTransform_);
+
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
+
+				// 座標代入
+				world->translation_ = subPos;
+
+				world->UpdateMatrix();
+
+				//Collider
+				std::unique_ptr<Collider> collider;
+				collider = std::make_unique<Collider>();
+
+				WallWorlds_.emplace_back(std::move(world));
+				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
+				colliders_.push_back(std::move(collider));
+				colliderAcceces++;
+			}
+
+			if (mapDataX == Player) {
+
+				playerWorld_.Initialize();
+
+				playerWorld_.translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+				playerWorld_.SetParent(&worldTransform_);
+
+				playerWorld_.UpdateMatrix();
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(playerWorld_.translation_, worldTransform_.translation_);
+
+				// 座標代入
+				playerWorld_.translation_ = subPos;
+
+				playerWorld_.UpdateMatrix();
+			}
+			
+			containerNumberX++;
+		}
+		containerNumberY++;
+	}
+
+	/*
 	// マップタイルによる座標設定
 	for (int tileY = 0; tileY < mapTileNumY_; tileY++) {
 		for (int tileX = 0; tileX < mapTileNumX_; tileX++) {
@@ -70,6 +225,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 			}
 		}
 	}
+	*/
 }
 
 void Map::Update() {
