@@ -27,6 +27,7 @@ private:
     Vector3 acceleration_;
     Input* input_;
 
+    const float spd_ = 0.1f;
 
     enum class State{
         kNormal,
@@ -37,4 +38,15 @@ private:
 
     std::optional<State> stateRequest_ = std::nullopt;
 
+
+
+
+    bool preIsRotating_;
+
+    bool isRotateChasing_ = false;
+
+    void UpdateMapRotating();
+
+    //マップ中心点のTransforation
+    WorldTransform* mapCenterTranslation_;
 };
