@@ -62,10 +62,9 @@ void Player::Collision(Collider& otherCollider) {
 	if (collider_.Collision(otherCollider, puchBackVector)) {
 		worldTransform_.translation_ += puchBackVector;
 		worldTransform_.UpdateMatrix();
+		//仮でフラグ解除
+		stateRequest_ = State::kNormal;
 	}
-
-	//仮でフラグ解除
-	stateRequest_ = State::kNormal;
 }
 
 void Player::Draw() {

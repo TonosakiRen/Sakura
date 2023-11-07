@@ -5,6 +5,7 @@
 #include "GameScene.h"
 #include "ImGuiManager.h"
 #include "Particle.h"
+#include "ParticleBox.h"
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* win = nullptr;
@@ -36,6 +37,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 3Dオブジェクト静的初期化
 	Particle::StaticInitialize();
+
+	ParticleBox::StaticInitialize();
 
 	//　スプライト静的初期化
 	Sprite::StaticInitialize();

@@ -26,10 +26,12 @@ void CommandQueue::Create() {
     }
 
     fenceValue_ = 0;
+    //現在時間を記録する
+    reference_ = std::chrono::steady_clock::now();
 }
 
 void CommandQueue::Execute(ID3D12GraphicsCommandList* commandList) {
-    ID3D12CommandList* ppCmdList[] = {commandList};
+    ID3D12CommandList* ppCmdList[] = { commandList };
     commandQueue_->ExecuteCommandLists(_countof(ppCmdList), ppCmdList);
 }
 
@@ -46,6 +48,29 @@ void CommandQueue::WaitForGPU() {
         result = fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
         WaitForSingleObject(fenceEvent_, INFINITE);
     }
+}
+
+void CommandQueue::UpdateFixFPS()
+{
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    std::chrono::microseconds elapsed =
+        std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+    static const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 62.0f));
+    static const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+    std::chrono::microseconds check = kMinCheckTime - elapsed;
+    if (check > std::chrono::microseconds(0)) {
+        std::chrono::microseconds waitTime = kMinTime - elapsed;
+
+        std::chrono::steady_clock::time_point waitStart = std::chrono::steady_clock::now();
+        do {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+        } while (std::chrono::steady_clock::now() - waitStart < waitTime);
+    }
+
+    elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::steady_clock::now() - reference_);
+    reference_ = std::chrono::steady_clock::now();
 }
 
 void CommandQueue::Destroy() {

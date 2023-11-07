@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "DirectionalLight.h"
 #include "Particle.h"
+#include "ParticleBox.h"
 #include "GameObject.h"
 #include "Skydome.h"
 #include "Floor.h"
@@ -25,6 +26,7 @@ public:
 	void Update();
 	void ModelDraw();
 	void ParticleDraw();
+	void ParticleBoxDraw();
 	void PreSpriteDraw();
 	void PostSpriteDraw();
 	void Draw();

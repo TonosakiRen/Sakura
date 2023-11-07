@@ -24,6 +24,34 @@ public:
 	void SetParent(WorldTransform* parent) {
 		parent_ = parent;
 	}
+
+	void SetLocalParent(WorldTransform* parent) {
+		if (parent != parent_) {
+			if (parent) {
+				Matrix4x4 localMatrix = matWorld_ * Inverse(parent->matWorld_);
+				translation_ = MakeTranslation(localMatrix);
+				if (isRotateParent_ == true) {
+					rotation_ = MakeEulerAngle(NormalizeMakeRotateMatrix(localMatrix));
+				}
+				if (isScaleParent_ == true) {
+					scale_ = MakeScale(localMatrix);
+				}
+
+				parent_ = parent;
+			}
+			else {
+				translation_ = MakeTranslation(matWorld_);
+				if (isRotateParent_ == true) {
+					rotation_ = MakeEulerAngle(NormalizeMakeRotateMatrix(matWorld_));
+				}
+				if (isScaleParent_ == true) {
+					scale_ = MakeScale(matWorld_);
+				}
+				parent_ = parent;
+			}
+		}
+
+	}
 	void SetIsScaleParent(bool isScaleParent) {
 		isScaleParent_ = isScaleParent;
 	}

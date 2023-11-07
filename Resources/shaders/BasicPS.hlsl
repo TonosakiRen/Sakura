@@ -44,14 +44,30 @@ PixelShaderOutput main(VSOutput input) {
 	float32_t4 tranformedUV = mul(float32_t4(input.uv, 0.0f, 1.0f), gMaterial.uvTransfrom);
 	float32_t4 texColor = tex.Sample(smp, tranformedUV.xy);
 	output.color.xyz += gMaterial.materialcolor.xyz * texColor.xyz;
-	
+
 	if (gMaterial.enableLighting != 0) {
 		// 陰
 		float32_t NdotL = dot(normal, -normalize(gDirectionLight.direction));
 		float32_t cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-		output.color.xyz *= gDirectionLight.color.xyz * cos * gDirectionLight.intensity;
+		float32_t3 diffuse = gDirectionLight.color.xyz * cos * gDirectionLight.intensity;
+
+		//反射
 
 		float32_t3 viewDirection = normalize(gViewProjection.viewPosition - input.worldPosition);
+
+
+		float32_t3 reflectVec = reflect(gDirectionLight.direction, normal);
+		float32_t3 speculerColor = float32_t3(1.0f, 1.0f, 1.0f);
+		float32_t specluerPower = 100.0f;
+		float32_t3 specluer = speculerColor * pow(saturate(dot(reflectVec, viewDirection)), specluerPower);
+
+		//アンビエント
+		float32_t3 ambient = float32_t3(0.3f, 0.3f, 0.3f);
+
+
+		output.color.xyz *= (diffuse + specluer + ambient);
+
+
 
 		// フレネル
 		//float32_t3 fresnelColor = float32_t3(1.0f, 0.0f, 0.0f);
@@ -60,11 +76,6 @@ PixelShaderOutput main(VSOutput input) {
 		////output.color.xyz = lerp(1.0f - fresnel, output.color.xyz, fresnelColor);
 		//output.color.xyz += fresnelColor * fresnel;
 
-		//反射
-		float32_t3 reflectVec = reflect(gDirectionLight.direction, normal);
-		float32_t3 speculerColor = float32_t3(1.0f, 1.0f, 1.0f);
-		float32_t specluerPower = 100.0f;
-		output.color.xyz += speculerColor * pow(saturate(dot(reflectVec, viewDirection)), specluerPower);
 	}
 
 	return output;

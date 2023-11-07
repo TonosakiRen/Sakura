@@ -14,6 +14,9 @@ ID3D12GraphicsCommandList* Particle::sCommandList = nullptr;
 std::unique_ptr<RootSignature> Particle::sRootSignature;
 std::unique_ptr<PipelineState> Particle::sPipelineState;
 
+Particle::Particle(uint32_t particleNum) : kParticleNum(particleNum) {
+}
+
 void Particle::StaticInitialize() {
     sDirectXCommon = DirectXCommon::GetInstance();
     InitializeGraphicsPipeline();
@@ -33,8 +36,8 @@ void Particle::PostDraw() {
     sCommandList = nullptr;
 }
 
-Particle* Particle::Create() {
-    Particle* object3d = new Particle();
+Particle* Particle::Create(uint32_t particleNum) {
+    Particle* object3d = new Particle(particleNum);
     assert(object3d);
 
     object3d->Initialize();
@@ -142,7 +145,7 @@ void Particle::InitializeGraphicsPipeline() {
         // グラフィックスパイプラインの生成
         sPipelineState->Create(gpipeline);
     }
-   
+
 }
 
 void Particle::CreateMesh() {
@@ -153,14 +156,14 @@ void Particle::CreateMesh() {
     //左下
     vertices_[0].pos = { -0.5f,-0.5f,0.0f };
     vertices_[0].uv = { 0.0f,1.0f };
-	//左上
-    vertices_[1].pos = { -0.5f,0.5f,0.0f};
+    //左上
+    vertices_[1].pos = { -0.5f,0.5f,0.0f };
     vertices_[1].uv = { 0.0f,0.0f };
-	//右上
-    vertices_[2].pos = { 0.5f,0.5f,0.0f};
+    //右上
+    vertices_[2].pos = { 0.5f,0.5f,0.0f };
     vertices_[2].uv = { 1.0f,0.0f };
-	//右下
-    vertices_[3].pos = { 0.5f,-0.5f,0.0f};
+    //右下
+    vertices_[3].pos = { 0.5f,-0.5f,0.0f };
     vertices_[3].uv = { 1.0f,1.0f };
 
     // 頂点インデックスの設定

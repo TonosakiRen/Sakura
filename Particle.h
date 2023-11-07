@@ -24,26 +24,27 @@ class Particle
 {
 public:
 
-	const uint32_t kParticleNum = 10;
+	const uint32_t kParticleNum;
 
 	enum class RootParameter {
 		kWorldTransform,
 		kViewProjection,
-		kTexture,      
-		kMaterial, 
+		kTexture,
+		kMaterial,
 		parameterNum
 	};
 
 	struct VertexData {
-		Vector3 pos;    
-		Vector2 uv;     
+		Vector3 pos;
+		Vector2 uv;
 	};
 
 	static void StaticInitialize();
 	static void PreDraw(ID3D12GraphicsCommandList* commandList);
 	static void PostDraw();
-	static Particle* Create();
+	static Particle* Create(uint32_t particleNum);
 
+	Particle(uint32_t particleNum);
 	void Initialize();
 	void Draw(const std::vector<InstancingBufferData>& bufferData, const ViewProjection& viewProjection, const DirectionalLight& directionalLight, const Vector4& color, const uint32_t textureHadle);
 	void CreateMesh();
@@ -52,7 +53,7 @@ public:
 	std::vector<InstancingBufferData> particleDatas_;
 	Material material_;
 
-private: 
+private:
 	static void InitializeGraphicsPipeline();
 private:
 	static DirectXCommon* sDirectXCommon;

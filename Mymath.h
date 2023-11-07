@@ -267,6 +267,27 @@ inline Vector3 MakeTranslation(const Matrix4x4& matrix) {
 	result.z = matrix.m[3][2];
 	return result;
 }
+inline Vector3 MakeEulerAngle(const Matrix4x4& matrix) {
+	Vector3 angles;
+
+	// Extract yaw (Y軸回りの回転)
+	angles.y = atan2(matrix.m[2][0], matrix.m[2][2]);
+
+	// Extract pitch (X軸回りの回転)
+	float sinPitch = -matrix.m[2][1];
+	if (fabs(sinPitch) >= 1.0f) {
+		angles.x = copysign(3.14159265f / 2.0f, sinPitch);
+	}
+	else {
+		angles.x = asin(sinPitch);
+	}
+
+	// Extract roll (Z軸回りの回転)
+	angles.z = atan2(matrix.m[0][1], matrix.m[1][1]);
+
+	return angles;
+}
+
 //回転行列算出
 inline Matrix4x4 NormalizeMakeRotateMatrix(const Matrix4x4& matrix) {
 	Vector3 xAxis = Normalize(GetXAxis(matrix)); // [0][?]

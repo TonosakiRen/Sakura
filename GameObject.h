@@ -24,8 +24,23 @@ public:
 	void SetDirectionalLight(DirectionalLight* directionalLight) {
 		directionalLight_ = directionalLight;
 	}
-	void SetEnableLighting(bool enableLighting){
+	void SetEnableLighting(bool enableLighting) {
 		material_.enableLighting_ = enableLighting;
+	}
+	void SetParent(WorldTransform* parent) {
+		worldTransform_.SetParent(parent);
+	}
+	void SetScale(Vector3 scale) {
+		worldTransform_.scale_ = scale;
+	}
+	void SetRotation(Vector3 rotation) {
+		worldTransform_.rotation_ = rotation;
+	}
+	void SetPosition(Vector3 position) {
+		worldTransform_.translation_ = position;
+	}
+	WorldTransform* GetWorldTransform() {
+		return &worldTransform_;
 	}
 protected:
 	WorldTransform worldTransform_;
