@@ -377,6 +377,33 @@ void Map::MapPositioningInitialize() {
 	}
 }
 
+void SaveMapData(const char* fileName, std::vector<std::vector<int>> datas) {
+	//ファイルの読み込み
+	FILE* fp;
+	int err = fopen_s(&fp, fileName, "w");
+
+
+	//読み込めなかったら返す
+	if (err != 0) {
+
+		assert("%s は見つかりませんでした!zako!");
+	}
+	else {
+		for (auto& data : datas) {
+			fprintf(fp, "{");
+			for (auto& indata : data) {
+				fprintf(fp, "%d , ", indata);
+			}
+			fprintf(fp, "},\n");
+		}
+
+
+	}
+
+	//ファイルを閉じる
+	fclose(fp);
+}
+
 void Map::MapEditor(const ViewProjection& view) {
 
 #ifdef _DEBUG
@@ -386,6 +413,19 @@ void Map::MapEditor(const ViewProjection& view) {
 		ImGui::Begin("block edit");
 		ImGui::Text("0 = Air : 1 = Block : 2 = PlayerSpawn");
 		ImGui::Text("Move : Arrow Key");
+		if (ImGui::Button("SaveMap")) {
+			SaveMapData(map1Pass,mapData_);
+			MessageBoxA(nullptr, "SaveComplete!","mapData",0);
+
+			isInitializeEditMode_=true;
+		}
+
+		if (ImGui::Button("LoadMap")) {
+			mapData_= LoadMapData(map1Pass);
+			isInitializeEditMode_ = true;
+			MessageBoxA(nullptr, "TextLoaded!", "mapData", 0);
+		}
+
 		ImGui::End();
 
 
