@@ -103,8 +103,10 @@ void GameScene::InGameUpdate() {
 
 	skydome_->Update();
 	map_->Update();
+	map_->MapEditor(viewProjection_);
+
 	player_->Update();
-	for (auto& collider : map_->GetCollider()) {
+	for (auto& collider : map_->GetWallCollider()) {
 		player_->Collision(*collider);
 	}
 }
@@ -172,6 +174,7 @@ void GameScene::PostSpriteDraw()
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
+		map_->DrawSprite();
 		break;
 	default:
 		break;

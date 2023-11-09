@@ -9,6 +9,8 @@
 #include<numbers>
 #include<list>
 
+#include"Sprite.h"
+
 
 #include "Collider.h"
 
@@ -24,6 +26,13 @@ public:
 	void Update();
 
 	void Draw();
+
+	void DrawSprite();
+
+	void Finalize();
+
+
+	void MapEditor(const ViewProjection& view);
 
 #pragma region ゲッター
 
@@ -47,6 +56,9 @@ public:
 
 	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
 
+	//wallだけのコライダーを取得
+	const std::vector<Collider*> GetWallCollider();
+
 #pragma endregion
 
 private://メンバ関数
@@ -58,7 +70,10 @@ private://メンバ関数
 	//状態ごとの更新
 	void StateUpdate();
 
+	//ImGuiまとめ
+	void ImGuiDraw();
 
+	
 #pragma region 状態初期化関数
 	//Normal状態の初期化
 	void InitializeStateNormal();
@@ -83,26 +98,28 @@ private://メンバ関数
 private://変数
 	Input* input_ = nullptr;
 
-	// タイルサイズ
+
+#pragma region マップの配置関係
+	// タイルサイズ(可変
 	int mapTileNumX_ = 1;
 	int mapTileNumY_ = 1;
 
-	// 蒲田の四角のサイズ
+	// 四角の一辺のサイズ
 	const float tileWide_ = 2.0f;
 
+	//タイルの種類
 	enum Tile {
-		None,
-		Block,
-		Player,
+		None,//空気
+		Block,//ブロック
+		Player,//プレイヤー初期座標
 	};
 
+	//マップのデータ情報格納場所
 	const char* map1Pass = "Resources/mapChips/Stage1.txt";
+	//マップデータ格納場所
+	std::vector<std::vector<int>> mapData_;
 
-	std::list<std::list<int>> mapData_;
-
-	
-
-	// マップチップ別のワールド
+	// マップチップごとのワールド
 	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;
 
 	// マップチップ別のコライダー
@@ -110,6 +127,9 @@ private://変数
 
 	// プレイヤーのワールド
 	WorldTransform playerWorld_;
+#pragma endregion
+
+	
 
 
 #pragma region 状態
@@ -148,4 +168,30 @@ private://変数
 	RotationEasing rotateE_;
 
 #pragma endregion
+
+
+#pragma region Editor
+	//編集モードがONか否か
+	bool isEditOn_ = false;
+
+	//初期配置処理をしたか
+	bool isInitializeEditMode_=false;
+
+	//編集時のカーソル
+	std::unique_ptr<Sprite>editCursor_;
+
+	//カーソルの画像
+	uint32_t cursorTex_;
+
+	//レティクルの座標
+	Vector2 reticlePos_;
+
+	//参照してるマップ配列のx
+	int32_t referenceMapX_ = 0;
+
+	//参照してるマップ配列のy
+	int32_t referenceMapY_ = 0;
+
+#pragma endregion
+
 };

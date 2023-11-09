@@ -9,9 +9,9 @@
 #include<list>
 #include<cassert>
 
-std::list<std::list<int>> LoadMapData(const char* fileName) {
+std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 	//返すデータの作成
-	std::list<std::list<int>>mapData;
+	std::vector<std::vector<int>>mapData;
 
 	//ファイルの読み込み
 	FILE* fp;
@@ -28,7 +28,7 @@ std::list<std::list<int>> LoadMapData(const char* fileName) {
 		//取得した文字いれる変数
 		char c;
 		//仮使用
-		std::list<int> data;
+		std::vector<int> data;
 		//	EOFまでファイルから文字を1文字ずつ読み込む
 		while ((c = fgetc(fp)) != EOF) {
 
@@ -127,7 +127,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	for (auto& mapDataY : mapData_) {
 		int containerNumberX = 0;
 		for (auto& mapDataX : mapDataY) {
-			if (mapDataX == Block) {
+			//if (mapDataX == Block) {
 				std::unique_ptr<WorldTransform> world;
 				world = std::make_unique<WorldTransform>();
 				world->Initialize();
@@ -152,7 +152,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
 				colliders_.push_back(std::move(collider));
 				colliderAcceces++;
-			}
+			//}
 
 			if (mapDataX == Player) {
 
@@ -229,17 +229,22 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 }
 
 void Map::Update() {
-	ImGui::Begin("map");
-	ImGui::DragFloat3("map world pos", &worldTransform_.translation_.x, 0.1f);
-	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.1f);
-	ImGui::DragFloat3("map world scale", &worldTransform_.scale_.x, 0.1f);
-	ImGui::End();
+	ImGuiDraw();
 
-	// 状態リクエスト処理
-	RequestProcessing();
+	//編集モードがoffの時処理
+	if (!isEditOn_) {
+		// 状態リクエスト処理
+		RequestProcessing();
 
-	StateUpdate();
+		StateUpdate();
+	}
+	else {
+		//GameSceneにある
+		//MapEditor();
+	}
 
+
+	//行列更新
 	worldTransform_.UpdateMatrix();
 	for (auto& world : WallWorlds_) {
 		world->UpdateMatrix();
@@ -251,17 +256,66 @@ void Map::Update() {
 
 void Map::Draw() {
 
+	int worldLocation = 0;
+	for (int32_t y = 0; y < mapData_.size(); y++) {
+		for (int32_t x = 0; x < mapData_[y].size(); x++) {
+			if (mapData_[y][x] == Block) {
+				//壁の描画
+				GameObject::Draw(*WallWorlds_[worldLocation]);
+
+				//コライダー描画
+				colliders_[worldLocation]->Draw();
+			}
+			worldLocation++;
+		}
+	}
+
+	// map中心点描画
+	GameObject::Draw(worldTransform_);
+
+	/*
 	// 壁描画
 	for (auto& world : WallWorlds_) {
 		GameObject::Draw(*world);
 	}
+	*/
 
-	// 描画
-	GameObject::Draw(worldTransform_);
-
+	/*
 	for (auto& collider : colliders_) {
 		collider->Draw();
 	}
+	*/
+}
+
+void Map::DrawSprite() {
+	//マップ編集モード
+	if (isEditOn_) {
+		editCursor_->Draw();
+	}
+}
+
+void Map::Finalize() {
+
+}
+
+const std::vector<Collider*> Map::GetWallCollider() {
+	std::vector<Collider*> colliders;
+
+	int32_t location = 0;
+
+	for (int32_t y = 0; y < mapData_.size(); y++) {
+		for (int32_t x = 0; x < mapData_[y].size(); x++) {
+			if (mapData_[y][x] == Block) {
+				
+				colliders.push_back(colliders_[location].get());
+
+			}
+			location++;
+		}
+	}
+
+	return colliders;
+	// TODO: return ステートメントをここに挿入します
 }
 
 void Map::RequestProcessing() {
@@ -303,6 +357,50 @@ void Map::StateUpdate() {
 	}
 }
 
+void Map::ImGuiDraw() {
+#ifdef _DEBUG
+ImGui::Begin("map");
+	ImGui::DragFloat3("map world pos", &worldTransform_.translation_.x, 0.1f);
+	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.1f);
+	ImGui::DragFloat3("map world scale", &worldTransform_.scale_.x, 0.1f);
+	ImGui::Checkbox("is edit on" ,&isEditOn_);
+	ImGui::End();
+#endif // _DEBUG
+}
+
+void Map::MapEditor(const ViewProjection& view) {
+
+	//初期化していなければ初期化
+	if (!isInitializeEditMode_) {
+		
+		//座標取得
+		Vector3 reticlePosV3 = MakeTranslation(WallWorlds_[0]->matWorld_);
+		
+		Matrix4x4 matviewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+
+
+		//V2に変換
+		reticlePos_ = { reticlePosV3.x,reticlePosV3.y };
+
+		//画像読み込み
+		cursorTex_ = TextureManager::Load("editcursor.png");
+
+		//テクスチャクラス初期化
+		editCursor_.reset(Sprite::Create(cursorTex_, reticlePos_));
+	}
+	else {
+
+	}
+
+}
+
+float EsingFloat(const float t, const float start, const float end) {
+	return start * (1.0f - t) + end * t;
+}
+
+
+#pragma region State初期化
 void Map::InitializeStateNormal() { isRotating = false; }
 
 void Map::InitializeStateRightRotation() {
@@ -324,6 +422,10 @@ void Map::InitializeStateLeftRotation() {
 	t_ = 0;
 }
 
+#pragma endregion
+
+#pragma region State更新
+
 void Map::UpdateStateNormal() {
 
 	if (input_->PushKey(DIK_E)) {
@@ -332,10 +434,6 @@ void Map::UpdateStateNormal() {
 	if (input_->PushKey(DIK_Q)) {
 		stateRequest_ = State::kLeftRotation;
 	}
-}
-
-float EsingFloat(const float t, const float start, const float end) {
-	return start * (1.0f - t) + end * t;
 }
 
 void Map::UpdateStateRightRotation() {
@@ -369,5 +467,7 @@ void Map::UpdateStateLeftRotation() {
 		stateRequest_ = State::kNormal;
 	}
 }
+#pragma endregion
+
 
 
