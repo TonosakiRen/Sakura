@@ -29,6 +29,11 @@ public:
 	Vector3 translation_ = { 0.0f, 0.0f, -10.0f };
 	Vector3 target_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 shakeValue_ = { 0.0f,0.0f,0.0f };
+
+	//privateから移動
+	Matrix4x4 matView;
+	Matrix4x4 matProjection;
+
 private:
 	void CreateConstBuffer();
 	void Map();
@@ -38,9 +43,7 @@ private:
 	float nearZ_ = 0.1f;
 	float farZ_ = 1000.0f;
 
-	Matrix4x4 matView;
-	Matrix4x4 matProjection;
-
+	
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff_;
 	ConstBufferDataViewProjection* constMap = nullptr;
 };

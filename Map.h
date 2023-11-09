@@ -73,7 +73,9 @@ private://メンバ関数
 	//ImGuiまとめ
 	void ImGuiDraw();
 
-	
+	//マップデータを基にチップ配置データ初期化
+	void MapPositioningInitialize();
+
 #pragma region 状態初期化関数
 	//Normal状態の初期化
 	void InitializeStateNormal();
@@ -171,11 +173,12 @@ private://変数
 
 
 #pragma region Editor
+#ifdef _DEBUG
 	//編集モードがONか否か
 	bool isEditOn_ = false;
 
 	//初期配置処理をしたか
-	bool isInitializeEditMode_=false;
+	bool isInitializeEditMode_ = false;
 
 	//編集時のカーソル
 	std::unique_ptr<Sprite>editCursor_;
@@ -191,6 +194,9 @@ private://変数
 
 	//参照してるマップ配列のy
 	int32_t referenceMapY_ = 0;
+#endif // _DEBUG
+
+	
 
 #pragma endregion
 

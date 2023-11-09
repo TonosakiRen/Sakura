@@ -97,84 +97,14 @@ bool Map::isRotating = false;
 void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight) {
 
 	input_ = Input::GetInstance();
-	
+
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
 
 	//マップデータを読み込み
 	mapData_ = LoadMapData(map1Pass);
-	//xに一番多いサイズ取得
-	for (auto& mapdataX : mapData_) {
-		if (mapTileNumX_ < (int)mapdataX.size()) {
-			mapTileNumX_ = (int)mapdataX.size();
-		}
-	}
-	mapTileNumY_ = (int)mapData_.size();
-
-
-	// 回転中心点の検索
-	Vector3 centerPos = { mapTileNumX_ - tileWide_ / 2, -mapTileNumY_ + tileWide_ / 2, 0 };
-
-	worldTransform_.Initialize();
-	worldTransform_.translation_ = centerPos;
-	worldTransform_.UpdateMatrix();
-
-	//Collider初期化のための変数
-	uint32_t colliderAcceces = 0;
-
 	
-	int containerNumberY = 0;
-	for (auto& mapDataY : mapData_) {
-		int containerNumberX = 0;
-		for (auto& mapDataX : mapDataY) {
-			//if (mapDataX == Block) {
-				std::unique_ptr<WorldTransform> world;
-				world = std::make_unique<WorldTransform>();
-				world->Initialize();
-				world->translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
-
-				// 親子関係設定
-				world->SetParent(&worldTransform_);
-
-				// ベクトル差分を代入
-				Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
-
-				// 座標代入
-				world->translation_ = subPos;
-
-				world->UpdateMatrix();
-
-				//Collider
-				std::unique_ptr<Collider> collider;
-				collider = std::make_unique<Collider>();
-
-				WallWorlds_.emplace_back(std::move(world));
-				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
-				colliders_.push_back(std::move(collider));
-				colliderAcceces++;
-			//}
-
-			if (mapDataX == Player) {
-
-				playerWorld_.Initialize();
-
-				playerWorld_.translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
-				playerWorld_.SetParent(&worldTransform_);
-
-				playerWorld_.UpdateMatrix();
-				// ベクトル差分を代入
-				Vector3 subPos = Subtract(playerWorld_.translation_, worldTransform_.translation_);
-
-				// 座標代入
-				playerWorld_.translation_ = subPos;
-
-				playerWorld_.UpdateMatrix();
-			}
-			
-			containerNumberX++;
-		}
-		containerNumberY++;
-	}
+	MapPositioningInitialize();
 
 	/*
 	// マップタイルによる座標設定
@@ -188,7 +118,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 				// 親子関係設定
 				world->SetParent(&worldTransform_);
-				
+
 				// ベクトル差分を代入
 				Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
 
@@ -200,7 +130,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 				//Collider
 				std::unique_ptr<Collider> collider;
 				collider = std::make_unique<Collider>();
-				
+
 				WallWorlds_.emplace_back(std::move(world));
 				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
 				colliders_.push_back(std::move(collider));
@@ -306,7 +236,7 @@ const std::vector<Collider*> Map::GetWallCollider() {
 	for (int32_t y = 0; y < mapData_.size(); y++) {
 		for (int32_t x = 0; x < mapData_[y].size(); x++) {
 			if (mapData_[y][x] == Block) {
-				
+
 				colliders.push_back(colliders_[location].get());
 
 			}
@@ -359,39 +289,248 @@ void Map::StateUpdate() {
 
 void Map::ImGuiDraw() {
 #ifdef _DEBUG
-ImGui::Begin("map");
+	ImGui::Begin("map");
 	ImGui::DragFloat3("map world pos", &worldTransform_.translation_.x, 0.1f);
 	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.1f);
 	ImGui::DragFloat3("map world scale", &worldTransform_.scale_.x, 0.1f);
-	ImGui::Checkbox("is edit on" ,&isEditOn_);
+	ImGui::Checkbox("is edit on", &isEditOn_);
 	ImGui::End();
 #endif // _DEBUG
 }
 
+void Map::MapPositioningInitialize() {
+
+
+	//xに一番多いサイズ取得
+	for (auto& mapdataX : mapData_) {
+		if (mapTileNumX_ < (int)mapdataX.size()) {
+			mapTileNumX_ = (int)mapdataX.size();
+		}
+	}
+	mapTileNumY_ = (int)mapData_.size();
+
+
+	// 回転中心点の検索
+	Vector3 centerPos = { mapTileNumX_ - tileWide_ / 2, -mapTileNumY_ + tileWide_ / 2, 0 };
+
+	worldTransform_.Initialize();
+	worldTransform_.translation_ = centerPos;
+	worldTransform_.UpdateMatrix();
+
+	//各種ベクター初期化
+	WallWorlds_.clear();
+	colliders_.clear();
+
+	//Collider初期化のための変数
+	uint32_t colliderAcceces = 0;
+	int containerNumberY = 0;
+	for (auto& mapDataY : mapData_) {
+		int containerNumberX = 0;
+		for (auto& mapDataX : mapDataY) {
+			//if (mapDataX == Block) {
+			std::unique_ptr<WorldTransform> world;
+			world = std::make_unique<WorldTransform>();
+			world->Initialize();
+			world->translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+
+			// 親子関係設定
+			world->SetParent(&worldTransform_);
+
+			// ベクトル差分を代入
+			Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
+
+			// 座標代入
+			world->translation_ = subPos;
+
+			world->UpdateMatrix();
+
+			//Collider
+			std::unique_ptr<Collider> collider;
+			collider = std::make_unique<Collider>();
+
+			WallWorlds_.emplace_back(std::move(world));
+			collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
+			colliders_.push_back(std::move(collider));
+			colliderAcceces++;
+			//}
+
+			if (mapDataX == Player) {
+
+				playerWorld_.Initialize();
+
+				playerWorld_.translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+				playerWorld_.SetParent(&worldTransform_);
+
+				playerWorld_.UpdateMatrix();
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(playerWorld_.translation_, worldTransform_.translation_);
+
+				// 座標代入
+				playerWorld_.translation_ = subPos;
+
+				playerWorld_.UpdateMatrix();
+			}
+
+			containerNumberX++;
+		}
+		containerNumberY++;
+	}
+}
+
 void Map::MapEditor(const ViewProjection& view) {
 
-	//初期化していなければ初期化
-	if (!isInitializeEditMode_) {
-		
-		//座標取得
-		Vector3 reticlePosV3 = MakeTranslation(WallWorlds_[0]->matWorld_);
-		
-		Matrix4x4 matviewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+#ifdef _DEBUG
+
+	if (isEditOn_) {
+
+		ImGui::Begin("block edit");
+		ImGui::Text("0 = Air : 1 = Block : 2 = PlayerSpawn");
+		ImGui::Text("Move : Arrow Key");
+		ImGui::End();
+
+
+		//初期化していなければ初期化
+		if (!isInitializeEditMode_) {
+
+			//フラグON
+			isInitializeEditMode_ = true;
+
+			//座標取得
+			Vector3 reticlePosV3 = MakeTranslation(WallWorlds_[0]->matWorld_);
+
+			Matrix4x4 matviewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+			Matrix4x4 matVPV = view.matView * view.matProjection * matviewport;
+
+			reticlePosV3 = Transform(reticlePosV3, matVPV);
+
+			//V2に変換
+			reticlePos_ = { reticlePosV3.x,reticlePosV3.y };
+
+			//画像読み込み
+			cursorTex_ = TextureManager::Load("editcursor.png");
+
+			//テクスチャクラス初期化
+			editCursor_.reset(Sprite::Create(cursorTex_, reticlePos_));
+		}
+		else {
+
+#pragma region カーソル移動処理
+			//移動入力受付
+			Vector2 move = { 0,0,0 };
+			if (input_->TriggerKey(DIK_UP)) {
+				move.y--;
+			}
+			if (input_->TriggerKey(DIK_DOWN)) {
+				move.y++;
+			}
+			if (input_->TriggerKey(DIK_LEFT)) {
+				move.x--;
+			}
+			if (input_->TriggerKey(DIK_RIGHT)) {
+				move.x++;
+			}
+
+			//コンテナをつかしたかのフラグ
+			bool isAddContainer = false;
+
+			//配列外参照対策処理(Y)
+			referenceMapY_ += (int)move.y;
+			if (referenceMapY_ < 0) {
+				referenceMapY_ = 0;
+			}
+			else if (referenceMapY_ >= mapData_.size()) {
+				//最後尾のmapdataをコピーして新しく作成
+				size_t maxsize = mapData_.size()-(size_t)1;
+				mapData_.emplace_back(mapData_[maxsize]);
+				isAddContainer = true;
+			}
+
+			//配列がい参照対策（X）
+			referenceMapX_ += (int)move.x;
+			if (referenceMapX_ < 0) {
+				referenceMapX_ = 0;
+			}
+			else if (referenceMapX_ >= mapData_[referenceMapY_].size()) {
+
+				while (true) {
+
+					if (referenceMapX_ < mapData_[referenceMapY_].size()) {
+						break;
+					}
+
+
+					//最後尾に0を追加して終わる
+					mapData_[referenceMapY_].emplace_back(1);
+					isAddContainer = true;
+				}
+				
+			}
+
+			//MAPData変更による各種初期化
+			if (isAddContainer) {
+				MapPositioningInitialize();
+			}
 
 
 
-		//V2に変換
-		reticlePos_ = { reticlePosV3.x,reticlePosV3.y };
+			Vector3 reticlePosV3 = { 0,0,0 };
 
-		//画像読み込み
-		cursorTex_ = TextureManager::Load("editcursor.png");
+			//座標の取得
+			int worldLocation = 0;
+			for (int32_t y = 0; y < mapData_.size(); y++) {
+				
+					for (int32_t x = 0; x < mapData_[y].size(); x++) {
+						
+						if (y == referenceMapY_ && x == referenceMapX_) {
+							//座標取得
+							reticlePosV3 = MakeTranslation(WallWorlds_[worldLocation]->matWorld_);
 
-		//テクスチャクラス初期化
-		editCursor_.reset(Sprite::Create(cursorTex_, reticlePos_));
+						}
+
+						worldLocation++;
+					}
+				
+			}
+
+#pragma endregion
+			
+#pragma region ブロックの置き換え
+			{
+				int pickChip = mapData_[referenceMapY_][referenceMapX_];
+				if (input_->TriggerKey(DIK_0)) {
+					pickChip = 0;
+				}
+				if (input_->TriggerKey(DIK_1)) {
+					pickChip = 1;
+				}
+				if (input_->TriggerKey(DIK_2)) {
+					pickChip = 2;
+				}
+
+
+				mapData_[referenceMapY_][referenceMapX_] = pickChip;
+			}
+#pragma endregion
+
+
+
+
+			
+			Matrix4x4 matviewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+			Matrix4x4 matVPV = view.matView * view.matProjection * matviewport;
+
+			reticlePosV3 = Transform(reticlePosV3, matVPV);
+
+			//V2に変換
+			reticlePos_ = { reticlePosV3.x,reticlePosV3.y };
+			editCursor_->position_ = reticlePos_;
+		}
+
 	}
-	else {
+#endif // _DEBUG
 
-	}
 
 }
 

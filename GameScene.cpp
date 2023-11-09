@@ -49,17 +49,18 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
-	//カメラの座標をマップの中心点に合わせる
-	Vector3 mapCenterV3 = map_->GetMapCenter();
-	viewProjection_.translation_.x = mapCenterV3.x;
-	viewProjection_.translation_.y = mapCenterV3.y;
-
+	
 
 }
 
 void GameScene::Update(){
 	//camera light
 	{
+		//カメラの座標をマップの中心点に合わせる
+		Vector3 mapCenterV3 = map_->GetMapCenter();
+		viewProjection_.translation_.x = mapCenterV3.x;
+		viewProjection_.translation_.y = mapCenterV3.y;
+
 		// camera
 		viewProjection_.DebugMove();
 		viewProjection_.UpdateMatrix();
