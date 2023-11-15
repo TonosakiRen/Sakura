@@ -321,13 +321,15 @@ void Map::MapPositioningInitialize() {
 	WallWorlds_.clear();
 	colliders_.clear();
 
+	//boxWorlds_.clear();
+
 	//Collider初期化のための変数
 	uint32_t colliderAcceces = 0;
 	int containerNumberY = 0;
 	for (auto& mapDataY : mapData_) {
 		int containerNumberX = 0;
 		for (auto& mapDataX : mapDataY) {
-			//if (mapDataX == Block) {
+			
 			std::unique_ptr<WorldTransform> world;
 			world = std::make_unique<WorldTransform>();
 			world->Initialize();
@@ -343,16 +345,41 @@ void Map::MapPositioningInitialize() {
 			world->translation_ = subPos;
 
 			world->UpdateMatrix();
-
+		
+			WallWorlds_.emplace_back(std::move(world));
 			//Collider
+
 			std::unique_ptr<Collider> collider;
 			collider = std::make_unique<Collider>();
 
-			WallWorlds_.emplace_back(std::move(world));
 			collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
-			colliders_.push_back(std::move(collider));
+			colliders_.push_back(std::move(collider));		
+
+
+
+
+			if (mapDataX == Box) {
+
+				std::unique_ptr<WorldTransform> Bworld;
+				Bworld = std::make_unique<WorldTransform>();
+				Bworld->Initialize();
+				Bworld->translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+
+				// 親子関係設定
+				Bworld->SetParent(&worldTransform_);
+
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(Bworld->translation_, worldTransform_.translation_);
+
+				// 座標代入
+				Bworld->translation_ = subPos;
+
+				Bworld->UpdateMatrix();
+
+				boxWorlds_.emplace_back(std::move(Bworld));
+			}
 			colliderAcceces++;
-			//}
+
 
 			if (mapDataX == Player) {
 
@@ -370,6 +397,8 @@ void Map::MapPositioningInitialize() {
 
 				playerWorld_.UpdateMatrix();
 			}
+
+			
 
 			containerNumberX++;
 		}

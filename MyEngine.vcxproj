@@ -95,6 +95,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ColorBuffer.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
@@ -136,6 +137,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="Box.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColorBuffer.h" />
     <ClInclude Include="CommandQueue.h" />

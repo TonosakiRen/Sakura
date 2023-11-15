@@ -17,6 +17,9 @@
     <Filter Include="Game\Map">
       <UniqueIdentifier>{1f6dcb8f-5ebd-46c4-b368-424574154796}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Box">
+      <UniqueIdentifier>{55c9b7b0-b038-4568-8fb1-158cf8e34601}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -136,6 +139,9 @@
     <ClCompile Include="Map.cpp">
       <Filter>Game\Map</Filter>
     </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Game\Box</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -204,9 +210,6 @@
     <ClInclude Include="DirectionalLight.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Skydome.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Floor.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -260,6 +263,12 @@
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Game\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Game\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Skydome.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

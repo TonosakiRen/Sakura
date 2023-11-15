@@ -77,6 +77,14 @@ void Player::Collision(Collider& otherCollider) {
 	}
 }
 
+bool Player::IsCollision(Collider& otherCollider) {
+	Vector3 puchBackVector;
+	if (collider_.Collision(otherCollider, puchBackVector)) {
+		return true;
+	}
+	return false;
+}
+
 void Player::Draw() {
 	collider_.Draw();
 	GameObject::Draw();

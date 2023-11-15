@@ -49,7 +49,17 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
-	
+
+	//箱の初期化
+	int managementNum = 0;
+	for (auto& world : map_->GetBoxWorldTransform()) {
+		std::unique_ptr<Box>box=std::make_unique<Box>();
+		box->Initialize("player", &viewProjection_, &directionalLight_, *world.get(),managementNum);
+
+		boxes_.emplace_back(std::move(box));
+
+		managementNum++;
+	}
 
 }
 
@@ -64,6 +74,7 @@ void GameScene::Update(){
 		// camera
 		viewProjection_.DebugMove();
 		viewProjection_.UpdateMatrix();
+
 		// light
 		ImGui::DragFloat3("light", &directionalLight_.direction_.x, 0.01f);
 		ImGui::DragFloat4("lightcolor", &directionalLight_.color_.x, 0.01f);
@@ -97,6 +108,9 @@ void GameScene::TitleUpdate() {
 void GameScene::InGameInitialize() {
 
 }
+
+
+
 void GameScene::InGameUpdate() {
 	if (input_->TriggerKey(DIK_P)) {
 		sceneRequest_ = Scene::Title;
@@ -107,9 +121,128 @@ void GameScene::InGameUpdate() {
 	map_->MapEditor(viewProjection_);
 
 	player_->Update();
+
+	for (auto& box : boxes_) {
+		box->Update();
+	}
+	
+	AllCollision();
+
+	/*
+	//コリジョン処理
 	for (auto& collider : map_->GetWallCollider()) {
 		player_->Collision(*collider);
+
+		for (auto& box : boxes_) {
+			box->Collision(*collider);
+			box->Collision(player_->collider_);
+
+			for (auto& box2 : boxes_) {
+				if (box->GetMaagementNum() != box2->GetMaagementNum()) {
+					box2->Collision(*box->GetCollider());
+					player_->Collision(*box2->GetCollider());
+
+				}
+			}
+		}
+
 	}
+	*/
+}
+
+
+Collider* GameScene::ComebackCollider(Box*baseBox) {
+	//ボックス処理
+	for (auto& box : boxes_) {
+		//コリジョン処理ですでに行っているかチェック
+		if (!box->GetIsAlreadCollision()) {
+			//同じでないことをチェック
+			if (baseBox->GetMaagementNum() != box->GetMaagementNum()) {
+				//当たっている場合
+				if (baseBox->IsCollision(*box->GetCollider())) {
+					//当たったというフラグをONに
+					box->SetCollisionFlagTrue();
+
+					Collider* coll = ComebackCollider(box.get());
+					if (coll) {
+						//別のに当たっていないかチェック
+						baseBox->Collision(*coll);
+					}
+					else {
+
+					}
+				}
+
+			}
+		}
+	}
+
+	//壁とのコリジョン判定フラグ
+	bool isHitWall = false;
+	//地面のコリジョン処理
+	for (auto& wall : map_->GetWallCollider()) {
+		if (baseBox->IsCollisionRecurrence(*wall)) {
+			//コリジョン処理を行う
+			baseBox->Collision(*wall);
+			//当たったフラグをＯＮ
+			isHitWall = true;
+		}
+	}
+
+	//もし壁に当たっていたら全体を押し返す
+	if (isHitWall) {
+		return baseBox->GetCollider();
+	}
+	else {
+		//当たっていなかったらヌル返しして
+		return nullptr;
+	}
+
+}
+
+
+
+
+
+void GameScene::AllCollision() {
+
+	//ブロックとの押し出し処理
+	for (auto& wall : map_->GetWallCollider()) {
+		player_->Collision(*wall);
+
+		for (auto& box : boxes_) {
+			box->Collision(*wall);
+
+
+			for (auto& box2 : boxes_) {
+				if (box->GetMaagementNum() != box2->GetMaagementNum()) {
+					box2->Collision(*box->GetCollider());
+				}
+			}
+		}
+	}
+
+	/*
+	//プレイヤーの箱との押し出し処理
+	for (auto& box : boxes_) {
+		if (player_->IsCollision(*box->GetCollider())) {
+			//当たったフラグON
+			box->SetCollisionFlagTrue();
+
+
+			Collider* coll = ComebackCollider(box.get());
+			if (!coll) {
+
+			}
+			else {
+				//プレイヤーの押し出し処理
+				player_->Collision(*box->GetCollider());
+			}
+		}
+	}
+	*/
+	
+
 }
 
 void GameScene::ModelDraw()
@@ -122,6 +255,9 @@ void GameScene::ModelDraw()
 		skydome_->Draw();
 		map_->Draw();
 		player_->Draw();
+		for (auto& box : boxes_) {
+			box->Draw();
+		}
 		break;
 	default:
 		break;

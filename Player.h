@@ -13,6 +13,7 @@ public:
     void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld);
     void Update();
     void Collision(Collider& otherCollider);
+    bool IsCollision(Collider& otherCollider);
     void Draw();
 public:
     Collider collider_;

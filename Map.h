@@ -11,8 +11,8 @@
 
 #include"Sprite.h"
 
-
 #include "Collider.h"
+
 
 class Map :
 	public GameObject {
@@ -59,6 +59,9 @@ public:
 	//wallだけのコライダーを取得
 	const std::vector<Collider*> GetWallCollider();
 
+	std::vector<std::unique_ptr<WorldTransform>>& GetBoxWorldTransform() { return boxWorlds_; }
+
+	
 #pragma endregion
 
 private://メンバ関数
@@ -111,9 +114,10 @@ private://変数
 
 	//タイルの種類
 	enum Tile {
-		None,//空気
-		Block,//ブロック
-		Player,//プレイヤー初期座標
+		None,	//空気
+		Block,	//ブロック
+		Player,	//プレイヤー初期座標
+		Box		//動く箱
 	};
 
 	//マップのデータ情報格納場所
@@ -129,6 +133,12 @@ private://変数
 
 	// プレイヤーのワールド
 	WorldTransform playerWorld_;
+
+
+	///Box（移動箱）のWorldの集合体
+	std::vector<std::unique_ptr<WorldTransform>>boxWorlds_;
+
+	
 #pragma endregion
 
 	

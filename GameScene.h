@@ -13,6 +13,7 @@
 #include "Floor.h"
 #include "Player.h"
 #include "Map.h"
+#include"Box.h"
 
 #include <optional>
 class GameScene
@@ -52,6 +53,8 @@ private:
 
 	std::unique_ptr<Map> map_;
 
+	//箱
+	std::vector<std::unique_ptr<Box>>boxes_;
 
 	//Scene
 	enum class Scene {
@@ -73,5 +76,11 @@ private:
 	//インゲーム
 	void InGameInitialize();
 	void InGameUpdate();
+
+
+	//コリジョン
+	void AllCollision();
+
+	Collider* ComebackCollider(Box* baseBox);
 };
 
