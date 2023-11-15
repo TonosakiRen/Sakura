@@ -22,7 +22,7 @@ GameScene::~GameScene() {};
 void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
-	
+
 	viewProjection_.Initialize();
 	viewProjection_.translation_.y = 7.0f;
 	viewProjection_.translation_.z = -27.0f;
@@ -53,8 +53,8 @@ void GameScene::Initialize() {
 	//箱の初期化
 	int managementNum = 0;
 	for (auto& world : map_->GetBoxWorldTransform()) {
-		std::unique_ptr<Box>box=std::make_unique<Box>();
-		box->Initialize("player", &viewProjection_, &directionalLight_, *world.get(),managementNum);
+		std::unique_ptr<Box>box = std::make_unique<Box>();
+		box->Initialize("player", &viewProjection_, &directionalLight_, *world.get(), managementNum);
 
 		boxes_.emplace_back(std::move(box));
 
@@ -63,7 +63,7 @@ void GameScene::Initialize() {
 
 }
 
-void GameScene::Update(){
+void GameScene::Update() {
 	//camera light
 	{
 		//カメラの座標をマップの中心点に合わせる
@@ -91,8 +91,8 @@ void GameScene::Update(){
 	}
 	//SceneUpdate
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
-	
-	
+
+
 }
 
 void GameScene::TitleInitialize() {
@@ -125,33 +125,14 @@ void GameScene::InGameUpdate() {
 	for (auto& box : boxes_) {
 		box->Update();
 	}
-	
+
 	AllCollision();
 
-	/*
-	//コリジョン処理
-	for (auto& collider : map_->GetWallCollider()) {
-		player_->Collision(*collider);
 
-		for (auto& box : boxes_) {
-			box->Collision(*collider);
-			box->Collision(player_->collider_);
-
-			for (auto& box2 : boxes_) {
-				if (box->GetMaagementNum() != box2->GetMaagementNum()) {
-					box2->Collision(*box->GetCollider());
-					player_->Collision(*box2->GetCollider());
-
-				}
-			}
-		}
-
-	}
-	*/
 }
 
-
-Collider* GameScene::ComebackCollider(Box*baseBox) {
+/*
+Collider* GameScene::ComebackCollider(Box* baseBox) {
 	//ボックス処理
 	for (auto& box : boxes_) {
 		//コリジョン処理ですでに行っているかチェック
@@ -199,7 +180,7 @@ Collider* GameScene::ComebackCollider(Box*baseBox) {
 	}
 
 }
-
+*/
 
 
 
@@ -209,18 +190,35 @@ void GameScene::AllCollision() {
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		player_->Collision(*wall);
+	}
 
-		for (auto& box : boxes_) {
+
+	//ボックス処理
+	for (auto& box : boxes_) {
+
+		//先にプレイヤーにあわせて押し出し
+		box->Collision(player_->collider_);
+
+		//壁チップ検索
+		for (auto& wall : map_->GetWallCollider()) {
+			//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
 			box->Collision(*wall);
 
+		}
 
-			for (auto& box2 : boxes_) {
-				if (box->GetMaagementNum() != box2->GetMaagementNum()) {
-					box2->Collision(*box->GetCollider());
-				}
-			}
+		//押し戻しによって返された分プレイヤーも返す
+		player_->Collision(*box->GetCollider());
+	}
+
+
+	/*
+	for (auto& wall : map_->GetWallCollider()) {
+		for (auto& box : boxes_) {
+			box->Collision(*wall);
 		}
 	}
+	*/
+
 
 	/*
 	//プレイヤーの箱との押し出し処理
@@ -241,14 +239,12 @@ void GameScene::AllCollision() {
 		}
 	}
 	*/
-	
+
 
 }
 
-void GameScene::ModelDraw()
-{
-	switch (scene_)
-	{
+void GameScene::ModelDraw() {
+	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
@@ -262,13 +258,11 @@ void GameScene::ModelDraw()
 	default:
 		break;
 	}
-	
+
 }
 
-void GameScene::ParticleDraw()
-{
-	switch (scene_)
-	{
+void GameScene::ParticleDraw() {
+	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
@@ -278,10 +272,8 @@ void GameScene::ParticleDraw()
 	}
 }
 
-void GameScene::ParticleBoxDraw()
-{
-	switch (scene_)
-	{
+void GameScene::ParticleBoxDraw() {
+	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
@@ -291,10 +283,8 @@ void GameScene::ParticleBoxDraw()
 	}
 }
 
-void GameScene::PreSpriteDraw()
-{
-	switch (scene_)
-	{
+void GameScene::PreSpriteDraw() {
+	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
@@ -304,10 +294,8 @@ void GameScene::PreSpriteDraw()
 	}
 }
 
-void GameScene::PostSpriteDraw()
-{
-	switch (scene_)
-	{
+void GameScene::PostSpriteDraw() {
+	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:

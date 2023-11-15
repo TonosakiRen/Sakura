@@ -81,6 +81,6 @@ private:
 	//コリジョン
 	void AllCollision();
 
-	Collider* ComebackCollider(Box* baseBox);
+	//Collider* ComebackCollider(Box* baseBox);
 };
 

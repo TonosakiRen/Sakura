@@ -38,7 +38,7 @@ public:
 
 public://ゲッター
 
-	Collider* GetCollider()const { return collider_.get(); }
+	Collider* GetCollider(){ return collider_.get(); }
 
 	const int GetMaagementNum()const { return managementNum_; }
 
