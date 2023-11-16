@@ -56,6 +56,8 @@ public://ゲッター
 	const int GetMaagementNum()const { return managementNum_; }
 
 	bool GetIsAlreadCollision(){return isAlreadyCollision_; }
+
+	bool GetFlag() { return isBuried_; }
 private:
 
 

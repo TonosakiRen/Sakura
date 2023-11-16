@@ -200,6 +200,30 @@ void GameScene::AllCollision() {
 		//先にプレイヤーにあわせて押し出し
 		box->Collision(player_->collider_);
 
+		/*
+		//二個目のボックス処理
+		for (auto& box2 : boxes_) {
+			if (box2->GetMaagementNum() != box->GetMaagementNum()) {
+				box2->Collision(*box->GetCollider());
+			}
+
+			for (auto& wall : map_->GetWallCollider()){
+				box2->Collision(*wall);
+				//ボックスの下にあるコライダーが浮いているか否か
+				box2->CollisionUnderCollider(*wall);
+
+				box->Collision(*wall);
+				//ボックスの下にあるコライダーが浮いているか否か
+				box->CollisionUnderCollider(*wall);
+
+			}
+
+			//押し出された箱の処理
+			box->Collision(*box2->GetCollider());
+		}
+		*/
+
+		
 		//壁チップ検索
 		for (auto& wall : map_->GetWallCollider()) {
 			//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
@@ -208,6 +232,7 @@ void GameScene::AllCollision() {
 			//ボックスの下にあるコライダーが浮いているか否か
 			box->CollisionUnderCollider(*wall);
 		}
+		
 
 		//押し戻しによって返された分プレイヤーも返す
 		player_->Collision(*box->GetCollider());
@@ -215,7 +240,28 @@ void GameScene::AllCollision() {
 
 	//各コリジョンによる状態変化
 	for (auto& box : boxes_) {
-		box->StateChange();
+
+		bool isBoxHit = false;
+
+		//box下のコライダーが反応していることを確認
+		if (box->GetFlag()) {
+
+
+			//boxが壁と接触しているかチェックして			
+			for (auto& wall : map_->GetWallCollider()) {
+				if (box->IsCollision(*wall)) {
+					//状態を変更
+					box->SetState(kStay);
+					isBoxHit = true;
+				}
+			}
+			
+		}
+
+		//当たっていなかったので変更
+		if (!isBoxHit) {
+			box->SetState(kFall);
+		}
 	}
 
 	/*
