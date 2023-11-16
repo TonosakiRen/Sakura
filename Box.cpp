@@ -32,6 +32,8 @@ void Box::Update() {
 	//コリジョン処理を行ったというフラグの無効化
 	isAlreadyCollision_ = false;
 
+	isBuried_ = false;
+
 	switch (state_) {
 	case kFall:
 		//重力をベクトルに追加
@@ -94,15 +96,13 @@ bool Box::IsCollision(Collider& otherCollider) {
 }
 
 void Box::CollisionUnderCollider(Collider& other) {
-	Vector3 puchBackVector;
-	if (underCollider_->Collision(other, puchBackVector)) {
-		state_ = kStay;
+	
+	if (underCollider_->Collision(other)) {
+		//止まってる状態
+		isBuried_ = true;
 		return;
 	}
-	else {
-		//落下状態に変更
-		state_ = kFall;
-	}
+	
 }
 
 bool Box::IsCollisionRecurrence(Collider& other) {
@@ -114,4 +114,14 @@ bool Box::IsCollisionRecurrence(Collider& other) {
 		}
 	}
 	return false;
+}
+
+void Box::StateChange() {
+
+	if (isBuried_) {
+		state_ = kStay;
+	}
+	else {
+		state_ = kFall;
+	}
 }

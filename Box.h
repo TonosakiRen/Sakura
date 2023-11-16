@@ -42,6 +42,10 @@ public:
 	//再起関数内で使用
 	bool IsCollisionRecurrence(Collider& other);
 
+
+	void StateChange();
+
+
 	void SetCollisionFlagTrue() { isAlreadyCollision_ = true; }
 
 	void SetState(BOX_STATE state) { state_ = state; }
@@ -69,6 +73,10 @@ private:
 	//ボックス同士のコリジョン処理をしたかどうか
 	bool isAlreadyCollision_ = false;
 
+	//埋まっているか
+	bool isBuried_ = false;
+
+	
 	//重力
 	const Vector3 gravity_ = { 0.0f,-0.5f,0.0f };
 
