@@ -22,9 +22,13 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 }
 
 void Player::Update() {
-	ImGui::Begin("player");
+#ifdef _DEBUG
+ImGui::Begin("player");
 	ImGui::DragFloat3("pos", &worldTransform_.translation_.x, 0.01f);
 	ImGui::End();
+#endif // _DEBUG
+
+	
 
 	//UpdateMapRotating();
 
