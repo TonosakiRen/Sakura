@@ -9,8 +9,6 @@
 #include "Particle.h"
 #include "ParticleBox.h"
 #include "GameObject.h"
-#include "Skydome.h"
-#include "Floor.h"
 #include "Player.h"
 #include "Map.h"
 #include"Box.h"
@@ -44,8 +42,6 @@ private:
 
 	std::unique_ptr<Sprite>sprite_;
 	WorldTransform spriteTransform_;
-
-	std::unique_ptr<Skydome> skydome_;
 	
 	std::unique_ptr<GameObject> sphere_;
 

@@ -37,9 +37,6 @@ void GameScene::Initialize() {
 
 	sprite_.reset(Sprite::Create(textureHandle_, { 0.0f,0.0f }));
 
-	skydome_ = std::make_unique<Skydome>();
-	skydome_->Initialize("skydome", &viewProjection_, &directionalLight_);
-
 	sphere_ = std::make_unique<GameObject>();
 	sphere_->Initialize("sphere", &viewProjection_, &directionalLight_);
 
@@ -70,6 +67,14 @@ void GameScene::Update() {
 		Vector3 mapCenterV3 = map_->GetMapCenter();
 		viewProjection_.translation_.x = mapCenterV3.x;
 		viewProjection_.translation_.y = mapCenterV3.y;
+		float mostlength = 0.0f;
+		if (viewProjection_.translation_.x > -viewProjection_.translation_.y) {
+			mostlength = viewProjection_.translation_.x;
+		}
+		else {
+			mostlength = -viewProjection_.translation_.y;
+		}
+		viewProjection_.translation_.z = -43.0f - (mostlength - 10.0f) * 2.0f;
 
 		// camera
 		viewProjection_.DebugMove();
@@ -116,7 +121,6 @@ void GameScene::InGameUpdate() {
 		sceneRequest_ = Scene::Title;
 	}
 
-	skydome_->Update();
 	map_->Update();
 	map_->MapEditor(viewProjection_);
 
