@@ -3,7 +3,6 @@
 #include <cassert>
 
 #include "DirectXCommon.h"
-#include "ColorBuffer.h"
 
 using namespace Microsoft::WRL;
 
@@ -30,7 +29,7 @@ void SwapChain::Create(HWND hWnd) {
     desc.Width = UINT(clientWidth); // 画面幅
     desc.Height = UINT(clientHeight); // 画面高
     desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 色の形式
-    desc.SampleDesc.Count = 1; // マルチサンプル市内
+    desc.SampleDesc.Count = 1; // マルチサンプルしない
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // 描画ターゲットとして利用する
     desc.BufferCount = kNumBuffers;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに移したら、中身を破棄
@@ -44,8 +43,6 @@ void SwapChain::Create(HWND hWnd) {
         reinterpret_cast<IDXGISwapChain1**>(swapChain_.ReleaseAndGetAddressOf())));
 
     assert(SUCCEEDED(result));
-
-   /* swapChain_->SetMaximumFrameLatency(1);*/
 
     for (uint32_t i = 0; i < kNumBuffers; ++i) {
         ComPtr<ID3D12Resource> resource;
