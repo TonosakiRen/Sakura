@@ -27,6 +27,13 @@ class ClearBox :
     void Collision(Collider& otherCollider);
 
     /// <summary>
+    /// 当たってるか否かの判定のみ処理
+    /// </summary>
+    /// <param name="otherCollider">ほかのコライダー</param>
+    /// <returns></returns>
+    bool IsHitCollision(Collider& otherCollider);
+
+    /// <summary>
     /// 描画
     /// </summary>
     void Draw();

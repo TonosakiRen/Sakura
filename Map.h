@@ -117,7 +117,8 @@ private://変数
 		None,	//空気
 		Block,	//ブロック
 		Player,	//プレイヤー初期座標
-		Box		//動く箱
+		Box,	//動く箱
+		Goal	//ゴール
 	};
 
 	//マップのデータ情報格納場所
@@ -131,12 +132,20 @@ private://変数
 	// マップチップ別のコライダー
 	std::vector<std::unique_ptr<Collider>> colliders_;
 
+
+#pragma region 一時的な情報共
 	// プレイヤーのワールド
 	WorldTransform playerWorld_;
 
-
 	///Box（移動箱）のWorldの集合体
 	std::vector<std::unique_ptr<WorldTransform>>boxWorlds_;
+
+	//ゴールの位置
+	WorldTransform goalW_;
+#pragma endregion
+
+
+	
 
 	
 #pragma endregion

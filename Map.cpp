@@ -399,7 +399,23 @@ void Map::MapPositioningInitialize() {
 				playerWorld_.UpdateMatrix();
 			}
 
+			//ゴールのWorldTransform設定
+			if (mapDataX == Goal) {
+				goalW_.Initialize();
 
+				goalW_.translation_={ tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+				goalW_.SetParent(&worldTransform_);
+
+				goalW_.UpdateMatrix();
+
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(goalW_.translation_, worldTransform_.translation_);
+
+				// 座標代入
+				goalW_.translation_ = subPos;
+
+				goalW_.UpdateMatrix();
+			}
 
 			containerNumberX++;
 		}
