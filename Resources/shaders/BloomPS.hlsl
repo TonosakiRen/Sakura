@@ -24,10 +24,10 @@ float32_t4 main(VSOutput input) : SV_TARGET{
 	PixelShaderOutput output;
 
     float32_t4 bloom = float32_t4(0.0f, 0.0f, 0.0f, 0.0f);
-    bloom += blurTexture0_.Sample(sampler_, input.uv);
-    bloom += blurTexture1_.Sample(sampler_, input.uv);
-    bloom += blurTexture2_.Sample(sampler_, input.uv);
-    bloom += blurTexture3_.Sample(sampler_, input.uv);
+    bloom += blurTexture0_.Sample(sampler_, input.uv) * param_.intensity;
+    bloom += blurTexture1_.Sample(sampler_, input.uv) * param_.intensity;
+    bloom += blurTexture2_.Sample(sampler_, input.uv) * param_.intensity;
+    bloom += blurTexture3_.Sample(sampler_, input.uv) * param_.intensity;
     bloom /= NUM_TEXTURES;
     bloom.a = 1.0f;
 
