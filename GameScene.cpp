@@ -213,6 +213,10 @@ void GameScene::AllCollision() {
 		player_->Collision(*box->GetCollider());
 	}
 
+	//各コリジョンによる状態変化
+	for (auto& box : boxes_) {
+		box->StateChange();
+	}
 
 	/*
 	for (auto& wall : map_->GetWallCollider()) {
