@@ -13,7 +13,7 @@ class ClearBox :
     /// <param name="viewProjection"></param>
     /// <param name="directionalLight"></param>
     /// <param name="pWorld"></param>
-    void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld);
+    void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld);
     
     /// <summary>
     /// 更新
@@ -32,5 +32,9 @@ class ClearBox :
     void Draw();
 
 private:
+
+    Collider collider_;
+
+
 };
 
