@@ -103,6 +103,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="CommandContext.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="ConvertString.cpp" />
+    <ClCompile Include="DeadLineParticle.cpp" />
     <ClCompile Include="DeadParticle.cpp" />
     <ClCompile Include="DepthBuffer.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
@@ -153,6 +154,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="ColorBuffer.h" />
     <ClInclude Include="CommandContext.h" />
     <ClInclude Include="CommandQueue.h" />
+    <ClInclude Include="DeadLineParticle.h" />
     <ClInclude Include="DeadParticle.h" />
     <ClInclude Include="DepthBuffer.h" />
     <ClInclude Include="DescriptorHandle.h" />

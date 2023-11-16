@@ -172,6 +172,9 @@
     <ClCompile Include="DeadParticle.cpp">
       <Filter>Game\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="DeadLineParticle.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -325,6 +328,9 @@
       <Filter>Game\Particle</Filter>
     </ClInclude>
     <ClInclude Include="DeadParticle.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadLineParticle.h">
       <Filter>Game\Particle</Filter>
     </ClInclude>
   </ItemGroup>
