@@ -12,16 +12,16 @@
       <UniqueIdentifier>{8d53b574-d700-4b43-b329-67c4e71f455f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game">
-      <UniqueIdentifier>{826581d2-6f69-46b8-8d95-da7acb670207}</UniqueIdentifier>
+      <UniqueIdentifier>{821c5250-d954-4930-83f3-fc1fd3dcbb59}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\Map">
-      <UniqueIdentifier>{1f6dcb8f-5ebd-46c4-b368-424574154796}</UniqueIdentifier>
+      <UniqueIdentifier>{0201cb33-bedd-455b-8f02-cfb95429928b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\Box">
-      <UniqueIdentifier>{55c9b7b0-b038-4568-8fb1-158cf8e34601}</UniqueIdentifier>
+      <UniqueIdentifier>{e710ef45-58f0-4e39-91a4-eb69db90e85d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\ClearBox">
-      <UniqueIdentifier>{3c4f0fe6-3e9a-4df2-a842-b4a917e6258b}</UniqueIdentifier>
+    <Filter Include="Game\Particle">
+      <UniqueIdentifier>{aee53479-957f-4a00-b640-c17dd52e34d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,18 +88,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Skydome.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Floor.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="PipelineState.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -133,7 +121,37 @@
     <ClCompile Include="ParticleBox.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="DustParticle.cpp">
+    <ClCompile Include="Bloom.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandContext.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthBuffer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussianBlur.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="DWParam.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalVariables.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="PostEffect.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="UploadBuffer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -142,20 +160,17 @@
     <ClCompile Include="Map.cpp">
       <Filter>Game\Map</Filter>
     </ClCompile>
+    <ClCompile Include="ClearBox.cpp">
+      <Filter>Game\Box</Filter>
+    </ClCompile>
     <ClCompile Include="Box.cpp">
       <Filter>Game\Box</Filter>
     </ClCompile>
-    <ClCompile Include="PostEffect.cpp" />
-    <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="GlobalVariables.cpp" />
-    <ClCompile Include="GaussianBlur.cpp" />
-    <ClCompile Include="DWParam.cpp" />
-    <ClCompile Include="DepthBuffer.cpp" />
-    <ClCompile Include="Bloom.cpp" />
-    <ClCompile Include="CommandContext.cpp" />
-    <ClCompile Include="UploadBuffer.cpp" />
-    <ClCompile Include="ClearBox.cpp">
-      <Filter>Game\ClearBox</Filter>
+    <ClCompile Include="DustParticle.cpp">
+      <Filter>Game\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="DeadParticle.cpp">
+      <Filter>Game\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,17 +231,8 @@
     <ClInclude Include="WorldTransform.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="DirectionalLight.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Floor.h">
-      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="PipelineState.h">
       <Filter>Engine</Filter>
@@ -270,7 +276,37 @@
     <ClInclude Include="ParticleBox.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="DustParticle.h">
+    <ClInclude Include="Bloom.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandContext.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthBuffer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="DWParam.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GaussianBlur.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVariables.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="PostEffect.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="UploadBuffer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -282,20 +318,14 @@
     <ClInclude Include="Box.h">
       <Filter>Game\Box</Filter>
     </ClInclude>
-    <ClInclude Include="Skydome.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="PostEffect.h" />
-    <ClInclude Include="Helper.h" />
-    <ClInclude Include="GlobalVariables.h" />
-    <ClInclude Include="GaussianBlur.h" />
-    <ClInclude Include="DWParam.h" />
-    <ClInclude Include="DepthBuffer.h" />
-    <ClInclude Include="Bloom.h" />
-    <ClInclude Include="CommandContext.h" />
-    <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="ClearBox.h">
-      <Filter>Game\ClearBox</Filter>
+      <Filter>Game\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="DustParticle.h">
+      <Filter>Game\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadParticle.h">
+      <Filter>Game\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
