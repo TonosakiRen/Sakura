@@ -44,6 +44,6 @@ private:
 
     float threshold_ = 0.8f;
     float knee_ = 0.3f;
-    float intensity_ = 1.0f;
+    float intensity_ = 2.0f;
 };
 
