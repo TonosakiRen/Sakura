@@ -103,7 +103,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 	//マップデータを読み込み
 	mapData_ = LoadMapData(map1Pass);
-	
+
 	MapPositioningInitialize();
 
 	/*
@@ -311,7 +311,8 @@ void Map::MapPositioningInitialize() {
 
 
 	// 回転中心点の検索
-	Vector3 centerPos = { mapTileNumX_ - tileWide_ / 2, -mapTileNumY_ + tileWide_ / 2, 0 };
+	///（マップの数）ｘ（半径）の半分　-　位置ブロックの半径の半分
+	Vector3 centerPos = { (mapTileNumX_ * tileWide_) / 2 - (tileWide_ / 2), -(mapTileNumY_ * tileWide_) / 2 + (tileWide_ / 2), 0 };
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = centerPos;
@@ -321,7 +322,7 @@ void Map::MapPositioningInitialize() {
 	WallWorlds_.clear();
 	colliders_.clear();
 
-	//boxWorlds_.clear();
+	boxWorlds_.clear();
 
 	//Collider初期化のための変数
 	uint32_t colliderAcceces = 0;
@@ -329,7 +330,7 @@ void Map::MapPositioningInitialize() {
 	for (auto& mapDataY : mapData_) {
 		int containerNumberX = 0;
 		for (auto& mapDataX : mapDataY) {
-			
+
 			std::unique_ptr<WorldTransform> world;
 			world = std::make_unique<WorldTransform>();
 			world->Initialize();
@@ -345,7 +346,7 @@ void Map::MapPositioningInitialize() {
 			world->translation_ = subPos;
 
 			world->UpdateMatrix();
-		
+
 			WallWorlds_.emplace_back(std::move(world));
 			//Collider
 
@@ -353,7 +354,7 @@ void Map::MapPositioningInitialize() {
 			collider = std::make_unique<Collider>();
 
 			collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
-			colliders_.push_back(std::move(collider));		
+			colliders_.push_back(std::move(collider));
 
 
 
@@ -398,7 +399,7 @@ void Map::MapPositioningInitialize() {
 				playerWorld_.UpdateMatrix();
 			}
 
-			
+
 
 			containerNumberX++;
 		}
@@ -443,14 +444,14 @@ void Map::MapEditor(const ViewProjection& view) {
 		ImGui::Text("0 = Air : 1 = Block : 2 = PlayerSpawn");
 		ImGui::Text("Move : Arrow Key");
 		if (ImGui::Button("SaveMap")) {
-			SaveMapData(map1Pass,mapData_);
-			MessageBoxA(nullptr, "SaveComplete!","mapData",0);
+			SaveMapData(map1Pass, mapData_);
+			MessageBoxA(nullptr, "SaveComplete!", "mapData", 0);
 
-			isInitializeEditMode_=true;
+			isInitializeEditMode_ = true;
 		}
 
 		if (ImGui::Button("LoadMap")) {
-			mapData_= LoadMapData(map1Pass);
+			mapData_ = LoadMapData(map1Pass);
 			isInitializeEditMode_ = true;
 			MessageBoxA(nullptr, "TextLoaded!", "mapData", 0);
 		}
@@ -510,7 +511,7 @@ void Map::MapEditor(const ViewProjection& view) {
 			}
 			else if (referenceMapY_ >= mapData_.size()) {
 				//最後尾のmapdataをコピーして新しく作成
-				size_t maxsize = mapData_.size()-(size_t)1;
+				size_t maxsize = mapData_.size() - (size_t)1;
 				mapData_.emplace_back(mapData_[maxsize]);
 				isAddContainer = true;
 			}
@@ -533,7 +534,7 @@ void Map::MapEditor(const ViewProjection& view) {
 					mapData_[referenceMapY_].emplace_back(1);
 					isAddContainer = true;
 				}
-				
+
 			}
 
 			//MAPData変更による各種初期化
@@ -548,22 +549,22 @@ void Map::MapEditor(const ViewProjection& view) {
 			//座標の取得
 			int worldLocation = 0;
 			for (int32_t y = 0; y < mapData_.size(); y++) {
-				
-					for (int32_t x = 0; x < mapData_[y].size(); x++) {
-						
-						if (y == referenceMapY_ && x == referenceMapX_) {
-							//座標取得
-							reticlePosV3 = MakeTranslation(WallWorlds_[worldLocation]->matWorld_);
 
-						}
+				for (int32_t x = 0; x < mapData_[y].size(); x++) {
 
-						worldLocation++;
+					if (y == referenceMapY_ && x == referenceMapX_) {
+						//座標取得
+						reticlePosV3 = MakeTranslation(WallWorlds_[worldLocation]->matWorld_);
+
 					}
-				
+
+					worldLocation++;
+				}
+
 			}
 
 #pragma endregion
-			
+
 #pragma region ブロックの置き換え
 			{
 				int pickChip = mapData_[referenceMapY_][referenceMapX_];
@@ -585,7 +586,7 @@ void Map::MapEditor(const ViewProjection& view) {
 
 
 
-			
+
 			Matrix4x4 matviewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
 
 			Matrix4x4 matVPV = view.matView * view.matProjection * matviewport;
