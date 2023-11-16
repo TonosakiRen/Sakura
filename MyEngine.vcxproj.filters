@@ -142,6 +142,15 @@
     <ClCompile Include="Box.cpp">
       <Filter>Game\Box</Filter>
     </ClCompile>
+    <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="GlobalVariables.cpp" />
+    <ClCompile Include="GaussianBlur.cpp" />
+    <ClCompile Include="DWParam.cpp" />
+    <ClCompile Include="DepthBuffer.cpp" />
+    <ClCompile Include="Bloom.cpp" />
+    <ClCompile Include="CommandContext.cpp" />
+    <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -270,6 +279,15 @@
     <ClInclude Include="Skydome.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="PostEffect.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="GlobalVariables.h" />
+    <ClInclude Include="GaussianBlur.h" />
+    <ClInclude Include="DWParam.h" />
+    <ClInclude Include="DepthBuffer.h" />
+    <ClInclude Include="Bloom.h" />
+    <ClInclude Include="CommandContext.h" />
+    <ClInclude Include="UploadBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Basic.hlsli">

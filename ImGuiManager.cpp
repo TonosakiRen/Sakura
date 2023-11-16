@@ -53,8 +53,6 @@ void ImGuiManager::End() {
 
 void ImGuiManager::Draw() {
 
-	ID3D12GraphicsCommandList* commandList = DirectXCommon::GetInstance()->GetCommandList();
-
 	// 描画コマンドを発行
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), *DirectXCommon::GetInstance()->GetCommandContext());
 }

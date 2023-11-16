@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <wrl.h>
 #include "Mymath.h"
+#include <cmath>
 
 #define DIRECTINPUT_VERSION 0x0800 
 #include <dinput.h>
@@ -58,10 +59,37 @@ public:
 	}
 
 	Vector2 GetLStick() {
-		return Vector2{ static_cast<float>(xInputState_.Gamepad.sThumbLX),static_cast<float>(xInputState_.Gamepad.sThumbLY) };
+		Vector2 l;
+		if (std::fabs(xInputState_.Gamepad.sThumbLX) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
+			l.x = 0.0f;
+		}
+		else {
+			l.x = static_cast<float>(xInputState_.Gamepad.sThumbLX);
+		}
+		if (std::fabs(xInputState_.Gamepad.sThumbLY) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) {
+			l.y = 0.0f;
+		}
+		else {
+			l.y = static_cast<float>(xInputState_.Gamepad.sThumbLY);
+		}
+		return l;
 	}
+
 	Vector2 GetRStick() {
-		return Vector2{ static_cast<float>(xInputState_.Gamepad.sThumbLX),static_cast<float>(xInputState_.Gamepad.sThumbLY) };
+		Vector2 r;
+		if (std::fabs(xInputState_.Gamepad.sThumbRX) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) {
+			r.x = 0.0f;
+		}
+		else {
+			r.x = static_cast<float>(xInputState_.Gamepad.sThumbRX);
+		}
+		if (std::fabs(xInputState_.Gamepad.sThumbRY) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) {
+			r.y = 0.0f;
+		}
+		else {
+			r.y = static_cast<float>(xInputState_.Gamepad.sThumbRY);
+		}
+		return r;
 	}
 
 	bool DownLStick(SHORT deadZone = -20000) {

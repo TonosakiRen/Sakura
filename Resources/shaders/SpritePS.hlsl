@@ -13,4 +13,5 @@ struct VSOutput {
 Texture2D<float4> tex : register(t0); 
 SamplerState smp : register(s0);   
 
-float32_t4 main(VSOutput input) : SV_TARGET{ return tex.Sample(smp, input.uv) * gCbuff0.color; }
+float32_t4 main(VSOutput input) : SV_TARGET{
+	return tex.Sample(smp, input.uv) * gCbuff0.color; }

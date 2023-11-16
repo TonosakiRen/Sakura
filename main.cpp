@@ -6,6 +6,8 @@
 #include "ImGuiManager.h"
 #include "Particle.h"
 #include "ParticleBox.h"
+#include "PostEffect.h"
+#include "GaussianBlur.h"
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* win = nullptr;
@@ -37,13 +39,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 3Dオブジェクト静的初期化
 	Particle::StaticInitialize();
-
 	ParticleBox::StaticInitialize();
+
+	PostEffect::StaticInitialize();
+	GaussianBlur::StaticInitialize();
+	dxCommon->InitializePostEffect();
 
 	//　スプライト静的初期化
 	Sprite::StaticInitialize();
 
-#pragma endregion
+
+#pragma endregion 変数
 
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
@@ -68,13 +74,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 		// 描画開始
-		dxCommon->PreDraw();
+		dxCommon->MainPreDraw();
 		// ゲームシーンの描画
-		gameScene->Draw();
+		gameScene->Draw(*dxCommon->GetCommandContext());
+
+		dxCommon->MainPostDraw();
+
+		dxCommon->SwapChainPreDraw();
+
+		gameScene->UIDraw(*dxCommon->GetCommandContext());
+
 		// ImGui描画
 		imguiManager->Draw();
-		// 描画終了
-		dxCommon->PostDraw();
+
+		dxCommon->SwapChainPostDraw();
 	}
 
 

@@ -91,4 +91,3 @@ float Input::GetWheel() {
 bool Input::IsPressMouse(int32_t mouseNumber) {
 	return mouseState_.state.rgbButtons[mouseNumber] & 0x80;
 }
-

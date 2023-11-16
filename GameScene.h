@@ -30,8 +30,8 @@ public:
 	void ParticleBoxDraw();
 	void PreSpriteDraw();
 	void PostSpriteDraw();
-	void Draw();
-
+	void Draw(CommandContext& commandContext);
+	void UIDraw(CommandContext& commandContext);
 
 private: 
 	DirectXCommon* dxCommon_ = nullptr;

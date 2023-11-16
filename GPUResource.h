@@ -5,6 +5,7 @@
 
 class GPUResource {
     friend class DirectXCommon;
+    friend class CommandContext;
 public:
     operator ID3D12Resource* () const { return resource_.Get(); }
 

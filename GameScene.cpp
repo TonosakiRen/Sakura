@@ -309,35 +309,34 @@ void GameScene::PostSpriteDraw() {
 	}
 }
 
-void GameScene::Draw() {
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
+void GameScene::Draw(CommandContext& commandContext) {
 	// 背景スプライト描画
-	Sprite::PreDraw(commandList);
+	Sprite::PreDraw(commandContext);
 	PreSpriteDraw();
 	Sprite::PostDraw();
 
-	//深度バッファクリア
-	dxCommon_->ClearDepthBuffer();
+	DirectXCommon::GetInstance()->ClearMainDepthBuffer();
 
 	//3Dオブジェクト描画
-	Model::PreDraw(commandList);
+	Model::PreDraw(commandContext);
 	ModelDraw();
 	Model::PostDraw();
 
 	//Particle描画
-	Particle::PreDraw(commandList);
+	Particle::PreDraw(commandContext);
 	ParticleDraw();
 	Particle::PostDraw();
 
 	//Particle描画
-	ParticleBox::PreDraw(commandList);
+	ParticleBox::PreDraw(commandContext);
 	ParticleBoxDraw();
 	ParticleBox::PostDraw();
+}
 
+void GameScene::UIDraw(CommandContext& commandContext)
+{
 	// 前景スプライト描画
-	Sprite::PreDraw(commandList);
+	Sprite::PreDraw(commandContext);
 	PostSpriteDraw();
 	Sprite::PostDraw();
 }
