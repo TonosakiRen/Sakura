@@ -87,8 +87,8 @@ void Sprite::StaticInitialize() {
 		gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-		gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-		gpipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		/*gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		gpipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;*/
 
 
 		D3D12_RENDER_TARGET_BLEND_DESC blenddesc{};
