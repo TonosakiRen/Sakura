@@ -45,10 +45,10 @@ public:
 
 	void StateChange();
 
-
 	void SetCollisionFlagTrue() { isAlreadyCollision_ = true; }
 
 	void SetState(BOX_STATE state) { state_ = state; }
+
 public://ゲッター
 
 	Collider* GetCollider(){ return collider_.get(); }

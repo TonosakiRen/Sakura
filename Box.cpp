@@ -1,5 +1,8 @@
 #include"Box.h"
+
 #include"ImGuiManager.h"
+
+#include"Map.h"
 
 void Box::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,
 	const WorldTransform& world, const int managementNum) {
@@ -36,14 +39,17 @@ void Box::Update() {
 
 	switch (state_) {
 	case kFall:
-		//重力をベクトルに追加
-		Vector3 move = gravity_;
 
-		//回転量に合わせて重力ベクトル変更
-		move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+		if (!Map::isRotating) {
+			//重力をベクトルに追加
+			Vector3 move = gravity_;
 
-		//加算して移動
-		worldTransform_.translation_ += move;
+			//回転量に合わせて重力ベクトル変更
+			move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+			//加算して移動
+			worldTransform_.translation_ += move;
+		}
 		break;
 	case kStay:
 		break;
