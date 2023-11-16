@@ -61,6 +61,8 @@ void Box::Update() {
 
 	underCollider_->worldTransform_.translation_ = offset;
 
+	underCollider_->AdjustmentScale();
+
 }
 
 void Box::Draw() {
@@ -72,7 +74,6 @@ void Box::Draw() {
 
 void Box::Collision(Collider& otherCollider) {
 
-	
 	//押し戻し処理
 	Vector3 puchBackVector;
 	if (collider_->Collision(otherCollider, puchBackVector)) {

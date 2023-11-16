@@ -194,14 +194,14 @@ void Map::Draw() {
 				GameObject::Draw(*WallWorlds_[worldLocation]);
 
 				//コライダー描画
-				colliders_[worldLocation]->Draw();
+				//colliders_[worldLocation]->Draw();
 			}
 			worldLocation++;
 		}
 	}
 
 	// map中心点描画
-	GameObject::Draw(worldTransform_);
+	//GameObject::Draw(worldTransform_);
 
 	/*
 	// 壁描画

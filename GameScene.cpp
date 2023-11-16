@@ -251,7 +251,6 @@ void GameScene::ModelDraw() {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
-		skydome_->Draw();
 		map_->Draw();
 		player_->Draw();
 		for (auto& box : boxes_) {
