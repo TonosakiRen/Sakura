@@ -44,7 +44,7 @@ void GameScene::Initialize() {
 	sphere_->Initialize("sphere", &viewProjection_, &directionalLight_);
 
 	map_ = std::make_unique<Map>();
-	map_->Initialize("player", &viewProjection_, &directionalLight_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 	int managementNum = 0;
 	for (auto& world : map_->GetBoxWorldTransform()) {
 		std::unique_ptr<Box>box = std::make_unique<Box>();
-		box->Initialize("player", &viewProjection_, &directionalLight_, *world.get(), managementNum);
+		box->Initialize("box", &viewProjection_, &directionalLight_, *world.get(), managementNum);
 
 		boxes_.emplace_back(std::move(box));
 
