@@ -190,6 +190,7 @@ void GameScene::AllCollision() {
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		player_->Collision(*wall);
+
 	}
 
 
@@ -204,6 +205,8 @@ void GameScene::AllCollision() {
 			//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
 			box->Collision(*wall);
 
+			//ボックスの下にあるコライダーが浮いているか否か
+			box->CollisionUnderCollider(*wall);
 		}
 
 		//押し戻しによって返された分プレイヤーも返す

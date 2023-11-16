@@ -1,4 +1,5 @@
 #include"Box.h"
+#include"ImGuiManager.h"
 
 void Box::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,
 	const WorldTransform& world, const int managementNum) {
@@ -15,28 +16,58 @@ void Box::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	collider_ = std::make_unique<Collider>();
 	collider_->Initialize(&worldTransform_, "blockTile", viewProjection, directionalLight);
 
+	underCollider_ = std::make_unique<Collider>();
+	underCollider_->Initialize(&worldTransform_, "blockTile", viewProjection, directionalLight);
+
 }
 
 void Box::Update() {
-	//コリジョン処理を無効化
+
+	ImGui::Begin("box");
+	ImGui::Text("%d", state_);
+	ImGui::DragFloat3("colloder", &collider_->worldTransform_.translation_.x);
+	ImGui::DragFloat3("underColloder", &underCollider_->worldTransform_.translation_.x);
+	ImGui::End();
+
+	//コリジョン処理を行ったというフラグの無効化
 	isAlreadyCollision_ = false;
 
-	//重力をベクトルに追加
-	Vector3 move = gravity_;
+	switch (state_) {
+	case kFall:
+		//重力をベクトルに追加
+		Vector3 move = gravity_;
 
-	//回転量に合わせて重力ベクトル変更
-	move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+		//回転量に合わせて重力ベクトル変更
+		move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 
-	//加算して移動
-	worldTransform_.translation_ += move;
+		//加算して移動
+		worldTransform_.translation_ += move;
+		break;
+	case kStay:
+		break;
+	default:
+		break;
+	}
+
+	
 
 	//行列更新
 	worldTransform_.UpdateMatrix();
+
+
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+
+	offset=offset* NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+	underCollider_->worldTransform_.translation_ = offset;
+
 }
 
 void Box::Draw() {
 	// map中心点描画
 	GameObject::Draw(worldTransform_);
+
+	underCollider_->Draw();
 }
 
 void Box::Collision(Collider& otherCollider) {
@@ -59,6 +90,18 @@ bool Box::IsCollision(Collider& otherCollider) {
 		return true;
 	}
 	return false;
+}
+
+void Box::CollisionUnderCollider(Collider& other) {
+	Vector3 puchBackVector;
+	if (underCollider_->Collision(other, puchBackVector)) {
+		state_ = kStay;
+		return;
+	}
+	else {
+		//落下状態に変更
+		state_ = kFall;
+	}
 }
 
 bool Box::IsCollisionRecurrence(Collider& other) {

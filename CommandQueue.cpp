@@ -1,7 +1,7 @@
 #include "CommandQueue.h"
 
 #include <cassert>
-
+#include<thread>
 #include "DirectXCommon.h"
 
 CommandQueue::~CommandQueue() {

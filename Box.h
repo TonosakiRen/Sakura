@@ -3,6 +3,12 @@
 #include"Collider.h"
 
 
+enum BOX_STATE {
+	kFall,
+	kStay
+};
+
+
 class Box : public GameObject {
 
 public:
@@ -31,11 +37,14 @@ public:
 
 	bool IsCollision(Collider& otherCollider);
 
+	void CollisionUnderCollider(Collider& other);
+
 	//再起関数内で使用
 	bool IsCollisionRecurrence(Collider& other);
 
 	void SetCollisionFlagTrue() { isAlreadyCollision_ = true; }
 
+	void SetState(BOX_STATE state) { state_ = state; }
 public://ゲッター
 
 	Collider* GetCollider(){ return collider_.get(); }
@@ -44,8 +53,15 @@ public://ゲッター
 
 	bool GetIsAlreadCollision(){return isAlreadyCollision_; }
 private:
+
+
+	BOX_STATE state_ = kFall;
+
 	//コライダー
 	std::unique_ptr<Collider>collider_;
+
+	//アンダーコライダー
+	std::unique_ptr<Collider>underCollider_;
 
 	//管理番号
 	int managementNum_;
