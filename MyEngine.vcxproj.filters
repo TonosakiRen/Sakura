@@ -20,6 +20,9 @@
     <Filter Include="Game\Box">
       <UniqueIdentifier>{55c9b7b0-b038-4568-8fb1-158cf8e34601}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\ClearBox">
+      <UniqueIdentifier>{3c4f0fe6-3e9a-4df2-a842-b4a917e6258b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -151,6 +154,9 @@
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="CommandContext.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
+    <ClCompile Include="ClearBox.cpp">
+      <Filter>Game\ClearBox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -288,6 +294,9 @@
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="CommandContext.h" />
     <ClInclude Include="UploadBuffer.h" />
+    <ClInclude Include="ClearBox.h">
+      <Filter>Game\ClearBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Basic.hlsli">
