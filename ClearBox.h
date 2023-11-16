@@ -6,6 +6,7 @@
 class ClearBox :
     public GameObject {
 
+public:
     /// <summary>
     /// 初期化
     /// </summary>

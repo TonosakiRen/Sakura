@@ -40,11 +40,12 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<GameObject>();
 	sphere_->Initialize("sphere", &viewProjection_, &directionalLight_);
 
+	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_,mapPassNum_);
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
 
 
 	//箱の初期化
@@ -58,6 +59,10 @@ void GameScene::Initialize() {
 		managementNum++;
 	}
 
+
+	clearBox_ = std::make_unique<ClearBox>();
+	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+	
 }
 
 void GameScene::Update() {
@@ -98,6 +103,7 @@ void GameScene::Update() {
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
 
 
+	
 }
 
 void GameScene::TitleInitialize() {
@@ -111,7 +117,25 @@ void GameScene::TitleUpdate() {
 
 }
 void GameScene::InGameInitialize() {
+	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
+	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
+
+	//箱の初期化
+	int managementNum = 0;
+	for (auto& world : map_->GetBoxWorldTransform()) {
+		std::unique_ptr<Box>box = std::make_unique<Box>();
+		box->Initialize("box", &viewProjection_, &directionalLight_, *world.get(), managementNum);
+
+		boxes_.emplace_back(std::move(box));
+
+		managementNum++;
+	}
+
+	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+
+	//次イニシャライズするときに
+	mapPassNum_++;
 }
 
 
@@ -124,69 +148,20 @@ void GameScene::InGameUpdate() {
 	map_->Update();
 	map_->MapEditor(viewProjection_);
 
+	clearBox_->Update();
+
 	player_->Update();
 
 	for (auto& box : boxes_) {
 		box->Update();
 	}
 
+	//
 	AllCollision();
 
-
+	//条件を満たしている場合のシーンチェンジ
+	InGameSceneChange();
 }
-
-/*
-Collider* GameScene::ComebackCollider(Box* baseBox) {
-	//ボックス処理
-	for (auto& box : boxes_) {
-		//コリジョン処理ですでに行っているかチェック
-		if (!box->GetIsAlreadCollision()) {
-			//同じでないことをチェック
-			if (baseBox->GetMaagementNum() != box->GetMaagementNum()) {
-				//当たっている場合
-				if (baseBox->IsCollision(*box->GetCollider())) {
-					//当たったというフラグをONに
-					box->SetCollisionFlagTrue();
-
-					Collider* coll = ComebackCollider(box.get());
-					if (coll) {
-						//別のに当たっていないかチェック
-						baseBox->Collision(*coll);
-					}
-					else {
-
-					}
-				}
-
-			}
-		}
-	}
-
-	//壁とのコリジョン判定フラグ
-	bool isHitWall = false;
-	//地面のコリジョン処理
-	for (auto& wall : map_->GetWallCollider()) {
-		if (baseBox->IsCollisionRecurrence(*wall)) {
-			//コリジョン処理を行う
-			baseBox->Collision(*wall);
-			//当たったフラグをＯＮ
-			isHitWall = true;
-		}
-	}
-
-	//もし壁に当たっていたら全体を押し返す
-	if (isHitWall) {
-		return baseBox->GetCollider();
-	}
-	else {
-		//当たっていなかったらヌル返しして
-		return nullptr;
-	}
-
-}
-*/
-
-
 
 
 void GameScene::AllCollision() {
@@ -298,6 +273,20 @@ void GameScene::AllCollision() {
 	*/
 
 
+	//クリアボックスとプレイヤーとの当たり判定
+	if (clearBox_->IsHitCollision(player_->collider_)) {
+		//シーン変更フラグをON
+		isSceneChange_ = true;
+	}
+
+}
+
+void GameScene::InGameSceneChange() {
+
+	if (isSceneChange_) {
+		//シーンを変更
+		sceneRequest_ = Scene::InGame;
+	}
 }
 
 void GameScene::ModelDraw() {
@@ -306,6 +295,7 @@ void GameScene::ModelDraw() {
 		break;
 	case GameScene::Scene::InGame:
 		map_->Draw();
+		clearBox_->Draw();
 		player_->Draw();
 		for (auto& box : boxes_) {
 			box->Draw();

@@ -12,10 +12,10 @@
 #include "Player.h"
 #include "Map.h"
 #include"Box.h"
+#include"ClearBox.h"
 
 #include <optional>
-class GameScene
-{
+class GameScene {
 
 public:
 	GameScene();
@@ -31,10 +31,30 @@ public:
 	void Draw(CommandContext& commandContext);
 	void UIDraw(CommandContext& commandContext);
 
-private: 
+private: //メンバ関数
+
+#pragma region タイトルのメンバ変数
+
+	void TitleInitialize();
+	void TitleUpdate();
+#pragma endregion
+
+#pragma region インゲームのメンバ変数
+	//インゲーム
+	void InGameInitialize();
+	void InGameUpdate();
+
+	//コリジョン
+	void AllCollision();
+
+	//InGameでのシーンチェンジの管理
+	void InGameSceneChange();
+#pragma endregion
+
+private://メンバ関数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
-	
+
 	ViewProjection viewProjection_;
 	DirectionalLight directionalLight_;
 
@@ -42,7 +62,7 @@ private:
 
 	std::unique_ptr<Sprite>sprite_;
 	WorldTransform spriteTransform_;
-	
+
 	std::unique_ptr<GameObject> sphere_;
 
 	std::unique_ptr<Player> player_;
@@ -52,11 +72,13 @@ private:
 	//箱
 	std::vector<std::unique_ptr<Box>>boxes_;
 
+	//クリアボックス
+	std::unique_ptr<ClearBox>clearBox_;
+
 	//Scene
 	enum class Scene {
 		Title,
 		InGame,
-
 		SceneNum
 	};
 
@@ -66,17 +88,11 @@ private:
 	static void (GameScene::* SceneUpdateTable[])();
 	std::optional<Scene> sceneRequest_ = std::nullopt;
 
-	//タイトル
-	void TitleInitialize();
-	void TitleUpdate();
-	//インゲーム
-	void InGameInitialize();
-	void InGameUpdate();
+
+	int mapPassNum_ = 0;
 
 
-	//コリジョン
-	void AllCollision();
-
-	//Collider* ComebackCollider(Box* baseBox);
+	//SceneChangeするかのフラグ
+	bool isSceneChange_ = false;
 };
 

@@ -94,15 +94,17 @@ std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 
 bool Map::isRotating = false;
 
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight) {
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
 
 	input_ = Input::GetInstance();
 
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
 
+	mapPassNumber_ = num;
+
 	//マップデータを読み込み
-	mapData_ = LoadMapData(map1Pass);
+	mapData_ = LoadMapData(map1Pass[num]);
 
 	MapPositioningInitialize();
 
@@ -460,14 +462,14 @@ void Map::MapEditor(const ViewProjection& view) {
 		ImGui::Text("0 = Air : 1 = Block : 2 = PlayerSpawn");
 		ImGui::Text("Move : Arrow Key");
 		if (ImGui::Button("SaveMap")) {
-			SaveMapData(map1Pass, mapData_);
+			SaveMapData(map1Pass[mapPassNumber_], mapData_);
 			MessageBoxA(nullptr, "SaveComplete!", "mapData", 0);
 
 			isInitializeEditMode_ = true;
 		}
 
 		if (ImGui::Button("LoadMap")) {
-			mapData_ = LoadMapData(map1Pass);
+			mapData_ = LoadMapData(map1Pass[mapPassNumber_]);
 			isInitializeEditMode_ = true;
 			MessageBoxA(nullptr, "TextLoaded!", "mapData", 0);
 		}
