@@ -108,8 +108,30 @@ void Player::Collision(Collider& otherCollider) {
 }
 
 bool Player::IsSetPerfect(Collider& otherCollider) {
-	if (collider_.Collision(otherCollider)) {
-		return true;
+	Vector3 puchBackVector;
+	//当たったか否か
+	if (collider_.Collision(otherCollider, puchBackVector)) {
+
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		//0
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return true;
+		}
+
+		return false;
 	}
 	return false;
 }
@@ -155,6 +177,21 @@ bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 
 	Vector3 puchBackVector;
 	if (underCollider_.Collision(otherCollider, puchBackVector)) {
+
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
 
 		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
 			return false;

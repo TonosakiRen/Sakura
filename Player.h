@@ -54,10 +54,21 @@ public:
     //初速度0でジャンプ（落下
     void SetFall() {
         state_ = PlayerState::kJump;
-        velocisity_ = { 0.0f,0.0f,0.0f };
+        //velocisity_ = { 0.0f,0.0f,0.0f };
     }
 
     void UnderColliderUpdate();
+
+    //引数のシーンと現在のシーンは同じかチェック
+    bool CheckStateSame(PlayerState state) {
+        if (state_ != state) {
+            return false;
+        }
+        else {
+            return true;
+        }
+        
+    }
 
 public:
     //本体のコライダー

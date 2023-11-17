@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 
 	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_,mapPassNum_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
@@ -62,7 +62,7 @@ void GameScene::Initialize() {
 
 	clearBox_ = std::make_unique<ClearBox>();
 	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
-	
+
 }
 
 void GameScene::Update() {
@@ -103,7 +103,7 @@ void GameScene::Update() {
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
 
 
-	
+
 }
 
 void GameScene::TitleInitialize() {
@@ -204,7 +204,7 @@ void GameScene::AllCollision() {
 		}
 		*/
 
-		
+
 		//壁チップ検索
 		for (auto& wall : map_->GetWallCollider()) {
 			//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
@@ -213,32 +213,39 @@ void GameScene::AllCollision() {
 			//ボックスの下にあるコライダーが浮いているか否か
 			box->CollisionUnderCollider(*wall);
 		}
-		
+
 
 		//押し戻しによって返された分プレイヤーも返す
 		player_->Collision(*box->GetCollider());
 	}
 
-	
+	//ブロックとの押し出し処理
+	for (auto& wall : map_->GetWallCollider()) {
+		player_->Collision(*wall);
+	}
 #pragma region プレイヤーの状態更新
 
 	player_->UnderColliderUpdate();
 
 
-	//壁との処理
-	for (auto& wall : map_->GetWallCollider()) {
-		//下のコライダーとの当たり判定処理
-		if (player_->IsUnderColliderCollision(*wall)) {
-			//ぴったりくっついている場合
-			if (player_->IsSetPerfect(*wall)) {
-				//状態変更（ノーマル
-				
-				player_->SetState(PlayerState::kNormal);
-				break;
+	if (!player_->CheckStateSame(PlayerState::kNormal)) {
+		//壁との処理
+		for (auto& wall : map_->GetWallCollider()) {
+			//下のコライダーとの当たり判定処理
+			if (player_->IsUnderColliderCollision(*wall)) {
+
+				//ぴったりくっついている場合
+				if (player_->IsSetPerfect(*wall)) {
+
+					//状態変更（ノーマル
+					player_->SetState(PlayerState::kNormal);
+
+					break;
+				}
+
 			}
 		}
 	}
-
 #pragma endregion
 
 
@@ -260,7 +267,7 @@ void GameScene::AllCollision() {
 					isBoxHit = true;
 				}
 			}
-			
+
 		}
 
 		//当たっていなかったので変更
@@ -402,8 +409,7 @@ void GameScene::Draw(CommandContext& commandContext) {
 	ParticleBox::PostDraw();
 }
 
-void GameScene::UIDraw(CommandContext& commandContext)
-{
+void GameScene::UIDraw(CommandContext& commandContext) {
 	// 前景スプライト描画
 	Sprite::PreDraw(commandContext);
 	PostSpriteDraw();
