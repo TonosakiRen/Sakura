@@ -156,8 +156,10 @@ void GameScene::InGameUpdate() {
 		box->Update();
 	}
 
-	//
-	AllCollision();
+	//マップが回転していないときのみコリジョン処理
+	if (!Map::isRotating) {
+		AllCollision();
+	}
 
 	//条件を満たしている場合のシーンチェンジ
 	InGameSceneChange();
@@ -169,7 +171,6 @@ void GameScene::AllCollision() {
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		player_->Collision(*wall);
-
 	}
 
 
@@ -178,6 +179,7 @@ void GameScene::AllCollision() {
 
 		//先にプレイヤーにあわせて押し出し
 		box->Collision(player_->collider_);
+
 
 		/*
 		//二個目のボックス処理
@@ -217,7 +219,31 @@ void GameScene::AllCollision() {
 		player_->Collision(*box->GetCollider());
 	}
 
-	//各コリジョンによる状態変化
+	
+#pragma region プレイヤーの状態更新
+
+	player_->UnderColliderUpdate();
+
+
+	//壁との処理
+	for (auto& wall : map_->GetWallCollider()) {
+		//下のコライダーとの当たり判定処理
+		if (player_->IsUnderColliderCollision(*wall)) {
+			//ぴったりくっついている場合
+			if (player_->IsSetPerfect(*wall)) {
+				//状態変更（ノーマル
+				
+				player_->SetState(PlayerState::kNormal);
+				break;
+			}
+		}
+	}
+
+#pragma endregion
+
+
+
+	//ボックスの状態変化
 	for (auto& box : boxes_) {
 
 		bool isBoxHit = false;
@@ -285,7 +311,7 @@ void GameScene::InGameSceneChange() {
 
 	if (isSceneChange_) {
 		//シーンを変更
-		sceneRequest_ = Scene::InGame;
+		//sceneRequest_ = Scene::InGame;
 	}
 }
 

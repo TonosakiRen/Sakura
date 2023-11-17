@@ -3,39 +3,47 @@
 #include "Map.h"
 
 void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld) {
+	//初期化
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	input_ = Input::GetInstance();
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
-	
+	underCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
+
 	//座標系処理
 	worldTransform_ = pWorld;
 	//worldTransform_.translation_ = MakeTranslation(worldTransform_.matWorld_);
 	//worldTransform_.SetParent(nullptr);
 
-	//マップ中心点を取得
-	mapCenterTranslation_ = pWorld.GetParent();
-
+	//速度初期設定
 	velocisity_ = { 0.0f,0.0f,0.0f };
+
+	//加速度初期
 	acceleration_ = { 0.0f,-0.05f,0.0f };
 	//acceleration_ = { 0.0f,0.00f,0.0f };
+
+	//ライティング無効化
 	material_.enableLighting_ = false;
 }
 
 void Player::Update() {
+
 #ifdef _DEBUG
-ImGui::Begin("player");
+	//デバッグ描画
+	ImGui::Begin("player");
 	ImGui::DragFloat3("pos", &worldTransform_.translation_.x, 0.01f);
+	ImGui::Text("state : %d", state_);
 	ImGui::End();
 #endif // _DEBUG
 
-	
+	//コリジョン処理を行ったかのフラグを初期化
+	isBuried_ = false;
 
-	//UpdateMapRotating();
-
-	// マップが動いていないの処理
+	// マップが動いていない時の処理
 	if (!Map::isRotating) {
 		Vector3 move = { 0.0f,0.0f,0.0f };
 
+#pragma region キーボード入力
+		//入力による移動
 		if (input_->PushKey(DIK_A)) {
 			move.x -= spd_;
 		}
@@ -49,77 +57,200 @@ ImGui::Begin("player");
 			move.y -= spd_;
 		}
 
+		//ジャンプ処理
 		if (input_->TriggerKey(DIK_SPACE)) {
-			stateRequest_ = State::kJump;
+			stateRequest_ = PlayerState::kJump;
 		}
-		
+#pragma endregion
+
+		//状態更新
 		UpdateState();
 
-		collider_.AdjustmentScale();
-		
+		//移動量に合わせて更新
 		move += velocisity_;
-
 		move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-
+		//加算
 		worldTransform_.translation_ += move;
 
 	}
 
+	//コライダー更新
+	collider_.AdjustmentScale();
+
+	//下の位置に配置して更新
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	underCollider_.worldTransform_.translation_ = offset;
+	underCollider_.AdjustmentScale();
+
+	//行列更新
 	worldTransform_.UpdateMatrix();
 
+	//過去情報を渡す
 	preIsRotating_ = Map::isRotating;
 }
 
 void Player::Collision(Collider& otherCollider) {
 	Vector3 puchBackVector;
 	if (collider_.Collision(otherCollider, puchBackVector)) {
-		puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-		worldTransform_.translation_ += puchBackVector;
-		worldTransform_.UpdateMatrix();
-		//仮でフラグ解除
-		stateRequest_ = State::kNormal;
+
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+
+		}
+		else {
+			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			worldTransform_.translation_ += puchBackVector;
+			worldTransform_.UpdateMatrix();
+			//処理フラグをON
+			isBuried_ = true;
+		}
 	}
+}
+
+bool Player::IsSetPerfect(Collider& otherCollider) {
+	if (collider_.Collision(otherCollider)) {
+		return true;
+	}
+	return false;
 }
 
 bool Player::IsCollision(Collider& otherCollider) {
 	Vector3 puchBackVector;
 	if (collider_.Collision(otherCollider, puchBackVector)) {
+		//ぴったり隣の場合
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return false;
+		}
+		//違う場合
 		return true;
+	}
+	return false;
+}
+
+void Player::UnderColliderCollision(Collider& otherCollider) {
+
+	//コリジョンした場合の更新位置をチェック
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	underCollider_.worldTransform_.translation_ = offset;
+	underCollider_.AdjustmentScale();
+
+	Vector3 puchBackVector;
+	if (underCollider_.Collision(otherCollider, puchBackVector)) {
+
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+
+		}
+		else {
+			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			worldTransform_.translation_ += puchBackVector;
+			worldTransform_.UpdateMatrix();
+			//仮でフラグ解除
+			stateRequest_ = PlayerState::kNormal;
+		}
+	}
+}
+
+bool Player::IsUnderColliderCollision(Collider& otherCollider) {
+
+	Vector3 puchBackVector;
+	if (underCollider_.Collision(otherCollider, puchBackVector)) {
+
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 	return false;
 }
 
 void Player::Draw() {
 	collider_.Draw();
+	underCollider_.Draw();
+
 	GameObject::Draw();
+
 }
 
-void Player::UpdateState() {
+void Player::UnderColliderUpdate() {
+	//コライダーを配置
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	underCollider_.worldTransform_.translation_ = offset;
+	underCollider_.AdjustmentScale();
+}
 
+/*
+void Player::StateChange(const std::vector<std::unique_ptr<>>& boxes) {
+	//押し出し処理が行われていた場合
+	//if (isBuried_) {
+
+	//押し出されたプレイヤーに合わせてコライダーを配置
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	underCollider_.worldTransform_.translation_ = offset;
+	underCollider_.AdjustmentScale();
+
+	//Boxと床のコリジョン処理
+	for (auto& box : boxes) {
+		//アンダーコライダーと当たっているか否か
+		if (IsUnderColliderCollision(*box->GetCollider())) {
+			//当たっている場合
+			//押し出し量０で当たっていたら
+ 			if (IsSetPerfect(*box->GetCollider())) {
+				stateRequest_ = PlayerState::kNormal;
+			}
+			else {
+				//当たっていない場合落下
+				if (state_ != PlayerState::kJump) {
+					//初期化処理を行わず状態を変更変更
+					state_ = PlayerState::kJump;
+					//初期速度を設定
+					velocisity_ = { 0.0f,0.0f,0.0f };
+				}
+			}
+
+		}
+		else {
+			//当たっていない場合落下
+			if (state_ != PlayerState::kJump) {
+				//初期化処理を行わず状態を変更変更
+				state_ = PlayerState::kJump;
+				//初期速度を設定
+				velocisity_ = { 0.0f,0.0f,0.0f };
+			}
+		}
+	}
+
+	//}
+}
+*/
+
+void Player::UpdateState() {
+	//状態変更時の初期化処理
 	if (stateRequest_) {
 		state_ = stateRequest_.value();
+
 		switch (state_) {
-		case Player::State::kNormal:
+		case PlayerState::kNormal:
 			velocisity_ = { 0.0f,0.0f,0.0f };
 			break;
-		case Player::State::kJump:
+		case PlayerState::kJump:
 			velocisity_.y = 1.0f;
 			break;
 		default:
 			break;
 		}
-
-
-
 		stateRequest_ = std::nullopt;
 	}
 
-
-
+	//状態更新処理
 	switch (state_) {
-	case Player::State::kNormal:
+	case PlayerState::kNormal:
 		break;
-	case Player::State::kJump:
+	case PlayerState::kJump:
 		velocisity_.y = clamp(velocisity_.y, -0.5f, 200.0f);
 		velocisity_ += acceleration_;
 		break;
@@ -128,28 +259,3 @@ void Player::UpdateState() {
 	}
 }
 
-void Player::UpdateMapRotating() {
-	//回転し始めた瞬間の処理
-	if (!preIsRotating_ && Map::isRotating) {
-		//マップから見た位置を取得
-		Vector3 subPos = MakeTranslation(worldTransform_.matWorld_) -MakeTranslation(mapCenterTranslation_->matWorld_);
-		//代入
-		worldTransform_.translation_ = subPos;
-		//親子関係追加
-		worldTransform_.SetParent(mapCenterTranslation_);
-
-		//更新
-		worldTransform_.UpdateMatrix();
-	}
-	
-	//回転処理が終わった時
-	if (preIsRotating_ && !Map::isRotating) {
-
-		//現在のワールド座標をローカル座標に代入
-		worldTransform_.translation_ = MakeTranslation(worldTransform_.matWorld_);
-		//親子関係削除
-		worldTransform_.SetParent(nullptr);
-		//更新
-		worldTransform_.UpdateMatrix();
-	}
-}

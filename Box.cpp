@@ -102,7 +102,6 @@ bool Box::IsCollision(Collider& otherCollider) {
 }
 
 void Box::CollisionUnderCollider(Collider& other) {
-	
 	if (underCollider_->Collision(other)) {
 		//止まってる状態
 		isBuried_ = true;

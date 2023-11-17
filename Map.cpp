@@ -197,6 +197,7 @@ void Map::Draw() {
 
 				//コライダー描画
 				//colliders_[worldLocation]->Draw();
+
 			}
 			worldLocation++;
 		}
