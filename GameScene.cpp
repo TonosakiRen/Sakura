@@ -119,7 +119,7 @@ void GameScene::TitleUpdate() {
 void GameScene::InGameInitialize() {
 	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
-	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
+	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
 	//箱の初期化
 	int managementNum = 0;
@@ -132,7 +132,7 @@ void GameScene::InGameInitialize() {
 		managementNum++;
 	}
 
-	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
 
 	//次イニシャライズするときに
 	mapPassNum_++;
@@ -209,9 +209,6 @@ void GameScene::AllCollision() {
 		for (auto& wall : map_->GetWallCollider()) {
 			//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
 			box->Collision(*wall);
-
-			//ボックスの下にあるコライダーが浮いているか否か
-			box->CollisionUnderCollider(*wall);
 		}
 
 
@@ -219,10 +216,12 @@ void GameScene::AllCollision() {
 		player_->Collision(*box->GetCollider());
 	}
 
+	/*
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		player_->Collision(*wall);
 	}
+	*/
 #pragma region プレイヤーの状態更新
 
 	player_->UnderColliderUpdate();
@@ -255,19 +254,18 @@ void GameScene::AllCollision() {
 
 		bool isBoxHit = false;
 
-		//box下のコライダーが反応していることを確認
-		if (box->GetFlag()) {
+		for (auto& wall : map_->GetWallCollider()) {
+			//ボックスの下にあるコライダーが浮いているか否か
+			if (box->CollisionUnderCollider(*wall)) {
 
-
-			//boxが壁と接触しているかチェックして			
-			for (auto& wall : map_->GetWallCollider()) {
-				if (box->IsCollision(*wall)) {
-					//状態を変更
-					box->SetState(kStay);
-					isBoxHit = true;
+				if (!isBoxHit) {
+					if (box->IsSetPerfect(*wall)) {
+						//状態を変更
+						box->SetState(kStay);
+						isBoxHit = true;
+					}
 				}
 			}
-
 		}
 
 		//当たっていなかったので変更
@@ -276,34 +274,7 @@ void GameScene::AllCollision() {
 		}
 	}
 
-	/*
-	for (auto& wall : map_->GetWallCollider()) {
-		for (auto& box : boxes_) {
-			box->Collision(*wall);
-		}
-	}
-	*/
 
-
-	/*
-	//プレイヤーの箱との押し出し処理
-	for (auto& box : boxes_) {
-		if (player_->IsCollision(*box->GetCollider())) {
-			//当たったフラグON
-			box->SetCollisionFlagTrue();
-
-
-			Collider* coll = ComebackCollider(box.get());
-			if (!coll) {
-
-			}
-			else {
-				//プレイヤーの押し出し処理
-				player_->Collision(*box->GetCollider());
-			}
-		}
-	}
-	*/
 
 
 	//クリアボックスとプレイヤーとの当たり判定

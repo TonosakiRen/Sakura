@@ -37,7 +37,10 @@ public:
 
 	bool IsCollision(Collider& otherCollider);
 
-	void CollisionUnderCollider(Collider& other);
+	//ぴったり配置されているか
+	bool IsSetPerfect(Collider& otherCollider);
+
+	bool CollisionUnderCollider(Collider& other);
 
 	//再起関数内で使用
 	bool IsCollisionRecurrence(Collider& other);

@@ -50,6 +50,8 @@ public:
 
 	//プレイヤーのWorldTransform
 	const WorldTransform& GetPlayerW() { return playerWorld_; }
+	//クリアのワールド取得
+	const WorldTransform& GetClearW() { return goalW_; }
 
 	//すべてのコライダー取得
 	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
@@ -60,8 +62,7 @@ public:
 	//箱のワールド取得
 	std::vector<std::unique_ptr<WorldTransform>>& GetBoxWorldTransform() { return boxWorlds_; }
 
-	//クリアのワールド取得
-	const WorldTransform& GetClearW() { return goalW_; }
+	
 #pragma endregion
 
 private://メンバ関数

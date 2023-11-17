@@ -324,7 +324,6 @@ void Map::MapPositioningInitialize() {
 	//各種ベクター初期化
 	WallWorlds_.clear();
 	colliders_.clear();
-
 	boxWorlds_.clear();
 
 	//Collider初期化のための変数
@@ -360,6 +359,7 @@ void Map::MapPositioningInitialize() {
 			colliders_.push_back(std::move(collider));
 
 
+			colliderAcceces++;
 
 
 			if (mapDataX == Box) {
@@ -381,11 +381,7 @@ void Map::MapPositioningInitialize() {
 				Bworld->UpdateMatrix();
 
 				boxWorlds_.emplace_back(std::move(Bworld));
-			}
-			colliderAcceces++;
-
-
-			if (mapDataX == Player) {
+			}else if (mapDataX == Player) {
 
 				playerWorld_.Initialize();
 
@@ -400,10 +396,8 @@ void Map::MapPositioningInitialize() {
 				playerWorld_.translation_ = subPos;
 
 				playerWorld_.UpdateMatrix();
-			}
-
-			//ゴールのWorldTransform設定
-			if (mapDataX == Goal) {
+			}else if (mapDataX == Goal) {
+				//ゴールのWorldTransform設定
 				goalW_.Initialize();
 
 				goalW_.translation_={ tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
