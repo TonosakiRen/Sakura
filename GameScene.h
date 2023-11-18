@@ -47,6 +47,9 @@ private: //メンバ関数
 	//コリジョン
 	void AllCollision();
 
+	//deadCheck
+	void CheckBoxDead();
+
 	//InGameでのシーンチェンジの管理
 	void InGameSceneChange();
 #pragma endregion
@@ -91,6 +94,7 @@ private://メンバ関数
 
 	int mapPassNum_ = 0;
 
+	bool isHitClearBox_ = false;
 
 	//SceneChangeするかのフラグ
 	bool isSceneChange_ = false;

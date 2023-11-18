@@ -64,8 +64,7 @@ public:
         //velocisity_ = { 0.0f,0.0f,0.0f };
     }
 
-    void UnderColliderUpdate();
-
+   
     //引数のシーンと現在のシーンは同じかチェック
     bool CheckStateSame(PlayerState state) {
         if (state_ != state) {

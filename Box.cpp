@@ -26,52 +26,54 @@ void Box::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 void Box::Update() {
 
-	ImGui::Begin("box");
-	ImGui::Text("%d", state_);
-	ImGui::DragFloat3("colloder", &collider_->worldTransform_.translation_.x);
-	ImGui::DragFloat3("underColloder", &underCollider_->worldTransform_.translation_.x);
-	ImGui::End();
+	if (!isDead_) {
 
-	//コリジョン処理を行ったというフラグの無効化
-	isAlreadyCollision_ = false;
+#ifdef _DEBUG
+		ImGui::Begin("box");
+		ImGui::Text("%d", state_);
+		ImGui::DragFloat3("colloder", &collider_->worldTransform_.translation_.x);
+		ImGui::DragFloat3("underColloder", &underCollider_->worldTransform_.translation_.x);
+		ImGui::End();
+#endif // _DEBUG
 
-	isBuried_ = false;
+		//コリジョン処理を行ったというフラグの無効化
+		isAlreadyCollision_ = false;
 
-	switch (state_) {
-	case kFall:
+		isBuried_ = false;
 
-		if (!Map::isRotating) {
-			//重力をベクトルに追加
-			Vector3 move = gravity_;
+		switch (state_) {
+		case kFall:
 
-			//回転量に合わせて重力ベクトル変更
-			move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			if (!Map::isRotating) {
+				//重力をベクトルに追加
+				Vector3 move = gravity_;
 
-			//加算して移動
-			worldTransform_.translation_ += move;
+				//回転量に合わせて重力ベクトル変更
+				move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+				//加算して移動
+				worldTransform_.translation_ += move;
+			}
+			break;
+		case kStay:
+			break;
+		default:
+			break;
 		}
-		break;
-	case kStay:
-		break;
-	default:
-		break;
+
+
+
+		//行列更新
+		worldTransform_.UpdateMatrix();
 	}
-
-	
-
-	//行列更新
-	worldTransform_.UpdateMatrix();
-
-
-	
-
 }
 
 void Box::Draw() {
-	// map中心点描画
-	GameObject::Draw(worldTransform_);
-
-	underCollider_->Draw();
+	if (!isDead_) {
+		// map中心点描画
+		GameObject::Draw(worldTransform_);
+	}
+	//underCollider_->Draw();
 }
 
 void Box::Collision(Collider& otherCollider) {

@@ -218,55 +218,8 @@ void Player::Draw() {
 
 }
 
-void Player::UnderColliderUpdate() {
-	
-}
 
-/*
-void Player::StateChange(const std::vector<std::unique_ptr<>>& boxes) {
-	//押し出し処理が行われていた場合
-	//if (isBuried_) {
 
-	//押し出されたプレイヤーに合わせてコライダーを配置
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-	underCollider_.worldTransform_.translation_ = offset;
-	underCollider_.AdjustmentScale();
-
-	//Boxと床のコリジョン処理
-	for (auto& box : boxes) {
-		//アンダーコライダーと当たっているか否か
-		if (IsUnderColliderCollision(*box->GetCollider())) {
-			//当たっている場合
-			//押し出し量０で当たっていたら
- 			if (IsSetPerfect(*box->GetCollider())) {
-				stateRequest_ = PlayerState::kNormal;
-			}
-			else {
-				//当たっていない場合落下
-				if (state_ != PlayerState::kJump) {
-					//初期化処理を行わず状態を変更変更
-					state_ = PlayerState::kJump;
-					//初期速度を設定
-					velocisity_ = { 0.0f,0.0f,0.0f };
-				}
-			}
-
-		}
-		else {
-			//当たっていない場合落下
-			if (state_ != PlayerState::kJump) {
-				//初期化処理を行わず状態を変更変更
-				state_ = PlayerState::kJump;
-				//初期速度を設定
-				velocisity_ = { 0.0f,0.0f,0.0f };
-			}
-		}
-	}
-
-	//}
-}
-*/
 
 void Player::UpdateState() {
 	//状態変更時の初期化処理
