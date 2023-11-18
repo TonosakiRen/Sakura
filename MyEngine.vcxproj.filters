@@ -336,6 +336,9 @@
     <ClInclude Include="Player.h">
       <Filter>Game\Player</Filter>
     </ClInclude>
+    <ClInclude Include="States.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Basic.hlsli">

@@ -192,6 +192,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="States.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="UploadBuffer.h" />

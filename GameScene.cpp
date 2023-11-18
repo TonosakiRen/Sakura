@@ -332,8 +332,8 @@ void GameScene::AllCollision() {
 
 	//ボックスがすべてない状態の時
 	if (isHitClearBox_) {
-		//クリアボックスとプレイヤーとの当たり判定
-		if (clearBox_->IsHitCollision(player_->collider_)) {
+		//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
+		if (clearBox_->IsHitCollision(player_->collider_)&&player_->GetRectangle()==clearBox_->GetRectangle()) {
 			//シーン変更フラグをON
 			isSceneChange_ = true;
 		}
