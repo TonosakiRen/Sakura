@@ -95,7 +95,7 @@ void Box::Collision(Collider& otherCollider) {
 			puchBackVector.z = 0;
 		}
 
-		//0
+		//埋まらずぴったり横の場合
 		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
 		}
 		else {
@@ -136,10 +136,10 @@ bool Box::IsSetPerfect(Collider& otherCollider) {
 
 		//0
 		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
-			return false;
+			return true;
 		}
 		else {
-			return true;
+			return false;
 		}
 
 		

@@ -168,9 +168,16 @@ void GameScene::InGameUpdate() {
 
 void GameScene::AllCollision() {
 
+
+#pragma region 押し戻し処理
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		player_->Collision(*wall);
+
+
+		for (auto& box : boxes_) {
+			box->Collision(*wall);
+		}
 	}
 
 
@@ -181,28 +188,39 @@ void GameScene::AllCollision() {
 		box->Collision(player_->collider_);
 
 
-		/*
 		//二個目のボックス処理
 		for (auto& box2 : boxes_) {
+			//一個目をもとに押し戻し処理
 			if (box2->GetMaagementNum() != box->GetMaagementNum()) {
 				box2->Collision(*box->GetCollider());
+
+
+				//押し出しによって壁に埋まったら押し出す
+				for (auto& wall : map_->GetWallCollider()) {
+					box2->Collision(*wall);
+				}
+
+
+				for (auto& box3 : boxes_) {
+					if (box3->GetMaagementNum() != box2->GetMaagementNum()) {
+						box3->Collision(*box2->GetCollider());
+
+						//押し出しによって壁に埋まったら押し出す
+						for (auto& wall : map_->GetWallCollider()) {
+							box3->Collision(*wall);
+						}
+
+						//押し出された箱２に押し戻された処理
+						box2->Collision(*box3->GetCollider());
+					}
+				}
+
+
+				//押し出された箱２に押し戻された処理
+				box->Collision(*box2->GetCollider());
 			}
-
-			for (auto& wall : map_->GetWallCollider()){
-				box2->Collision(*wall);
-				//ボックスの下にあるコライダーが浮いているか否か
-				box2->CollisionUnderCollider(*wall);
-
-				box->Collision(*wall);
-				//ボックスの下にあるコライダーが浮いているか否か
-				box->CollisionUnderCollider(*wall);
-
-			}
-
-			//押し出された箱の処理
-			box->Collision(*box2->GetCollider());
 		}
-		*/
+
 
 
 		//壁チップ検索
@@ -216,34 +234,30 @@ void GameScene::AllCollision() {
 		player_->Collision(*box->GetCollider());
 	}
 
-	/*
-	//ブロックとの押し出し処理
-	for (auto& wall : map_->GetWallCollider()) {
-		player_->Collision(*wall);
-	}
-	*/
+#pragma endregion
+
 #pragma region プレイヤーの状態更新
+	bool isActivate_ = false;
 
-	player_->UnderColliderUpdate();
+	//壁との処理
+	for (auto& wall : map_->GetWallCollider()) {
+		//下のコライダーとの当たり判定処理
+		if (player_->IsUnderColliderCollision(*wall)) {
 
+			//ぴったりくっついている場合
+			if (player_->IsSetPerfect(*wall)) {
 
-	if (!player_->CheckStateSame(PlayerState::kNormal)) {
-		//壁との処理
-		for (auto& wall : map_->GetWallCollider()) {
-			//下のコライダーとの当たり判定処理
-			if (player_->IsUnderColliderCollision(*wall)) {
-
-				//ぴったりくっついている場合
-				if (player_->IsSetPerfect(*wall)) {
-
-					//状態変更（ノーマル
-					player_->SetState(PlayerState::kNormal);
-
-					break;
-				}
-
+				//状態変更（ノーマル
+				player_->SetState(PlayerState::kNormal);
+				isActivate_ = true;
+				break;
 			}
+
 		}
+	}
+
+	if (!isActivate_) {
+		player_->SetStateNoInitialize(PlayerState::kJump);
 	}
 #pragma endregion
 
@@ -253,7 +267,6 @@ void GameScene::AllCollision() {
 	for (auto& box : boxes_) {
 
 		bool isBoxHit = false;
-
 		for (auto& wall : map_->GetWallCollider()) {
 			//ボックスの下にあるコライダーが浮いているか否か
 			if (box->CollisionUnderCollider(*wall)) {

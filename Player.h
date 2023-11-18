@@ -25,6 +25,9 @@ public:
     //更新
     void Update();
     
+    //描画
+    void Draw();
+
     //コリジョン判定と処理
     void Collision(Collider& otherCollider);
 
@@ -40,8 +43,7 @@ public:
     //↓コライダーに当たったか否か
     bool IsUnderColliderCollision(Collider& otherCollider);
 
-    //描画
-    void Draw();
+   
 
     //状態更新
     void SetState(PlayerState state) { 
@@ -49,6 +51,11 @@ public:
         if (state_ != state) {
             stateRequest_ = state;
         }
+    }
+
+    //初期化なしで状態変更
+    void SetStateNoInitialize(PlayerState state) {
+        state_ = state;
     }
   
     //初速度0でジャンプ（落下

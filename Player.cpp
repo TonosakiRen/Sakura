@@ -32,6 +32,7 @@ void Player::Update() {
 	ImGui::Begin("player");
 	ImGui::DragFloat3("pos", &worldTransform_.translation_.x, 0.01f);
 	ImGui::Text("state : %d", state_);
+	ImGui::DragFloat3("under C", &underCollider_.worldTransform_.translation_.x);
 	ImGui::End();
 #endif // _DEBUG
 
@@ -175,6 +176,12 @@ void Player::UnderColliderCollision(Collider& otherCollider) {
 
 bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 
+	//コライダーを配置
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	underCollider_.worldTransform_.translation_ = offset;
+	underCollider_.AdjustmentScale();
+
 	Vector3 puchBackVector;
 	if (underCollider_.Collision(otherCollider, puchBackVector)) {
 
@@ -212,11 +219,7 @@ void Player::Draw() {
 }
 
 void Player::UnderColliderUpdate() {
-	//コライダーを配置
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-	underCollider_.worldTransform_.translation_ = offset;
-	underCollider_.AdjustmentScale();
+	
 }
 
 /*
