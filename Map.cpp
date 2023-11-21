@@ -94,15 +94,21 @@ std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 
 bool Map::isRotating = false;
 
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight) {
+bool Map::preIsRotating = false;
+
+bool Map::rotateComplete = false;
+
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
 
 	input_ = Input::GetInstance();
 
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
 
+	mapPassNumber_ = num;
+
 	//マップデータを読み込み
-	mapData_ = LoadMapData(map1Pass);
+	mapData_ = LoadMapData(map1Pass[num]);
 
 	MapPositioningInitialize();
 
@@ -161,6 +167,9 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 void Map::Update() {
 	ImGuiDraw();
 
+	if (preIsRotating == isRotating) {
+		rotateComplete = false;
+	}
 	//編集モードがoffの時処理
 	if (!isEditOn_) {
 		// 状態リクエスト処理
@@ -182,6 +191,9 @@ void Map::Update() {
 	for (auto& collider : colliders_) {
 		collider->AdjustmentScale();
 	}
+
+
+	preIsRotating = isRotating;
 }
 
 void Map::Draw() {
@@ -195,6 +207,7 @@ void Map::Draw() {
 
 				//コライダー描画
 				//colliders_[worldLocation]->Draw();
+
 			}
 			worldLocation++;
 		}
@@ -321,7 +334,6 @@ void Map::MapPositioningInitialize() {
 	//各種ベクター初期化
 	WallWorlds_.clear();
 	colliders_.clear();
-
 	boxWorlds_.clear();
 
 	//Collider初期化のための変数
@@ -357,6 +369,7 @@ void Map::MapPositioningInitialize() {
 			colliders_.push_back(std::move(collider));
 
 
+			colliderAcceces++;
 
 
 			if (mapDataX == Box) {
@@ -378,11 +391,7 @@ void Map::MapPositioningInitialize() {
 				Bworld->UpdateMatrix();
 
 				boxWorlds_.emplace_back(std::move(Bworld));
-			}
-			colliderAcceces++;
-
-
-			if (mapDataX == Player) {
+			}else if (mapDataX == Player) {
 
 				playerWorld_.Initialize();
 
@@ -397,9 +406,23 @@ void Map::MapPositioningInitialize() {
 				playerWorld_.translation_ = subPos;
 
 				playerWorld_.UpdateMatrix();
+			}else if (mapDataX == Goal) {
+				//ゴールのWorldTransform設定
+				goalW_.Initialize();
+
+				goalW_.translation_={ tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+				goalW_.SetParent(&worldTransform_);
+
+				goalW_.UpdateMatrix();
+
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(goalW_.translation_, worldTransform_.translation_);
+
+				// 座標代入
+				goalW_.translation_ = subPos;
+
+				goalW_.UpdateMatrix();
 			}
-
-
 
 			containerNumberX++;
 		}
@@ -444,14 +467,14 @@ void Map::MapEditor(const ViewProjection& view) {
 		ImGui::Text("0 = Air : 1 = Block : 2 = PlayerSpawn");
 		ImGui::Text("Move : Arrow Key");
 		if (ImGui::Button("SaveMap")) {
-			SaveMapData(map1Pass, mapData_);
+			SaveMapData(map1Pass[mapPassNumber_], mapData_);
 			MessageBoxA(nullptr, "SaveComplete!", "mapData", 0);
 
 			isInitializeEditMode_ = true;
 		}
 
 		if (ImGui::Button("LoadMap")) {
-			mapData_ = LoadMapData(map1Pass);
+			mapData_ = LoadMapData(map1Pass[mapPassNumber_]);
 			isInitializeEditMode_ = true;
 			MessageBoxA(nullptr, "TextLoaded!", "mapData", 0);
 		}
@@ -610,7 +633,7 @@ float EsingFloat(const float t, const float start, const float end) {
 
 
 #pragma region State初期化
-void Map::InitializeStateNormal() { isRotating = false; }
+void Map::InitializeStateNormal() { isRotating = false; rotateComplete = true; }
 
 void Map::InitializeStateRightRotation() {
 	isRotating = true;

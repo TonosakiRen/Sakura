@@ -26,69 +26,85 @@ void Box::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 void Box::Update() {
 
-	ImGui::Begin("box");
-	ImGui::Text("%d", state_);
-	ImGui::DragFloat3("colloder", &collider_->worldTransform_.translation_.x);
-	ImGui::DragFloat3("underColloder", &underCollider_->worldTransform_.translation_.x);
-	ImGui::End();
+	if (!isDead_) {
 
-	//コリジョン処理を行ったというフラグの無効化
-	isAlreadyCollision_ = false;
+#ifdef _DEBUG
+		ImGui::Begin("box");
+		ImGui::Text("%d", state_);
+		ImGui::DragFloat3("colloder", &collider_->worldTransform_.translation_.x);
+		ImGui::DragFloat3("underColloder", &underCollider_->worldTransform_.translation_.x);
+		ImGui::End();
+#endif // _DEBUG
 
-	isBuried_ = false;
+		//コリジョン処理を行ったというフラグの無効化
+		isAlreadyCollision_ = false;
 
-	switch (state_) {
-	case kFall:
+		isBuried_ = false;
 
-		if (!Map::isRotating) {
-			//重力をベクトルに追加
-			Vector3 move = gravity_;
+		switch (state_) {
+		case kFall:
 
-			//回転量に合わせて重力ベクトル変更
-			move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			if (!Map::isRotating) {
+				//重力をベクトルに追加
+				Vector3 move = gravity_;
 
-			//加算して移動
-			worldTransform_.translation_ += move;
+				//回転量に合わせて重力ベクトル変更
+				move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+				//加算して移動
+				worldTransform_.translation_ += move;
+			}
+			break;
+		case kStay:
+			break;
+		default:
+			break;
 		}
-		break;
-	case kStay:
-		break;
-	default:
-		break;
+
+
+
+		//行列更新
+		worldTransform_.UpdateMatrix();
 	}
-
-	
-
-	//行列更新
-	worldTransform_.UpdateMatrix();
-
-
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-
-	offset=offset* NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-
-	underCollider_->worldTransform_.translation_ = offset;
-
-	underCollider_->AdjustmentScale();
-
 }
 
 void Box::Draw() {
-	// map中心点描画
-	GameObject::Draw(worldTransform_);
-
-	underCollider_->Draw();
+	if (!isDead_) {
+		// map中心点描画
+		GameObject::Draw(worldTransform_);
+	}
+	//underCollider_->Draw();
 }
 
 void Box::Collision(Collider& otherCollider) {
 
+
 	//押し戻し処理
 	Vector3 puchBackVector;
 	if (collider_->Collision(otherCollider, puchBackVector)) {
-		puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-		worldTransform_.translation_ += puchBackVector;
-		worldTransform_.UpdateMatrix();
 		
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		//埋まらずぴったり横の場合
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+		}
+		else {
+			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			worldTransform_.translation_ += puchBackVector;
+			worldTransform_.UpdateMatrix();
+		}
 	}
 
 }
@@ -101,14 +117,79 @@ bool Box::IsCollision(Collider& otherCollider) {
 	return false;
 }
 
-void Box::CollisionUnderCollider(Collider& other) {
-	
-	if (underCollider_->Collision(other)) {
-		//止まってる状態
-		isBuried_ = true;
-		return;
+bool Box::IsSetPerfect(Collider& otherCollider) {
+	Vector3 puchBackVector;
+	//当たったか否か
+	if (collider_->Collision(otherCollider, puchBackVector)) {
+
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		//0
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
+		
 	}
-	
+	return false;
+}
+
+bool Box::CollisionUnderCollider(Collider& other) {
+
+
+	Vector3 offset = { 0.0f,-2.0f,0.0f };
+
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+	underCollider_->worldTransform_.translation_ = offset;
+
+	underCollider_->AdjustmentScale();
+
+	Vector3 puchBackVector;
+	if (underCollider_->Collision(other,puchBackVector)) {
+
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		//ぴったり隣にある
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return false;
+		}
+		else {
+			//止まってる状態
+			isBuried_ = true;
+			return true;
+		}
+
+		
+	}
+	return false;
 }
 
 bool Box::IsCollisionRecurrence(Collider& other) {

@@ -20,8 +20,12 @@ public:
 
 	static bool isRotating;
 
+	static bool preIsRotating;
+
+	static bool rotateComplete;
+
 	//
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
 
 	void Update();
 
@@ -36,9 +40,7 @@ public:
 
 #pragma region ゲッター
 
-
-
-	// マップの壁一つ
+	// マップの壁
 	std::vector<std::unique_ptr<WorldTransform>>& GetSpikeWorld() { return WallWorlds_; }
 
 	// マップ中心座標取得
@@ -52,13 +54,16 @@ public:
 
 	//プレイヤーのWorldTransform
 	const WorldTransform& GetPlayerW() { return playerWorld_; }
+	//クリアのワールド取得
+	const WorldTransform& GetClearW() { return goalW_; }
 
-
+	//すべてのコライダー取得
 	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
 
 	//wallだけのコライダーを取得
 	const std::vector<Collider*> GetWallCollider();
 
+	//箱のワールド取得
 	std::vector<std::unique_ptr<WorldTransform>>& GetBoxWorldTransform() { return boxWorlds_; }
 
 	
@@ -117,11 +122,20 @@ private://変数
 		None,	//空気
 		Block,	//ブロック
 		Player,	//プレイヤー初期座標
-		Box		//動く箱
+		Box,	//動く箱
+		Goal	//ゴール
 	};
 
+	int mapPassNumber_;
+
 	//マップのデータ情報格納場所
-	const char* map1Pass = "Resources/mapChips/Stage1.txt";
+	const char* map1Pass[5] = {
+		"Resources/mapChips/Stage1.txt",
+		"Resources/mapChips/Stage2.txt",
+		"Resources/mapChips/Stage3.txt",
+		"Resources/mapChips/Stage4.txt",
+		"Resources/mapChips/Stage5.txt",
+	};
 	//マップデータ格納場所
 	std::vector<std::vector<int>> mapData_;
 
@@ -131,12 +145,20 @@ private://変数
 	// マップチップ別のコライダー
 	std::vector<std::unique_ptr<Collider>> colliders_;
 
+
+#pragma region 一時的な情報共
 	// プレイヤーのワールド
 	WorldTransform playerWorld_;
 
-
 	///Box（移動箱）のWorldの集合体
 	std::vector<std::unique_ptr<WorldTransform>>boxWorlds_;
+
+	//ゴールの位置
+	WorldTransform goalW_;
+#pragma endregion
+
+
+	
 
 	
 #pragma endregion

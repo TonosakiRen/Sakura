@@ -37,7 +37,10 @@ public:
 
 	bool IsCollision(Collider& otherCollider);
 
-	void CollisionUnderCollider(Collider& other);
+	//ぴったり配置されているか
+	bool IsSetPerfect(Collider& otherCollider);
+
+	bool CollisionUnderCollider(Collider& other);
 
 	//再起関数内で使用
 	bool IsCollisionRecurrence(Collider& other);
@@ -49,6 +52,7 @@ public:
 
 	void SetState(BOX_STATE state) { state_ = state; }
 
+	void SetIsDead(bool isDead) { isDead_ = isDead; }
 public://ゲッター
 
 	Collider* GetCollider(){ return collider_.get(); }
@@ -58,6 +62,8 @@ public://ゲッター
 	bool GetIsAlreadCollision(){return isAlreadyCollision_; }
 
 	bool GetFlag() { return isBuried_; }
+
+	bool GetIsDead() { return isDead_; }
 private:
 
 
@@ -82,5 +88,6 @@ private:
 	//重力
 	const Vector3 gravity_ = { 0.0f,-0.5f,0.0f };
 
-
+	//死亡判定
+	bool isDead_ = false;
 };
