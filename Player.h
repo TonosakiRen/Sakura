@@ -44,6 +44,9 @@ public:
 	//↓コライダーに当たったか否か
 	bool IsUnderColliderCollision(Collider& otherCollider);
 
+	//上にあるコライダーに当たったか否か
+	bool IsUpColliderCollision(Collider& otherCollider);
+
 	/// <summary>
 	/// 向き取得
 	/// </summary>
@@ -55,6 +58,19 @@ public:
 		if (state_ != state) {
 			stateRequest_ = state;
 		}
+	}
+
+	void SetBoxState(RectangleFacing rec) {
+		
+		if (worldTransform_.scale_.x==portraitScale.x&& worldTransform_.scale_.y == portraitScale.y&& worldTransform_.scale_.z == portraitScale.z) {
+			worldTransform_.scale_ = landScapeScale;
+		}
+		else {
+			worldTransform_.scale_ = portraitScale;
+		}
+
+		rectangleState_ = rec;
+
 	}
 
 	//初期化なしで状態変更
@@ -80,14 +96,29 @@ public:
 
 	}
 
+	bool CheckBoxStateSame(RectangleFacing rec) {
+		if (rectangleState_ == rec) {
+			return true;
+		}
+		
+		return false;
+	}
 
-
+	//状態変更の用意があるかチェック
+	bool CheckStateReqest() {
+		if (stateRequest_) {
+			return true;
+		}
+		return false;
+	}
 public:
 	//本体のコライダー
 	Collider collider_;
 	//プレイヤー真下のコライダー
 	Collider underCollider_;
 
+	//playerue
+	Collider upCollider_;
 private:
 	//状態更新
 	void UpdateState();
@@ -104,6 +135,10 @@ private:
 	//移動速度
 	const float spd_ = 0.1f;
 
+	//縦向きスケール
+	Vector3 portraitScale = { 0.8f,1.5f,1.0f };
+	//横向きスケール
+	Vector3 landScapeScale = { 1.5f,0.8f,1.0f };
 
 
 	//状態変数
@@ -111,9 +146,7 @@ private:
 	//状態変更時受け取る
 	std::optional<PlayerState> stateRequest_ = std::nullopt;
 
-	//前シーンの回転フラグ受け取り
-	bool preIsRotating_;
-
+	
 	//埋まって処理を行ったか否か
 	bool isBuried_ = false;
 

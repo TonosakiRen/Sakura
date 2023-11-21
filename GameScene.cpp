@@ -277,6 +277,24 @@ void GameScene::AllCollision() {
 					break;
 				}
 			}
+
+			if (!player_->CheckStateReqest()) {
+				//Boxが縦向きの時の処理
+				if (player_->CheckBoxStateSame(RectangleFacing::kPortrait)) {
+					//上のコライダーとの当たり判定
+					if (player_->IsUpColliderCollision(*box->GetCollider())) {
+						//ぴったりくっついている場合&&地面にいる場合
+						if (player_->IsSetPerfect(*box->GetCollider()) && player_->CheckStateSame(PlayerState::kNormal)) {
+
+
+							//状態変更
+							player_->SetBoxState(RectangleFacing::kLandscape);
+							isActivate_ = true;
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 

@@ -20,6 +20,10 @@ public:
 
 	static bool isRotating;
 
+	static bool preIsRotating;
+
+	static bool rotateComplete;
+
 	//
 	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
 

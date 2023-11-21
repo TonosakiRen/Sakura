@@ -94,6 +94,10 @@ std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 
 bool Map::isRotating = false;
 
+bool Map::preIsRotating = false;
+
+bool Map::rotateComplete = false;
+
 void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
 
 	input_ = Input::GetInstance();
@@ -163,6 +167,9 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 void Map::Update() {
 	ImGuiDraw();
 
+	if (preIsRotating == isRotating) {
+		rotateComplete = false;
+	}
 	//編集モードがoffの時処理
 	if (!isEditOn_) {
 		// 状態リクエスト処理
@@ -184,6 +191,9 @@ void Map::Update() {
 	for (auto& collider : colliders_) {
 		collider->AdjustmentScale();
 	}
+
+
+	preIsRotating = isRotating;
 }
 
 void Map::Draw() {
@@ -623,7 +633,7 @@ float EsingFloat(const float t, const float start, const float end) {
 
 
 #pragma region State初期化
-void Map::InitializeStateNormal() { isRotating = false; }
+void Map::InitializeStateNormal() { isRotating = false; rotateComplete = true; }
 
 void Map::InitializeStateRightRotation() {
 	isRotating = true;

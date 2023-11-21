@@ -9,8 +9,12 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 	underCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 
+	upCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
+	
 	//座標系処理
 	worldTransform_ = pWorld;
+	worldTransform_.scale_ = portraitScale;
+
 	//worldTransform_.translation_ = MakeTranslation(worldTransform_.matWorld_);
 	//worldTransform_.SetParent(nullptr);
 
@@ -31,8 +35,22 @@ void Player::Update() {
 	//デバッグ描画
 	ImGui::Begin("player");
 	ImGui::DragFloat3("pos", &worldTransform_.translation_.x, 0.01f);
+	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.01f);
+
 	ImGui::Text("state : %d", state_);
 	ImGui::DragFloat3("under C", &underCollider_.worldTransform_.translation_.x);
+
+	switch (rectangleState_) {
+	case RectangleFacing::kPortrait:
+		ImGui::Text("boxState : Portrait");
+		break;
+	case RectangleFacing::kLandscape:
+		ImGui::Text("boxState : Landscape");
+		break;
+	default:
+		break;
+	}
+
 	ImGui::End();
 #endif // _DEBUG
 
@@ -75,20 +93,26 @@ void Player::Update() {
 
 	}
 
-	//コライダー更新
-	collider_.AdjustmentScale();
-
-	//下の位置に配置して更新
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-	underCollider_.worldTransform_.translation_ = offset;
-	underCollider_.AdjustmentScale();
 
 	//行列更新
 	worldTransform_.UpdateMatrix();
 
-	//過去情報を渡す
-	preIsRotating_ = Map::isRotating;
+	//コライダー更新
+	collider_.AdjustmentScale();
+
+	
+
+	
+
+
+	if (Map::rotateComplete) {
+		if (rectangleState_ != RectangleFacing::kPortrait) {
+			rectangleState_ = RectangleFacing::kPortrait;
+		}
+		else if (rectangleState_ != RectangleFacing::kLandscape) {
+			rectangleState_ = RectangleFacing::kLandscape;
+		}
+	}
 }
 
 void Player::Collision(Collider& otherCollider) {
@@ -153,11 +177,31 @@ bool Player::IsCollision(Collider& otherCollider) {
 void Player::UnderColliderCollision(Collider& otherCollider) {
 
 	//コリジョンした場合の更新位置をチェック
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-	underCollider_.worldTransform_.translation_ = offset;
-	underCollider_.AdjustmentScale();
+	//下の位置に配置して更新
+	Vector3 offset{};
+	switch (rectangleState_) {
+	case RectangleFacing::kPortrait:
+		offset = { 0.0f,-2.5f,0.0f };
+		offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 
+		underCollider_.worldTransform_.translation_ = offset;
+		underCollider_.worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
+		underCollider_.AdjustmentScale();
+
+		break;
+	case RectangleFacing::kLandscape:
+		offset = { 0.0f,-2.0f,0.0f };
+		offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+		underCollider_.worldTransform_.translation_ =  offset;
+		underCollider_.worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
+		underCollider_.AdjustmentScale();
+		break;
+	default:
+		break;
+	}
+
+	
 	Vector3 puchBackVector;
 	if (underCollider_.Collision(otherCollider, puchBackVector)) {
 
@@ -176,11 +220,31 @@ void Player::UnderColliderCollision(Collider& otherCollider) {
 
 bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 
-	//コライダーを配置
-	Vector3 offset = { 0.0f,-2.0f,0.0f };
-	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-	underCollider_.worldTransform_.translation_ = offset;
-	underCollider_.AdjustmentScale();
+	//コリジョンした場合の更新位置をチェック
+	//下の位置に配置して更新
+	Vector3 offset{};
+	switch (rectangleState_) {
+	case RectangleFacing::kPortrait:
+		offset = { 0.0f,-2.0f,0.0f };
+		offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+		underCollider_.worldTransform_.translation_ = offset;
+		underCollider_.worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
+		underCollider_.AdjustmentScale();
+
+		break;
+	case RectangleFacing::kLandscape:
+		offset = { 0.0f,-2.0f,0.0f };
+		offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+
+		underCollider_.worldTransform_.translation_ = offset;
+		underCollider_.worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
+		underCollider_.AdjustmentScale();
+		break;
+	default:
+		break;
+	}
+
 
 	Vector3 puchBackVector;
 	if (underCollider_.Collision(otherCollider, puchBackVector)) {
@@ -210,10 +274,46 @@ bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 	return false;
 }
 
+bool Player::IsUpColliderCollision(Collider& otherCollider) {
+	//コライダーを配置
+	Vector3 offset = { 0.0f,2.0f,0.0f };
+	offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+	upCollider_.worldTransform_.translation_ =  offset;
+	upCollider_.AdjustmentScale();
+
+
+	Vector3 puchBackVector;
+	if (upCollider_.Collision(otherCollider, puchBackVector)) {
+
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	return false;
+
+}
+
 void Player::Draw() {
 	collider_.Draw();
 	underCollider_.Draw();
-
+	upCollider_.Draw();
 	GameObject::Draw();
 
 }
@@ -226,12 +326,15 @@ void Player::UpdateState() {
 	if (stateRequest_) {
 		state_ = stateRequest_.value();
 
+		Vector3 offset;
 		switch (state_) {
 		case PlayerState::kNormal:
 			velocisity_ = { 0.0f,0.0f,0.0f };
 			break;
 		case PlayerState::kJump:
-			velocisity_.y = 1.0f;
+			offset = { 0.0f,1.0f,0.0f };
+			//offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			velocisity_ = offset;
 			break;
 		default:
 			break;

@@ -42,12 +42,19 @@ public:
 	/// <summary>
 	/// 向き取得
 	/// </summary>
-	RectangleFacing GetRectangle() { return state_; }
+	RectangleFacing GetRectangle() { return rectangleState_; }
+
+
 private:
+	//縦向きスケール
+	Vector3 portraitScale = { 0.8f,1.5f,1.0f };
+	//横向きスケール
+	Vector3 landScapeScale = { 1.5f,0.8f,1.0f };
+
 
 	Collider collider_;
 
-
-	RectangleFacing state_ = RectangleFacing::kPortrait;
+	//ボックスの状態
+	RectangleFacing rectangleState_ = RectangleFacing::kLandscape;
 };
 
