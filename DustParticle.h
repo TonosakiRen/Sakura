@@ -38,5 +38,6 @@ private:
 	std::unique_ptr<ParticleBox> particleBox_;
 	Vector3 minDirection_;
 	Vector3 maxDirection_;
+
 };
 

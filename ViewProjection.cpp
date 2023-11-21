@@ -66,6 +66,14 @@ bool ViewProjection::Shake(Vector3 shakeValue, int& frame)
     return false;
 }
 
+Vector2 ViewProjection::MakeScreenVector(Vector3 position) const
+{
+    Matrix4x4 matViewPort = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+    Matrix4x4 matViewProjectionViewport = matView * matProjection * matViewPort;
+    Vector3 result = position * matViewProjectionViewport;
+    return Vector2(result.x, result.y);
+}
+
 void ViewProjection::DebugMove() {
     Input* input = Input::GetInstance();
 

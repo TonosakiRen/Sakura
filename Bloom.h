@@ -42,7 +42,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
     Microsoft::WRL::ComPtr<ID3D12Resource> indexBuff_;
 
-    float threshold_ = 0.8f;
+    float threshold_ = 0.4f;
     float knee_ = 0.3f;
     float intensity_ = 2.0f;
 };

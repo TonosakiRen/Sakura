@@ -72,3 +72,4 @@ void WorldTransform::UpdateMatrix() {
         constMap->matWorld = matWorld_;
     }
 }
+

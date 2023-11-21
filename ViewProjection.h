@@ -18,6 +18,8 @@ public:
 	void UpdateMatrix();
 	bool Shake(Vector3 shakeValue, int& frame);
 
+	Vector2 MakeScreenVector(Vector3 position) const;
+
 	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const {
 		return constBuff_->GetGPUVirtualAddress();
 	}

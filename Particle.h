@@ -16,15 +16,12 @@
 
 class DirectXCommon;
 
-struct InstancingBufferData {
-	Matrix4x4 matWorld;
-};
-
 class Particle
 {
 public:
 
 	const uint32_t kParticleNum;
+	static const Matrix4x4 backToFrontMatrix;
 
 	enum class RootParameter {
 		kWorldTransform,
@@ -36,7 +33,13 @@ public:
 
 	struct VertexData {
 		Vector3 pos;
+		Vector3 normal;
 		Vector2 uv;
+
+	};
+
+	struct InstancingBufferData {
+		Matrix4x4 matWorld;
 	};
 
 	static void StaticInitialize();
@@ -46,7 +49,7 @@ public:
 
 	Particle(uint32_t particleNum);
 	void Initialize();
-	void Draw(const std::vector<InstancingBufferData>& bufferData, const ViewProjection& viewProjection, const DirectionalLight& directionalLight, const Vector4& color, const uint32_t textureHadle);
+	void Draw(const std::vector<InstancingBufferData>& bufferData, const ViewProjection& viewProjection, const Vector4& color, const uint32_t textureHadle);
 	void CreateMesh();
 
 public:

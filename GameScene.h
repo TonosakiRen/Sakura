@@ -13,6 +13,8 @@
 #include "Map.h"
 #include"Box.h"
 
+#include "DeadLineParticle.h"
+
 #include <optional>
 class GameScene
 {
@@ -52,6 +54,8 @@ private:
 	//箱
 	std::vector<std::unique_ptr<Box>>boxes_;
 
+	std::unique_ptr<DeadLineParticle> deadParticle_;
+
 	//Scene
 	enum class Scene {
 		Title,
@@ -78,5 +82,7 @@ private:
 	void AllCollision();
 
 	//Collider* ComebackCollider(Box* baseBox);
+
+	uint32_t bikkuri_;
 };
 

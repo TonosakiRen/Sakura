@@ -14,6 +14,8 @@ ID3D12GraphicsCommandList* Particle::sCommandList = nullptr;
 std::unique_ptr<RootSignature> Particle::sRootSignature;
 std::unique_ptr<PipelineState> Particle::sPipelineState;
 
+const Matrix4x4 Particle::backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
+
 Particle::Particle(uint32_t particleNum) : kParticleNum(particleNum) {
 }
 
@@ -75,14 +77,13 @@ void Particle::InitializeGraphicsPipeline() {
         rootparams[int(RootParameter::kMaterial)].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_ALL);
 
         // スタティックサンプラー
-        CD3DX12_STATIC_SAMPLER_DESC samplerDesc =
-            CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
+        CD3DX12_STATIC_SAMPLER_DESC staticSamplerDesc(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 
         // ルートシグネチャの設定
         D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
         rootSignatureDesc.pParameters = rootparams;
         rootSignatureDesc.NumParameters = _countof(rootparams);
-        rootSignatureDesc.pStaticSamplers = &samplerDesc;
+        rootSignatureDesc.pStaticSamplers = &staticSamplerDesc;
         rootSignatureDesc.NumStaticSamplers = 1;
         rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
@@ -96,6 +97,9 @@ void Particle::InitializeGraphicsPipeline() {
         D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
           {
            "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
+           D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+          {
+           "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,
            D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
           {
            "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT,
@@ -155,15 +159,19 @@ void Particle::CreateMesh() {
 
     //左下
     vertices_[0].pos = { -0.5f,-0.5f,0.0f };
+    vertices_[0].normal = { 0.0f,0.0f,1.0f };
     vertices_[0].uv = { 0.0f,1.0f };
     //左上
     vertices_[1].pos = { -0.5f,0.5f,0.0f };
+    vertices_[1].normal = { 0.0f,0.0f,1.0f };
     vertices_[1].uv = { 0.0f,0.0f };
     //右上
     vertices_[2].pos = { 0.5f,0.5f,0.0f };
+    vertices_[2].normal = { 0.0f,0.0f,1.0f };
     vertices_[2].uv = { 1.0f,0.0f };
     //右下
     vertices_[3].pos = { 0.5f,-0.5f,0.0f };
+    vertices_[3].normal = { 0.0f,0.0f,1.0f };
     vertices_[3].uv = { 1.0f,1.0f };
 
     // 頂点インデックスの設定
@@ -267,7 +275,7 @@ void Particle::Initialize() {
     CreateMesh();
 }
 
-void Particle::Draw(const std::vector<InstancingBufferData>& bufferData, const ViewProjection& viewProjection, const DirectionalLight& directionalLight, const Vector4& color, const uint32_t textureHadle) {
+void Particle::Draw(const std::vector<InstancingBufferData>& bufferData, const ViewProjection& viewProjection, const Vector4& color, const uint32_t textureHadle) {
     assert(sDirectXCommon->GetDevice());
     assert(sCommandList);
     assert(!bufferData.empty());

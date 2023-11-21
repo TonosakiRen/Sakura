@@ -53,6 +53,12 @@ struct TranformationMatrix {
 	Matrix4x4 World;
 };
 
+struct OBB {
+	Vector3 center;          // 中心点
+	Vector3 orientations[3]; // 座標軸、正規化、直交座標
+	Vector3 size;            // 座標軸方向の長さの半分。中心から面までの距離
+};
+
 inline float clamp(float num, float min, float max) {
 	if (num < min) {
 		return min;
@@ -79,13 +85,6 @@ inline bool closeValue(float& num, float goal, float speed) {
 
 inline float Radian(float degree) { return degree * std::numbers::pi_v<float> / 180.0f; }
 inline float Degree(float radian) { return radian * 180.0f / std::numbers::pi_v<float>; }
-
-struct OBB {
-	Vector3 center;          // 中心点
-	Vector3 orientations[3]; // 座標軸、正規化、直交座標
-	Vector3 size;            // 座標軸方向の長さの半分。中心から面までの距離
-};
-
 
 #pragma region Vector3
 
@@ -125,6 +124,22 @@ inline Vector3 GetYAxis(Matrix4x4 m) {
 inline Vector3 GetZAxis(Matrix4x4 m) {
 
 	return { m.m[2][0],m.m[2][1],m.m[2][2] };
+}
+
+inline void SetXAxis(Matrix4x4& m,Vector3 v) {
+	m.m[0][0] = v.x;
+	m.m[0][1] = v.y;
+	m.m[0][2] = v.z;
+}
+inline void SetYAxis(Matrix4x4& m,Vector3 v) {
+	m.m[1][0] = v.x;
+	m.m[1][1] = v.y;
+	m.m[1][2] = v.z;
+}
+inline void SetZAxis(Matrix4x4& m,Vector3 v) {
+	m.m[2][0] = v.x;
+	m.m[2][1] = v.y;
+	m.m[2][2] = v.z;
 }
 
 //Vetor3
@@ -844,6 +859,20 @@ inline Matrix4x4 MakeLookRotation(const Vector3& direction, const Vector3& up = 
 
 #pragma endregion
 
+inline OBB MakeOBB(Vector3 pos, Vector3 rotation, Vector3 size) {
+	OBB result;
+	result.center = pos;
+	Matrix4x4 rotationMatirx;
+	rotationMatirx = MakeRotateXYZMatrix(rotation);
+	result.orientations[0] = GetXAxis(rotationMatirx);
+	result.orientations[1] = GetYAxis(rotationMatirx);
+	result.orientations[2] = GetZAxis(rotationMatirx);
+	result.size = size;
+
+	return result;
+}
+
+
 inline int Rand(int min, int max) {
 	if (min == 0 && max == 0) {
 		return 0;
@@ -866,3 +895,40 @@ inline void SRAND() {
 	srand((unsigned)time(NULL));
 }
 
+inline OBB MakeOBB(Vector3 pos, Matrix4x4 rotation, Vector3 size) {
+	OBB result;
+	result.center = pos;
+	result.orientations[0] = GetXAxis(rotation);
+	result.orientations[1] = GetYAxis(rotation);
+	result.orientations[2] = GetZAxis(rotation);
+	result.size = size;
+
+	return result;
+}
+
+inline OBB MakeOBB(Matrix4x4 worldMatrix) {
+	OBB result;
+	result.center = MakeTranslation(worldMatrix);
+
+	Matrix4x4 rotation = MakeIdentity4x4();
+	rotation = NormalizeMakeRotateMatrix(worldMatrix);
+	result.orientations[0] = GetXAxis(rotation);
+	result.orientations[1] = GetYAxis(rotation);
+	result.orientations[2] = GetZAxis(rotation);
+
+	result.size = MakeScale(worldMatrix);
+
+	return result;
+}
+
+inline Vector3 MakeRandVector3(OBB box) {
+	Vector3 result;
+	result = { Rand(-box.size.x ,box.size.x),Rand(-box.size.y ,box.size.y ) ,Rand(-box.size.z,box.size.z) };
+	Matrix4x4 rotateMatrix = MakeIdentity4x4();
+	SetXAxis(rotateMatrix,box.orientations[0]);
+	SetYAxis(rotateMatrix, box.orientations[1]);
+	SetZAxis(rotateMatrix, box.orientations[2]);
+	result = result * rotateMatrix;
+	result = result + box.center;
+	return result;
+}

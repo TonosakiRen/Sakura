@@ -57,6 +57,10 @@ void GameScene::Initialize() {
 
 		managementNum++;
 	}
+	deadParticle_ = std::make_unique<DeadLineParticle>();
+	deadParticle_->Initialize({ 0.0f,0.0f }, { 1.0f,0.0f });
+
+	bikkuri_ = TextureManager::Load("!.png");
 
 }
 
@@ -97,7 +101,11 @@ void GameScene::Update() {
 	//SceneUpdate
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
 
+	deadParticle_->SetMapCenter(map_->GetMapCenter());
+	deadParticle_->Update();
 
+
+	ImGui::DragFloat3("emi", &deadParticle_->emitterWorldTransform_.translation_.x, 0.1f);
 }
 
 void GameScene::TitleInitialize() {
@@ -322,6 +330,13 @@ void GameScene::ParticleDraw() {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
+		deadParticle_->SetIsEmit(true);
+		/*deadParticle_->emitterWorldTransform_.translation_.x = map_->GetMapCenter().x;
+		deadParticle_->emitterWorldTransform_.translation_.y = 8.0f;*/
+
+		/*deadParticle_->emitterWorldTransform_.translation_.y = -27.0f;*/
+		deadParticle_->emitterWorldTransform_.scale_ = { 1.5f,1.5f,1.5f };
+		deadParticle_->Draw(&viewProjection_,{1.0f,1.0f,1.0f,1.0f}, bikkuri_);
 		break;
 	default:
 		break;

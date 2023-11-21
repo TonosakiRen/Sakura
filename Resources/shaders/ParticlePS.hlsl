@@ -8,8 +8,9 @@ struct Material {
 ConstantBuffer<Material> gMaterial  : register(b1);
 
 struct VSOutput {
-	float32_t4 pos : SV_POSITION; 
-	float32_t2 uv : TEXCOORD;      
+	float32_t4 pos : SV_POSITION; // システム用頂点座標
+	float32_t3 normal : NORMAL;     // 法線ベクトル
+	float32_t2 uv : TEXCOORD;       // uv値
 };
 
 struct PixelShaderOutput {
