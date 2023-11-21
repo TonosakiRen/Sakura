@@ -98,13 +98,18 @@ bool Map::preIsRotating = false;
 
 bool Map::rotateComplete = false;
 
+Map::Map()
+{
+	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
+}
+
 void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
 
 	input_ = Input::GetInstance();
 
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	SetEnableLighting(false);
-
+	particleBox_->Initialize();
 	mapPassNumber_ = num;
 
 	//マップデータを読み込み
@@ -198,19 +203,23 @@ void Map::Update() {
 
 void Map::Draw() {
 
+	std::vector<ParticleBox::InstancingBufferData> instancingBufferDatas;
+	instancingBufferDatas.reserve(kBoxNum);
+
 	int worldLocation = 0;
 	for (int32_t y = 0; y < mapData_.size(); y++) {
 		for (int32_t x = 0; x < mapData_[y].size(); x++) {
 			if (mapData_[y][x] == Block) {
 				//壁の描画
-				GameObject::Draw(*WallWorlds_[worldLocation]);
-
-				//コライダー描画
-				//colliders_[worldLocation]->Draw();
-
+				/*GameObject::Draw(*WallWorlds_[worldLocation]);*/
+				instancingBufferDatas.emplace_back(WallWorlds_[worldLocation]->matWorld_);
 			}
 			worldLocation++;
 		}
+	}
+
+	if (!instancingBufferDatas.empty()) {
+		particleBox_->Draw(instancingBufferDatas, *viewProjection_, *directionalLight_,{1.0f,1.0f,1.0f,1.0f}, model_.GetUvHandle());
 	}
 
 	// map中心点描画

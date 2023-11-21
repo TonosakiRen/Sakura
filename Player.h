@@ -152,4 +152,6 @@ private:
 
 	//長方形の向き
 	RectangleFacing rectangleState_ = RectangleFacing::kPortrait;
+
+	WorldTransform animationTransform_;
 };

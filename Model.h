@@ -47,6 +47,8 @@ public:
 
 	void CreateMesh();
 
+	uint32_t GetUvHandle() { return uvHandle_; }
+
 private: 
 	static void InitializeGraphicsPipeline();
 private:

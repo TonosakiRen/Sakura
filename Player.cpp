@@ -10,7 +10,9 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 	underCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 
 	upCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
-	
+	animationTransform_.Initialize();
+	animationTransform_.SetParent(&worldTransform_);
+
 	//座標系処理
 	worldTransform_ = pWorld;
 	worldTransform_.scale_ = portraitScale;
@@ -314,8 +316,8 @@ void Player::Draw() {
 	collider_.Draw();
 	underCollider_.Draw();
 	upCollider_.Draw();
-	GameObject::Draw();
-
+	animationTransform_.UpdateMatrix();
+	model_.Draw(animationTransform_, *viewProjection_, *directionalLight_,material_);
 }
 
 

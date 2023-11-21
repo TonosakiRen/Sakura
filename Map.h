@@ -13,6 +13,8 @@
 
 #include "Collider.h"
 
+#include "ParticleBox.h"
+
 
 class Map :
 	public GameObject {
@@ -23,6 +25,10 @@ public:
 	static bool preIsRotating;
 
 	static bool rotateComplete;
+
+	static const uint32_t kBoxNum = 1000;
+
+	Map();
 
 	//
 	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
@@ -228,6 +234,8 @@ private://変数
 	int32_t referenceMapY_ = 0;
 #endif // _DEBUG
 
+	//Instancingびょうがよう
+	std::unique_ptr<ParticleBox> particleBox_;
 	
 
 #pragma endregion

@@ -401,7 +401,6 @@ void GameScene::ModelDraw() {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
-		map_->Draw();
 
 		clearBox_->Draw();
 		player_->Draw();
@@ -438,6 +437,7 @@ void GameScene::ParticleBoxDraw() {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
+		map_->Draw();
 		break;
 	default:
 		break;

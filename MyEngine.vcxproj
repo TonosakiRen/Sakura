@@ -94,6 +94,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PlayerAnimation.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="Box.cpp" />
@@ -146,6 +147,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PlayerAnimation.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="Box.h" />
