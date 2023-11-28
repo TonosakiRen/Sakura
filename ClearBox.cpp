@@ -10,25 +10,61 @@ void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection
 
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 
-	if (rectangleState_ == RectangleFacing::kPortrait) {
-		worldTransform_.scale_ = portraitScale;
-	}
-	else {
-		worldTransform_.scale_ = landScapeScale;
-	}
+	rectangleState_ = RectangleFacing::kLandscape;
+	worldTransform_.scale_ = landScapeScale;
+	worldTransform_.translation_.y -= 0.2f;
+	worldTransform_.translation_.x -= 0.5f;
 }
 
-void ClearBox::StageInitialize(WorldTransform gWorld)
+void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 {
 	//設定したワールドをコピー
 	worldTransform_ = gWorld;
 	worldTransform_.UpdateMatrix();
 
-	if (rectangleState_ == RectangleFacing::kPortrait) {
-		worldTransform_.scale_ = portraitScale;
+	switch (stageNum)
+	{
+	case 0:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 1:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 2:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 3:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 4:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 5:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 6:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 7:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 8:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	case 9:
+		rectangleState_ = RectangleFacing::kLandscape;
+		break;
+	default:
+		break;
+	}
+
+	if (rectangleState_ == RectangleFacing::kLandscape) {
+		worldTransform_.scale_ = landScapeScale;
+		worldTransform_.translation_.y -= 0.2f;
+		worldTransform_.translation_.x -= 0.5f;
 	}
 	else {
-		worldTransform_.scale_ = landScapeScale;
+		worldTransform_.scale_ = portraitScale;
 	}
 
 }
