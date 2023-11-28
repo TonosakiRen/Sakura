@@ -167,11 +167,14 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 		}
 	}
 	*/
+
+	iniData_ = worldTransform_;
 }
 
 void Map::StageInitialize(int num)
 {
 	mapData_ = LoadMapData(map1Pass[num]);
+	worldTransform_ = iniData_;
 	MapPositioningInitialize();
 	state_ = State::kNormal;
 	stateRequest_ = std::nullopt;

@@ -247,4 +247,9 @@ private:
 
 #pragma endregion
 
+
+#pragma region 初期化用
+	WorldTransform iniData_;
+#pragma endregion
+
 };
