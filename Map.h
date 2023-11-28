@@ -72,6 +72,9 @@ public:
 	//箱のワールド取得
 	std::vector<std::unique_ptr<WorldTransform>>& GetBoxWorldTransform() { return boxWorlds_; }
 
+	//マップデータ格納場所
+	std::vector<std::vector<int>>& GetMapData_() { return mapData_; };
+
 	
 #pragma endregion
 
@@ -123,6 +126,7 @@ private://変数
 	// 四角の一辺のサイズ
 	const float tileWide_ = 2.0f;
 
+public:
 	//タイルの種類
 	enum Tile {
 		None,	//空気
@@ -131,6 +135,7 @@ private://変数
 		Box,	//動く箱
 		Goal	//ゴール
 	};
+private:
 
 	int mapPassNumber_;
 
@@ -142,6 +147,7 @@ private://変数
 		"Resources/mapChips/Stage4.txt",
 		"Resources/mapChips/Stage5.txt",
 	};
+
 	//マップデータ格納場所
 	std::vector<std::vector<int>> mapData_;
 
@@ -179,6 +185,7 @@ private://変数
 		kRightRotation, // 右回転
 		kLeftRotation   // 左回転
 	};
+private:
 
 	// 状態
 	State state_ = State::kNormal;
@@ -211,8 +218,6 @@ private://変数
 
 
 #pragma region Editor
-#ifdef _DEBUG
-	//編集モードがONか否か
 	bool isEditOn_ = false;
 
 	//初期配置処理をしたか
@@ -232,7 +237,7 @@ private://変数
 
 	//参照してるマップ配列のy
 	int32_t referenceMapY_ = 0;
-#endif // _DEBUG
+// _DEBUG
 
 	//Instancingびょうがよう
 	std::unique_ptr<ParticleBox> particleBox_;

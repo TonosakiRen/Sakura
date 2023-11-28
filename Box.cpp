@@ -46,13 +46,13 @@ void Box::Update() {
 
 			if (!Map::isRotating) {
 				//重力をベクトルに追加
-				Vector3 move = gravity_;
+				move_ = gravity_;
 
 				//回転量に合わせて重力ベクトル変更
-				move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+				move_ = move_ * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 
 				//加算して移動
-				worldTransform_.translation_ += move;
+				worldTransform_.translation_ += move_;
 			}
 			break;
 		case kStay:
@@ -76,13 +76,46 @@ void Box::Draw() {
 	//underCollider_->Draw();
 }
 
+void Box::Collision(Collider& otherCollider,const Vector3& priorityVector) {
+
+	Vector3 rotatedpriotiyVector = priorityVector ;
+	//押し戻し処理
+	Vector3 puchBackVector;
+	if (collider_->Collision(otherCollider, puchBackVector, rotatedpriotiyVector)) {
+		
+		//誤差
+		float ErrorNum = 0.001f;
+
+		//誤差レベルの数字は0にする
+		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
+			puchBackVector.x = 0;
+		}
+		if (puchBackVector.y<ErrorNum && puchBackVector.y>-ErrorNum) {
+			puchBackVector.y = 0;
+		}
+		if (puchBackVector.z<ErrorNum && puchBackVector.z>-ErrorNum) {
+			puchBackVector.z = 0;
+		}
+
+		//埋まらずぴったり横の場合
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+		}
+		else {
+			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			worldTransform_.translation_ += puchBackVector;
+			worldTransform_.UpdateMatrix();
+		}
+	}
+
+}
+
 void Box::Collision(Collider& otherCollider) {
 
 
 	//押し戻し処理
 	Vector3 puchBackVector;
 	if (collider_->Collision(otherCollider, puchBackVector)) {
-		
+
 		//誤差
 		float ErrorNum = 0.001f;
 

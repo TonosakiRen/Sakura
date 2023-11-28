@@ -48,6 +48,7 @@ private: //メンバ関数
 
 	//コリジョン
 	void AllCollision();
+	void AllCollisionPrePosUpdate();
 
 	//deadCheck
 	void CheckBoxDead();

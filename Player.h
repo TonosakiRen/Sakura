@@ -30,6 +30,9 @@ public:
 	void Draw();
 
 	//コリジョン判定と処理
+	void Collision(Collider& otherCollider,const Vector3& priotiyVector);
+
+	//コリジョン判定と処理
 	void Collision(Collider& otherCollider);
 
 	//ぴったり配置されているか
@@ -111,6 +114,12 @@ public:
 		}
 		return false;
 	}
+
+	Vector3 GetMove() {
+		return move_;
+	}
+
+
 public:
 	//本体のコライダー
 	Collider collider_;
@@ -129,16 +138,21 @@ private:
 	Vector3 velocisity_;
 	//加速量
 	Vector3 acceleration_;
+	//移動
+	Vector3 move_;
 	//キー
 	Input* input_;
 
 	//移動速度
 	const float spd_ = 0.1f;
 
+public:
 	//縦向きスケール
-	Vector3 portraitScale = { 0.8f,1.5f,1.0f };
+	const Vector3 portraitScale = { 0.8f,1.5f,1.0f };
 	//横向きスケール
-	Vector3 landScapeScale = { 1.5f,0.8f,1.0f };
+	const Vector3 landScapeScale = { 1.5f,0.8f,1.0f };
+
+private:
 
 
 	//状態変数

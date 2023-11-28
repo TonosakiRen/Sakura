@@ -59,23 +59,24 @@ void Player::Update() {
 	//コリジョン処理を行ったかのフラグを初期化
 	isBuried_ = false;
 
+
+	move_ = { 0.0f,0.0f,0.0f };
 	// マップが動いていない時の処理
 	if (!Map::isRotating) {
-		Vector3 move = { 0.0f,0.0f,0.0f };
-
+		
 #pragma region キーボード入力
 		//入力による移動
 		if (input_->PushKey(DIK_A)) {
-			move.x -= spd_;
+			move_.x -= spd_;
 		}
 		if (input_->PushKey(DIK_D)) {
-			move.x += spd_;
+			move_.x += spd_;
 		}
 		if (input_->PushKey(DIK_W)) {
-			move.y += spd_;
+			move_.y += spd_;
 		}
 		if (input_->PushKey(DIK_S)) {
-			move.y -= spd_;
+			move_.y -= spd_;
 		}
 
 		//ジャンプ処理
@@ -88,10 +89,10 @@ void Player::Update() {
 		UpdateState();
 
 		//移動量に合わせて更新
-		move += velocisity_;
-		move = move * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+		move_ += velocisity_;
+		move_ = move_ * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 		//加算
-		worldTransform_.translation_ += move;
+		worldTransform_.translation_ += move_;
 
 	}
 
@@ -113,6 +114,23 @@ void Player::Update() {
 		}
 		else if (rectangleState_ != RectangleFacing::kLandscape) {
 			rectangleState_ = RectangleFacing::kLandscape;
+		}
+	}
+}
+
+void Player::Collision(Collider& otherCollider, const Vector3& priotiyVector) {
+	Vector3 puchBackVector;
+	if (collider_.Collision(otherCollider, puchBackVector, priotiyVector)) {
+
+		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
+
+		}
+		else {
+			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+			worldTransform_.translation_ += puchBackVector;
+			worldTransform_.UpdateMatrix();
+			//処理フラグをON
+			isBuried_ = true;
 		}
 	}
 }

@@ -33,6 +33,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	void Collision(Collider& otherCollider, const Vector3& priorityVector);
+
 	void Collision(Collider& otherCollider);
 
 	bool IsCollision(Collider& otherCollider);
@@ -53,6 +55,8 @@ public:
 	void SetState(BOX_STATE state) { state_ = state; }
 
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
+
+	
 public://ゲッター
 
 	Collider* GetCollider(){ return collider_.get(); }
@@ -64,6 +68,22 @@ public://ゲッター
 	bool GetFlag() { return isBuried_; }
 
 	bool GetIsDead() { return isDead_; }
+
+	
+	Vector3 GetMove() {
+		return move_;
+	}
+
+public:
+	//maptip用
+	Vector2 preLeftTopIndex_;
+	Vector2 preRightTopIndex_;
+	Vector2 preLeftBottomIndex_;
+	Vector2 preRightBottomIndex_;
+
+	//maptip用
+	Vector2 preLeftTop_;
+	Vector2 preRightBottom_;
 private:
 
 
@@ -83,11 +103,15 @@ private:
 
 	//埋まっているか
 	bool isBuried_ = false;
-
 	
 	//重力
 	const Vector3 gravity_ = { 0.0f,-0.5f,0.0f };
 
+	//移動
+	Vector3 move_;
+
 	//死亡判定
 	bool isDead_ = false;
+
+	
 };

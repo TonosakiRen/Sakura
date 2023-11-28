@@ -165,6 +165,7 @@ void GameScene::InGameUpdate() {
 	//マップが回転していないときのみコリジョン処理
 	if (!Map::isRotating) {
 		AllCollision();
+		AllCollisionPrePosUpdate();
 	}
 
 	//ボックスの枠外落下処理
@@ -362,6 +363,19 @@ void GameScene::AllCollision() {
 			isSceneChange_ = true;
 		}
 	}
+}
+
+void GameScene::AllCollisionPrePosUpdate()
+{
+	//ブロックとの押し出し処理
+	for (auto& wall : map_->GetWallCollider()) {
+		wall->prePosUpdate();
+	}
+	player_->collider_.prePosUpdate();
+	for (auto& box : boxes_) {
+		box->GetCollider()->prePosUpdate();
+	}
+
 }
 
 void GameScene::CheckBoxDead() {

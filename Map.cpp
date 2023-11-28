@@ -241,9 +241,11 @@ void Map::Draw() {
 
 void Map::DrawSprite() {
 	//マップ編集モード
+#ifdef _DEBUG
 	if (isEditOn_) {
 		editCursor_->Draw();
 	}
+#endif // _DEBUG
 }
 
 void Map::Finalize() {
@@ -649,7 +651,7 @@ void Map::InitializeStateRightRotation() {
 
 	// 開始回転と終了回転設定
 	rotateE_ = { .startT{worldTransform_.rotation_.z},
-		.endT{worldTransform_.rotation_.z + HalfPI_} };
+		.endT{worldTransform_.rotation_.z - HalfPI_} };
 
 	t_ = 0;
 }
@@ -658,7 +660,7 @@ void Map::InitializeStateLeftRotation() {
 	isRotating = true;
 
 	// 開始回転と終了回転設定
-	rotateE_ = { .startT{worldTransform_.rotation_.z}, .endT{worldTransform_.rotation_.z - HalfPI_} };
+	rotateE_ = { .startT{worldTransform_.rotation_.z}, .endT{worldTransform_.rotation_.z + HalfPI_} };
 
 	t_ = 0;
 }
@@ -671,6 +673,7 @@ void Map::UpdateStateNormal() {
 
 	if (input_->PushKey(DIK_E)) {
 		stateRequest_ = State::kRightRotation;
+		
 	}
 	if (input_->PushKey(DIK_Q)) {
 		stateRequest_ = State::kLeftRotation;
