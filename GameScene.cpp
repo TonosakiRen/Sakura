@@ -48,6 +48,8 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
+	playerAnimation_ = std::make_unique<PlayerAnimation>();
+	playerAnimation_->SetPlayer(player_.get());
 
 	map_->SetPlayer(player_.get());
 
@@ -105,8 +107,6 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 
 		// light
-		ImGui::DragFloat3("light", &directionalLight_.direction_.x, 0.01f);
-		ImGui::DragFloat4("lightcolor", &directionalLight_.color_.x, 0.01f);
 		directionalLight_.direction_ = Normalize(directionalLight_.direction_);
 		directionalLight_.UpdateDirectionalLight();
 	}
@@ -123,8 +123,6 @@ void GameScene::Update() {
 
 	deadParticle_->SetMapCenter(map_->GetMapCenter());
 	deadParticle_->Update();
-
-
 }
 
 void GameScene::TitleInitialize() {
@@ -227,8 +225,10 @@ void GameScene::InGameUpdate() {
 			AllCollisionPrePosUpdate();
 		}
 
-		//ボックスの枠外落下処理
-		CheckBoxDead();
+	playerAnimation_->Update();
+
+	//ボックスの枠外落下処理
+	CheckBoxDead();
 
 		//条件を満たしている場合のシーンチェンジ
 		InGameSceneChange();

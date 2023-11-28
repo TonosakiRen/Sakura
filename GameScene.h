@@ -13,6 +13,7 @@
 #include "Map.h"
 #include"Box.h"
 #include"ClearBox.h"
+#include "PlayerAnimation.h"
 
 #include "DeadLineParticle.h"
 
@@ -127,6 +128,10 @@ private://メンバ関数
 	};
 
 	SceneAnimation sceneAnime_ = SceneAnimation::kInGame;
+
+
+	//playerAnimation]
+	std::unique_ptr<PlayerAnimation> playerAnimation_;
 
 	int spawnBoxNum = 0;
 
