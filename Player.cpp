@@ -101,12 +101,7 @@ void Player::Update() {
 	worldTransform_.UpdateMatrix();
 
 	//コライダー更新
-	collider_.AdjustmentScale();
-
-	
-
-	
-
+	collider_.AdjustmentScale();	
 
 	if (Map::rotateComplete) {
 		if (rectangleState_ != RectangleFacing::kPortrait) {
