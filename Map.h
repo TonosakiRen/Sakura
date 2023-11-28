@@ -47,6 +47,7 @@ public:
 
 	void MapEditor(const ViewProjection& view);
 
+	bool StartAnimation();
 #pragma region ゲッター
 
 	// マップの壁
@@ -268,6 +269,10 @@ private:
 
 #pragma region 初期化用
 	WorldTransform iniData_;
+
+	float halfpi = (float)std::numbers::pi / 2.0f;
+	//回転量
+	Vector2 stRotatenum = { halfpi * 4 * 4 };
 #pragma endregion
 
 };

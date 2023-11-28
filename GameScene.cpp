@@ -144,6 +144,7 @@ void GameScene::StageInitialize(int stageNum)
 	if (mapPassNum_ >= 6) {
 		//mapPassNum_ = 0;
 	}
+	sceneAnime_ = SceneAnimation::kInGame;
 
 	map_->StageInitialize(stageNum);
 	player_->StageInitialize(map_->GetPlayerW());
@@ -172,37 +173,45 @@ void GameScene::StageInitialize(int stageNum)
 
 
 void GameScene::InGameUpdate() {
-	if (input_->TriggerKey(DIK_P)) {
-		sceneRequest_ = Scene::Title;
+
+
+
+	switch (sceneAnime_) {
+	case GameScene::SceneAnimation::kStart:
+
+		break;
+	case GameScene::SceneAnimation::kInGame:
+		map_->Update();
+		map_->MapEditor(viewProjection_);
+
+		clearBox_->Update();
+
+		player_->Update();
+
+		for (auto& box : boxes_) {
+			box->Update();
+		}
+
+		//マップが回転していないときのみコリジョン処理
+		if (!Map::isRotating) {
+			AllCollision();
+			AllCollisionPrePosUpdate();
+		}
+
+		//ボックスの枠外落下処理
+		CheckBoxDead();
+
+		//条件を満たしている場合のシーンチェンジ
+		InGameSceneChange();
+		break;
+	case GameScene::SceneAnimation::kEnd:
+		break;
+	default:
+		break;
 	}
-
-	if (input_->TriggerKey(DIK_2)) {
-		isStageChange_ = true;
-	}
+	
 
 
-	map_->Update();
-	map_->MapEditor(viewProjection_);
-
-	clearBox_->Update();
-
-	player_->Update();
-
-	for (auto& box : boxes_) {
-		box->Update();
-	}
-
-	//マップが回転していないときのみコリジョン処理
-	if (!Map::isRotating) {
-		AllCollision();
-		AllCollisionPrePosUpdate();
-	}
-
-	//ボックスの枠外落下処理
-	CheckBoxDead();
-
-	//条件を満たしている場合のシーンチェンジ
-	InGameSceneChange();
 }
 
 
@@ -460,6 +469,14 @@ void GameScene::InGameSceneChange() {
 
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		sceneRequest_ = Scene::Title;
+	}
+
+	if (input_->TriggerKey(DIK_P)) {
+		sceneRequest_ = Scene::Title;
+	}
+
+	if (input_->TriggerKey(DIK_2)) {
+		isStageChange_ = true;
 	}
 }
 

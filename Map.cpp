@@ -657,6 +657,11 @@ void Map::MapEditor(const ViewProjection& view) {
 
 }
 
+bool Map::StartAnimation() {
+
+	return false;
+}
+
 float EsingFloat(const float t, const float start, const float end) {
 	return start * (1.0f - t) + end * t;
 }
