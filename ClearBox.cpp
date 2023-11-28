@@ -2,7 +2,19 @@
 #include"ImGuiManager.h"
 #include"Map.h"
 
-void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld) {
+void ClearBox::Reset(const WorldTransform& world , RectangleFacing state) {
+	worldTransform_ = world;
+
+	rectangleState_ = state;
+	if (rectangleState_ == RectangleFacing::kPortrait) {
+		worldTransform_.scale_ = portraitScale;
+	}
+	else {
+		worldTransform_.scale_ = landScapeScale;
+	}
+}
+
+void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld, RectangleFacing state) {
 	GameObject::Initialize(name, viewProjection, directionalLight);
 
 	//設定したワールドをコピー
@@ -10,6 +22,8 @@ void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection
 
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 
+	//状態設定
+	rectangleState_ = state;
 	if (rectangleState_ == RectangleFacing::kPortrait) {
 		worldTransform_.scale_ = portraitScale;
 	}
@@ -25,10 +39,10 @@ void ClearBox::Update() {
 	ImGui::DragFloat3("pos", &worldTransform_.translation_.x);
 	switch (rectangleState_) {
 	case RectangleFacing::kPortrait:
-		ImGui::Text("boxState : Portrait");
+		ImGui::Text("boxState : Portrait 縦向き");
 		break;
 	case RectangleFacing::kLandscape:
-		ImGui::Text("boxState : Landscape");
+		ImGui::Text("boxState : Landscape 横向き");
 		break;
 	default:
 		break;
@@ -69,3 +83,5 @@ bool ClearBox::IsHitCollision(Collider& otherCollider) {
 void ClearBox::Draw() {
 	GameObject::Draw();
 }
+
+

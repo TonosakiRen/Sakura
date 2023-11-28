@@ -100,20 +100,30 @@ bool Map::rotateComplete = false;
 
 Map::Map()
 {
-	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
-}
-
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
-
 	input_ = Input::GetInstance();
 
-	GameObject::Initialize(name, viewProjection, directionalLight);
-	SetEnableLighting(false);
-	particleBox_->Initialize();
-	mapPassNumber_ = num;
+	
+	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
 
-	//マップデータを読み込み
-	mapData_ = LoadMapData(map1Pass[num]);
+}
+
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int maxMapnum,int startMapNum) {
+
+	GameObject::Initialize(name, viewProjection, directionalLight);
+	
+	SetEnableLighting(false);
+	
+	particleBox_->Initialize();
+	
+	mapPassNumber_ = startMapNum;
+
+	//すべてのマップデータの保存
+	for (int i = 0; i <= maxMapnum; i++) {
+		allMapData_.push_back(LoadMapData(map1Pass[i]));
+	}
+
+	//マップデータを設定
+	mapData_ = allMapData_[mapPassNumber_];
 
 	MapPositioningInitialize();
 
@@ -466,6 +476,14 @@ void SaveMapData(const char* fileName, std::vector<std::vector<int>> datas) {
 
 	//ファイルを閉じる
 	fclose(fp);
+}
+
+void Map::ChangeMapData(int mapDataNum) {
+	//マップデータを設定
+	mapData_ = allMapData_[mapDataNum];
+
+	MapPositioningInitialize();
+
 }
 
 void Map::MapEditor(const ViewProjection& view) {

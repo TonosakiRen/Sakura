@@ -16,7 +16,7 @@ public:
 	/// <param name="mapPassNum">マップパスへの番号</param>
 	/// <param name="viewProjection"></param>
 	/// <param name="directionalLight"></param>
-	void Initialize(nt mapPassNum,ViewProjection* viewProjection, DirectionalLight* directionalLight);
+	void Initialize(int mapPassNum,ViewProjection* viewProjection, DirectionalLight* directionalLight);
 
 	/// <summary>
 	/// 更新

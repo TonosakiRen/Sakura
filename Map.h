@@ -31,7 +31,7 @@ public:
 	Map();
 
 	//
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int maxMapnum, int startMapNum=0);
 
 	void Update();
 
@@ -41,6 +41,8 @@ public:
 
 	void Finalize();
 
+	//配置をロードとworld再配置
+	void ChangeMapData(int mapDataNum);
 
 	void MapEditor(const ViewProjection& view);
 
@@ -151,6 +153,9 @@ private:
 	//マップデータ格納場所
 	std::vector<std::vector<int>> mapData_;
 
+	//全部のマップデータ
+	std::vector<std::vector<std::vector<int>>>allMapData_;
+
 	// マップチップごとのワールド
 	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;
 
@@ -227,10 +232,10 @@ private:
 	std::unique_ptr<Sprite>editCursor_;
 
 	//カーソルの画像
-	uint32_t cursorTex_;
+	uint32_t cursorTex_=0;
 
 	//レティクルの座標
-	Vector2 reticlePos_;
+	Vector2 reticlePos_{};
 
 	//参照してるマップ配列のx
 	int32_t referenceMapX_ = 0;

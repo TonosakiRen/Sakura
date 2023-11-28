@@ -406,7 +406,21 @@ void GameScene::InGameSceneChange() {
 
 	if (isSceneChange_) {
 		//シーンを変更
-		sceneRequest_ = Scene::InGame;
+		map_->ChangeMapData(0);
+
+		//箱の初期化
+		boxes_.clear();
+		int managementNum = 0;
+		for (auto& world : map_->GetBoxWorldTransform()) {
+			std::unique_ptr<Box>box = std::make_unique<Box>();
+			box->Initialize("box", &viewProjection_, &directionalLight_, *world.get(), managementNum);
+
+			boxes_.emplace_back(std::move(box));
+
+			managementNum++;
+		}
+
+
 	}
 }
 

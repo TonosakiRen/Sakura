@@ -14,7 +14,7 @@ public:
 	/// <param name="viewProjection"></param>
 	/// <param name="directionalLight"></param>
 	/// <param name="pWorld"></param>
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld,RectangleFacing state=RectangleFacing::kLandscape);
 
 	/// <summary>
 	/// 更新
@@ -44,7 +44,7 @@ public:
 	/// </summary>
 	RectangleFacing GetRectangle() { return rectangleState_; }
 
-
+	void Reset(const WorldTransform& world , RectangleFacing state);
 private:
 	//縦向きスケール
 	Vector3 portraitScale = { 0.8f,1.5f,1.0f };
