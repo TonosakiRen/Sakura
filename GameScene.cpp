@@ -139,7 +139,7 @@ void GameScene::StageInitialize(int stageNum)
 
 	map_->StageInitialize(stageNum);
 	player_->StageInitialize(map_->GetPlayerW());
-	clearBox_->StageInitialize(map_->GetClearW());
+	clearBox_->StageInitialize(map_->GetClearW(), stageNum);
 	boxes_.clear();
 	int managementNum = 0;
 	for (auto& world : map_->GetBoxWorldTransform()) {
@@ -152,7 +152,13 @@ void GameScene::StageInitialize(int stageNum)
 	}
 
 	//次イニシャライズするときに
-	mapPassNum_++;
+	if (stageNum == mapPassNum_ - 1) {
+		//プレイヤーが死んだ場合はここに入る
+	}
+	else {
+		mapPassNum_++;
+	}
+	
 	
 }
 
