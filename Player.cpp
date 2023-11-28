@@ -18,7 +18,7 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 		slimeTransform[i].Initialize();
 		slimeTransform[i].SetIsScaleParent(false);
 		slimeTransform[i].SetParent(&animationTransform_);
-		slimeTransform[i].translation_.y = 1.5f - (3.0f / slimeNum) * i;
+		slimeTransform[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * i - ((3.0f / Player::slimeNum) / 2.0f);
 		slimeTransform[i].UpdateMatrix();
 	}
 

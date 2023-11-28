@@ -8,7 +8,7 @@ void PlayerAnimation::Update()
 		if (savePlayerRectAngele == RectangleFacing::kPortrait) {
 
 			for (int i = 0; i < Player::slimeNum; i++) {
-				slimeWorldTrasnform_[i].translation_.x = 0.8f - (1.6f / Player::slimeNum) * (i + 1);
+				slimeWorldTrasnform_[i].translation_.x = 0.8f - (1.6f / Player::slimeNum) * i - ((1.6f / Player::slimeNum) / 2.0f);
 				slimeWorldTrasnform_[i].translation_.y = 0.0f;
 				slimeWorldTrasnform_[i].rotation_.z = Radian(90.0f);
 			}
@@ -19,7 +19,7 @@ void PlayerAnimation::Update()
 		else {
 
 			for (int i = 0; i < Player::slimeNum; i++) {
-				slimeWorldTrasnform_[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * (i + 1);
+				slimeWorldTrasnform_[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * i - ((3.0f / Player::slimeNum) / 2.0f);
 				slimeWorldTrasnform_[i].translation_.x = 0.0f;
 				slimeWorldTrasnform_[i].rotation_.z = 0.0f;
 			}
