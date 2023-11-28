@@ -135,7 +135,7 @@ void Player::Update() {
 
 	const float deadLine = 50.0f;
 	//死亡判定
-	if (pos.y <= -deadLine || pos.y >= deadLine || pos.x <= -deadLine || pos.x >= deadLine) {
+	if (pos.y <= -deadLine) {
 		isDead_ = true;
 	}
 	

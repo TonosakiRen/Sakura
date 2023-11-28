@@ -420,7 +420,7 @@ void GameScene::CheckBoxDead() {
 			deadNum_++;
 		}else{
 			Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
-			if (pos.y <= -deadLine || pos.y >= deadLine || pos.x <= -deadLine || pos.x >= deadLine) {
+			if (pos.y <= -deadLine) {
 				//死亡判定渡し
 				box->SetIsDead(true);
 			}
