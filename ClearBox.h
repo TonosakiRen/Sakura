@@ -23,6 +23,8 @@ public:
 	/// </summary>
 	void Update();
 
+	void UpdateMatirx();
+
 	/// <summary>
 	/// コリジョンの判定と処理
 	/// </summary>

@@ -29,6 +29,8 @@ public:
 	//更新
 	void Update();
 
+	void UpdateMatiries();
+
 	//描画
 	void Draw();
 

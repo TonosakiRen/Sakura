@@ -178,6 +178,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 void Map::StageInitialize(int num)
 {
+
 	//マップデータを読み込み
 	mapData_ = allMapData_[num];
 
@@ -207,6 +208,10 @@ void Map::Update() {
 	}
 
 
+	UpdateMatrix();
+}
+
+void Map::UpdateMatrix() {
 	//行列更新
 	worldTransform_.UpdateMatrix();
 	for (auto& world : WallWorlds_) {
@@ -215,7 +220,6 @@ void Map::Update() {
 	for (auto& collider : colliders_) {
 		collider->AdjustmentScale();
 	}
-
 
 	preIsRotating = isRotating;
 }
@@ -658,6 +662,38 @@ void Map::MapEditor(const ViewProjection& view) {
 }
 
 bool Map::StartAnimation() {
+	//進行度
+	float t = animecount_ / maxAnimeCount_;
+	//回転量計算
+	worldTransform_.rotation_.y = stRotatenum.x * (t)+stRotatenum.y * (1 - t);
+
+	//条件達成で終わり
+	if (animecount_++ >= maxAnimeCount_) {
+		worldTransform_.rotation_.y = stRotatenum.y;
+		animecount_ = 0;
+
+		return true;
+	}
+
+	
+	return false;
+}
+
+bool Map::EndAnimation() {
+	//進行度
+	float t = animecount_ / maxAnimeCount_;
+	
+	//回転量計算
+	worldTransform_.rotation_.y = edRotatenum.x * (t)+edRotatenum.y * (1 - t);
+
+	worldTransform_.rotation_.z = zrotate.x * (t)+zrotate.y * (1 - t);
+	
+	//条件達成で終わり
+	if (animecount_++ >= maxAnimeCount_) {
+		worldTransform_.rotation_.y = edRotatenum.y;
+		animecount_ = 0;
+		return true;
+	}
 
 	return false;
 }

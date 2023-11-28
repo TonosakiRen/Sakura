@@ -178,7 +178,17 @@ void GameScene::InGameUpdate() {
 
 	switch (sceneAnime_) {
 	case GameScene::SceneAnimation::kStart:
-
+		if (map_->StartAnimation()) {
+			sceneAnime_ = SceneAnimation::kInGame;
+		}
+		map_->UpdateMatrix();
+		player_->UpdateMatiries();
+		clearBox_->UpdateMatirx();
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				box->UpdateMatrix();
+			}
+		}
 		break;
 	case GameScene::SceneAnimation::kInGame:
 		map_->Update();
@@ -205,6 +215,17 @@ void GameScene::InGameUpdate() {
 		InGameSceneChange();
 		break;
 	case GameScene::SceneAnimation::kEnd:
+		if (map_->EndAnimation()) {
+			NextScene();
+		}
+		map_->UpdateMatrix();
+		player_->UpdateMatiries();
+		clearBox_->UpdateMatirx();
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				box->UpdateMatrix();
+			}
+		}
 		break;
 	default:
 		break;
@@ -453,6 +474,25 @@ void GameScene::CheckBoxDead() {
 void GameScene::InGameSceneChange() {
 
 	if (isStageChange_) {
+		sceneAnime_ = SceneAnimation::kEnd;
+		map_->SetAnimeRZ(map_->GetWorldTransform()->rotation_.z);
+	}
+
+	if (input_->TriggerKey(DIK_ESCAPE)) {
+		sceneRequest_ = Scene::Title;
+	}
+
+	if (input_->TriggerKey(DIK_P)) {
+		sceneRequest_ = Scene::Title;
+	}
+
+	if (input_->TriggerKey(DIK_2)) {
+		isStageChange_ = true;
+	}
+}
+
+void GameScene::NextScene() {
+	if (isStageChange_) {
 		if (mapPassNum_ < maxMapNum_) {
 			StageInitialize(mapPassNum_);
 			isStageChange_ = false;
@@ -467,17 +507,7 @@ void GameScene::InGameSceneChange() {
 		}
 	}
 
-	if (input_->TriggerKey(DIK_ESCAPE)) {
-		sceneRequest_ = Scene::Title;
-	}
-
-	if (input_->TriggerKey(DIK_P)) {
-		sceneRequest_ = Scene::Title;
-	}
-
-	if (input_->TriggerKey(DIK_2)) {
-		isStageChange_ = true;
-	}
+	sceneAnime_ = SceneAnimation::kStart;
 }
 
 void GameScene::ClearInitialize() {

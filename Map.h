@@ -38,16 +38,22 @@ public:
 
 	void Update();
 
+	void UpdateMatrix();
+
 	void Draw();
 
 	void DrawSprite();
 
 	void Finalize();
 
+	void SetAnimeRZ(float z) { zrotate.z = z; }
+
 
 	void MapEditor(const ViewProjection& view);
 
 	bool StartAnimation();
+
+	bool EndAnimation();
 #pragma region ゲッター
 
 	// マップの壁
@@ -272,7 +278,14 @@ private:
 
 	float halfpi = (float)std::numbers::pi / 2.0f;
 	//回転量
-	Vector2 stRotatenum = { halfpi * 4 * 4 };
+	const Vector2 stRotatenum = { halfpi * 4 * 4,0 };
+
+	const Vector2 edRotatenum = { 0, -halfpi * 4 * 4 };
+
+	Vector2 zrotate = { 0,0 };
+
+	const float maxAnimeCount_ = 30;
+	int animecount_ = 0;
 #pragma endregion
 
 };

@@ -29,6 +29,8 @@ public:
 	/// </summary>
 	void Update();
 
+	void UpdateMatrix();
+
 	/// <summary>
 	/// 描画
 	/// </summary>

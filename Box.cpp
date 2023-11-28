@@ -66,8 +66,13 @@ void Box::Update() {
 
 
 		//行列更新
-		worldTransform_.UpdateMatrix();
+		UpdateMatrix();
 	}
+}
+
+void Box::UpdateMatrix() {
+	//行列更新
+	worldTransform_.UpdateMatrix();
 }
 
 void Box::Draw() {

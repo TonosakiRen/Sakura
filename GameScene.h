@@ -58,6 +58,7 @@ private: //メンバ関数
 	//InGameでのシーンチェンジの管理
 	void InGameSceneChange();
 
+	void NextScene();
 #pragma endregion
 
 #pragma region クリア

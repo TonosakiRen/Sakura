@@ -118,11 +118,7 @@ void Player::Update() {
 
 	}
 
-	//行列更新
-	worldTransform_.UpdateMatrix();
-
-	//コライダー更新
-	collider_.AdjustmentScale();	
+	UpdateMatiries();
 
 	if (Map::rotateComplete) {
 		if (rectangleState_ != RectangleFacing::kPortrait) {
@@ -142,6 +138,15 @@ void Player::Update() {
 	}
 	
 
+}
+
+void Player::UpdateMatiries() {
+
+	//行列更新
+	worldTransform_.UpdateMatrix();
+
+	//コライダー更新
+	collider_.AdjustmentScale();
 }
 
 void Player::Collision(Collider& otherCollider, const Vector3& priotiyVector) {

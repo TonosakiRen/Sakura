@@ -87,8 +87,7 @@ void ClearBox::Update() {
 	ImGui::End();
 #endif // _DEBUG
 
-	worldTransform_.UpdateMatrix();
-
+	UpdateMatirx();
 
 	if (Map::rotateComplete) {
 		if (rectangleState_ != RectangleFacing::kPortrait) {
@@ -99,6 +98,10 @@ void ClearBox::Update() {
 		}
 	}
 	
+}
+
+void ClearBox::UpdateMatirx() {
+	worldTransform_.UpdateMatrix();
 }
 
 void ClearBox::Collision(Collider& otherCollider) {
