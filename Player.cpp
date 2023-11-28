@@ -40,6 +40,7 @@ void Player::StageInitialize(const WorldTransform& pWorld)
 	worldTransform_.UpdateMatrix();
 	isDead_ = false;
 	isJump = false;
+	rectangleState_ = RectangleFacing::kPortrait;
 }
 
 void Player::Update() {
