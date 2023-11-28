@@ -10,10 +10,9 @@ void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection
 
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 
-	rectangleState_ = RectangleFacing::kLandscape;
-	worldTransform_.scale_ = landScapeScale;
-	worldTransform_.translation_.y -= 0.2f;
-	worldTransform_.translation_.x -= 0.5f;
+	rectangleState_ = RectangleFacing::kPortrait;
+	worldTransform_.scale_ = portraitScale;
+	worldTransform_.translation_.y += 0.5f;
 }
 
 void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
@@ -25,22 +24,22 @@ void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 	switch (stageNum)
 	{
 	case 0:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 1:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 2:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 3:
 		rectangleState_ = RectangleFacing::kLandscape;
 		break;
 	case 4:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 5:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 6:
 		rectangleState_ = RectangleFacing::kLandscape;
@@ -65,6 +64,7 @@ void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 	}
 	else {
 		worldTransform_.scale_ = portraitScale;
+		worldTransform_.translation_.y += 0.5f;
 	}
 
 }
