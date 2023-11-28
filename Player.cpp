@@ -2,7 +2,7 @@
 #include "ImGuiManager.h"
 #include "Map.h"
 
-void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld) {
+void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,const WorldTransform& pWorld) {
 	//初期化
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	input_ = Input::GetInstance();
@@ -29,6 +29,17 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 
 	//ライティング無効化
 	material_.enableLighting_ = false;
+}
+
+void Player::StageInitialize(const WorldTransform& pWorld)
+{
+	velocisity_ = { 0.0f,0.0f,0.0f };
+	acceleration_ = { 0.0f,-0.05f,0.0f };
+	worldTransform_ = pWorld;
+	worldTransform_.scale_ = portraitScale;
+	worldTransform_.UpdateMatrix();
+	isDead_ = false;
+	isJump = false;
 }
 
 void Player::Update() {
@@ -80,8 +91,12 @@ void Player::Update() {
 		}
 
 		//ジャンプ処理
-		if (input_->TriggerKey(DIK_SPACE)) {
+		if (velocisity_.y == 0.0f) {
+			isJump = false;
+		}
+		if (input_->TriggerKey(DIK_SPACE) && isJump == false) {
 			stateRequest_ = PlayerState::kJump;
+			isJump = true;
 		}
 #pragma endregion
 
@@ -95,6 +110,7 @@ void Player::Update() {
 		worldTransform_.translation_ += move_;
 
 	}
+
 
 
 	//行列更新
@@ -111,6 +127,13 @@ void Player::Update() {
 			rectangleState_ = RectangleFacing::kLandscape;
 		}
 	}
+
+	//死亡判定
+	if (MakeTranslation(worldTransform_.matWorld_).y <= -50.0f) {
+		isDead_ = true;
+	}
+	
+
 }
 
 void Player::Collision(Collider& otherCollider, const Vector3& priotiyVector) {
@@ -347,9 +370,15 @@ void Player::UpdateState() {
 			velocisity_ = { 0.0f,0.0f,0.0f };
 			break;
 		case PlayerState::kJump:
-			offset = { 0.0f,1.0f,0.0f };
-			//offset = offset * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
-			velocisity_ = offset;
+			if (rectangleState_ == RectangleFacing::kPortrait) {
+				offset = { 0.0f,0.7f,0.0f };
+				velocisity_ = offset;
+			}
+
+			if (rectangleState_ == RectangleFacing::kLandscape) {
+				offset = { 0.0f,0.5f,0.0f };
+				velocisity_ = offset;
+			}
 			break;
 		default:
 			break;

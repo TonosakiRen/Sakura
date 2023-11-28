@@ -18,6 +18,14 @@ void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection
 	}
 }
 
+void ClearBox::StageInitialize(WorldTransform gWorld)
+{
+	//設定したワールドをコピー
+	worldTransform_ = gWorld;
+	worldTransform_.UpdateMatrix();
+
+}
+
 void ClearBox::Update() {
 
 #ifdef _DEBUG

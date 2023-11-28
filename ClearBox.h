@@ -16,6 +16,8 @@ public:
 	/// <param name="pWorld"></param>
 	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform gWorld);
 
+	void StageInitialize(WorldTransform gWorld);
+
 	/// <summary>
 	/// 更新
 	/// </summary>

@@ -21,7 +21,10 @@ class Player :
 public:
 
 	//初期化
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, WorldTransform pWorld);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,const WorldTransform& pWorld);
+
+	//初期化
+	void StageInitialize(const WorldTransform& pWorld);
 
 	//更新
 	void Update();
@@ -119,6 +122,13 @@ public:
 		return move_;
 	}
 
+	void SetIsDead(bool isdead) {
+		isDead_ = isdead;
+	}
+
+	bool GetIsDead() {
+		return isDead_;
+	}
 
 public:
 	//本体のコライダー
@@ -168,4 +178,9 @@ private:
 	RectangleFacing rectangleState_ = RectangleFacing::kPortrait;
 
 	WorldTransform animationTransform_;
+
+	//死んだか
+	bool isDead_ = false;
+
+	bool isJump = false;
 };

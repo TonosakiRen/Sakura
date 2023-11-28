@@ -45,7 +45,7 @@ void GameScene::Initialize() {
 	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
+	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
 
 	//箱の初期化
@@ -58,12 +58,15 @@ void GameScene::Initialize() {
 
 		managementNum++;
 	}
+
+	mapPassNum_++;
+
 	deadParticle_ = std::make_unique<DeadLineParticle>();
 	deadParticle_->Initialize({ 0.0f,0.0f }, { 1.0f,0.0f });
 
 
 	clearBox_ = std::make_unique<ClearBox>();
-	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+	clearBox_->Initialize("clearBox", &viewProjection_, &directionalLight_, map_->GetClearW());
 
 	bikkuri_ = TextureManager::Load("!.png");
 
@@ -123,11 +126,19 @@ void GameScene::TitleUpdate() {
 
 }
 void GameScene::InGameInitialize() {
-	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
-	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
+}
 
-	//箱の初期化
+void GameScene::StageInitialize(int stageNum)
+{
+	if (mapPassNum_ >= 6) {
+		mapPassNum_ = 0;
+	}
+
+	map_->StageInitialize(stageNum);
+	player_->StageInitialize(map_->GetPlayerW());
+	clearBox_->StageInitialize(map_->GetClearW());
+	boxes_.clear();
 	int managementNum = 0;
 	for (auto& world : map_->GetBoxWorldTransform()) {
 		std::unique_ptr<Box>box = std::make_unique<Box>();
@@ -138,18 +149,21 @@ void GameScene::InGameInitialize() {
 		managementNum++;
 	}
 
-	clearBox_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetClearW());
-
 	//次イニシャライズするときに
 	mapPassNum_++;
+	
 }
-
 
 
 void GameScene::InGameUpdate() {
 	if (input_->TriggerKey(DIK_P)) {
 		sceneRequest_ = Scene::Title;
 	}
+
+	if (input_->TriggerKey(DIK_2)) {
+		isStageChange_ = true;
+	}
+
 
 	map_->Update();
 	map_->MapEditor(viewProjection_);
@@ -360,8 +374,14 @@ void GameScene::AllCollision() {
 		//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
 		if (clearBox_->IsHitCollision(player_->collider_)&&player_->GetRectangle()==clearBox_->GetRectangle()) {
 			//シーン変更フラグをON
-			isSceneChange_ = true;
+			isStageChange_ = true;
 		}
+	}
+
+	//プレイヤーが死んだら初期化
+	if (player_->GetIsDead()) {
+		//シーン変更フラグをON
+		StageInitialize(mapPassNum_ - 1);
 	}
 }
 
@@ -404,9 +424,9 @@ void GameScene::CheckBoxDead() {
 
 void GameScene::InGameSceneChange() {
 
-	if (isSceneChange_) {
-		//シーンを変更
-		sceneRequest_ = Scene::InGame;
+	if (isStageChange_) {
+		StageInitialize(mapPassNum_);
+		isStageChange_ = false;
 	}
 }
 
