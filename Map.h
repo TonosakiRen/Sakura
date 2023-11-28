@@ -15,6 +15,7 @@
 
 #include "ParticleBox.h"
 
+class Player;
 
 class Map :
 	public GameObject {
@@ -77,6 +78,9 @@ public:
 	//マップデータ格納場所
 	std::vector<std::vector<int>>& GetMapData_() { return mapData_; };
 
+	void SetPlayer(const Player* player) {
+		player_ = player;
+	}
 	
 #pragma endregion
 
@@ -118,6 +122,8 @@ private://メンバ関数
 
 private://変数
 	Input* input_ = nullptr;
+
+	const Player* player_ = nullptr;
 
 
 #pragma region マップの配置関係

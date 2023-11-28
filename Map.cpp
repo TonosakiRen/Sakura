@@ -8,6 +8,7 @@
 #include<ctype.h>
 #include<list>
 #include<cassert>
+#include "Player.h"
 
 std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 	//返すデータの作成
@@ -683,12 +684,9 @@ void Map::InitializeStateLeftRotation() {
 
 void Map::UpdateStateNormal() {
 
-	if (input_->PushKey(DIK_E)) {
+	if (input_->PushKey(DIK_E) && player_->GetIsJump() == false) {
 		stateRequest_ = State::kRightRotation;
 		
-	}
-	if (input_->PushKey(DIK_Q)) {
-		stateRequest_ = State::kLeftRotation;
 	}
 }
 

@@ -34,7 +34,6 @@ void GameScene::Initialize() {
 	directionalLight_.direction_ = { 1.0f, -1.0f, 1.0f };
 	directionalLight_.UpdateDirectionalLight();
 
-
 	textureHandle_ = TextureManager::Load("uvChecker.png");
 
 	sprite_.reset(Sprite::Create(textureHandle_, { 0.0f,0.0f }));
@@ -49,6 +48,8 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
 
+
+	map_->SetPlayer(player_.get());
 
 	//箱の初期化
 	int managementNum = 0;
@@ -71,7 +72,6 @@ void GameScene::Initialize() {
 	clearBox_->Initialize("clearBox", &viewProjection_, &directionalLight_, map_->GetClearW());
 
 	bikkuri_ = TextureManager::Load("!.png");
-
 }
 
 void GameScene::Update() {
@@ -404,7 +404,7 @@ void GameScene::AllCollisionPrePosUpdate()
 
 void GameScene::CheckBoxDead() {
 	//仮で-50以下で消滅するように
-	float deadLine = -50;
+	float deadLine = 50.0f;
 
 	//死んだ数チェック
 	int deadNum_ = 0;
@@ -412,12 +412,13 @@ void GameScene::CheckBoxDead() {
 	for (auto& box : boxes_) {
 		if (box->GetIsDead()) {
 			deadNum_++;
-		}else if (box->GetWorldTransform()->matWorld_.m[3][1]<=deadLine) {
-			//死亡判定渡し
-			box->SetIsDead(true);
+		}else{
+			Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
+			if (pos.y <= -deadLine || pos.y >= deadLine || pos.x <= -deadLine || pos.x >= deadLine) {
+				//死亡判定渡し
+				box->SetIsDead(true);
+			}
 		}
-
-		
 	}
 
 	//すべて死んでいる場合
