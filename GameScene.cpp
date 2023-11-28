@@ -7,11 +7,13 @@ using namespace DirectX;
 void (GameScene::* GameScene::SceneUpdateTable[])() = {
 	&GameScene::TitleUpdate,
 	&GameScene::InGameUpdate,
+	&GameScene::ClearUpdate
 };
 
 void (GameScene::* GameScene::SceneInitializeTable[])() = {
 	&GameScene::TitleInitialize,
 	&GameScene::InGameInitialize,
+	&GameScene::ClearInitialize
 };
 
 
@@ -132,7 +134,7 @@ void GameScene::InGameInitialize() {
 void GameScene::StageInitialize(int stageNum)
 {
 	if (mapPassNum_ >= 6) {
-		mapPassNum_ = 0;
+		//mapPassNum_ = 0;
 	}
 
 	map_->StageInitialize(stageNum);
@@ -364,6 +366,8 @@ void GameScene::AllCollision() {
 		if (!isBoxHit) {
 			box->SetState(kFall);
 		}
+
+
 	}
 #pragma endregion
 
@@ -425,9 +429,22 @@ void GameScene::CheckBoxDead() {
 void GameScene::InGameSceneChange() {
 
 	if (isStageChange_) {
-		StageInitialize(mapPassNum_);
-		isStageChange_ = false;
+		if (mapPassNum_ < maxMapNum_) {
+			StageInitialize(mapPassNum_);
+			isStageChange_ = false;
+		}
+		else {
+			sceneRequest_ = Scene::Clear;
+		}
 	}
+}
+
+void GameScene::ClearInitialize() {
+
+}
+
+void GameScene::ClearUpdate() {
+
 }
 
 void GameScene::ModelDraw() {

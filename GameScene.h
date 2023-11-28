@@ -60,6 +60,12 @@ private: //メンバ関数
 
 #pragma endregion
 
+#pragma region クリア
+	void ClearInitialize();
+	void ClearUpdate();
+#pragma endregion
+
+
 private://メンバ関数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -90,6 +96,7 @@ private://メンバ関数
 	enum class Scene {
 		Title,
 		InGame,
+		Clear,
 		SceneNum
 	};
 
@@ -109,5 +116,7 @@ private://メンバ関数
 	//Collider* ComebackCollider(Box* baseBox);
 
 	uint32_t bikkuri_;
+
+	const int maxMapNum_ = 10;
 };
 

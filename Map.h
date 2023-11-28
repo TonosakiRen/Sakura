@@ -141,13 +141,21 @@ private:
 
 	int mapPassNumber_;
 
+
+	
 	//マップのデータ情報格納場所
-	const char* map1Pass[5] = {
+	const char* map1Pass[10] = {
 		"Resources/mapChips/Stage1.txt",
 		"Resources/mapChips/Stage2.txt",
 		"Resources/mapChips/Stage3.txt",
 		"Resources/mapChips/Stage4.txt",
 		"Resources/mapChips/Stage5.txt",
+		"Resources/mapChips/Stage6.txt",
+		"Resources/mapChips/Stage7.txt",
+		"Resources/mapChips/Stage8.txt",
+		"Resources/mapChips/Stage9.txt",
+		"Resources/mapChips/Stage10.txt",
+
 	};
 
 	//マップデータ格納場所
