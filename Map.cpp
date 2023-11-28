@@ -169,6 +169,15 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	*/
 }
 
+void Map::StageInitialize(int num)
+{
+	mapData_ = LoadMapData(map1Pass[num]);
+	MapPositioningInitialize();
+	state_ = State::kNormal;
+	stateRequest_ = std::nullopt;
+	t_ = 0;
+}
+
 void Map::Update() {
 	ImGuiDraw();
 

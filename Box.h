@@ -23,6 +23,7 @@ public:
 	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,
 		const WorldTransform&world,const int managementNum);
 
+
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -74,16 +75,6 @@ public://ゲッター
 		return move_;
 	}
 
-public:
-	//maptip用
-	Vector2 preLeftTopIndex_;
-	Vector2 preRightTopIndex_;
-	Vector2 preLeftBottomIndex_;
-	Vector2 preRightBottomIndex_;
-
-	//maptip用
-	Vector2 preLeftTop_;
-	Vector2 preRightBottom_;
 private:
 
 

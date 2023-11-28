@@ -33,6 +33,8 @@ public:
 	//
 	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
 
+	void StageInitialize(int num);
+
 	void Update();
 
 	void Draw();

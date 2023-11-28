@@ -46,6 +46,8 @@ private: //メンバ関数
 	void InGameInitialize();
 	void InGameUpdate();
 
+	void StageInitialize(int stageNum);
+
 	//コリジョン
 	void AllCollision();
 	void AllCollisionPrePosUpdate();
@@ -55,6 +57,7 @@ private: //メンバ関数
 
 	//InGameでのシーンチェンジの管理
 	void InGameSceneChange();
+
 #pragma endregion
 
 private://メンバ関数
@@ -102,7 +105,7 @@ private://メンバ関数
 	bool isHitClearBox_ = false;
 
 	//SceneChangeするかのフラグ
-	bool isSceneChange_ = false;
+	bool isStageChange_ = false;
 	//Collider* ComebackCollider(Box* baseBox);
 
 	uint32_t bikkuri_;
