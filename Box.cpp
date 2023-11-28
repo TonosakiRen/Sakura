@@ -9,6 +9,8 @@ void Box::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	//worldとか初期化
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	
+
+
 	//設定したワールド渡し
 	worldTransform_ = world;
 
@@ -64,8 +66,13 @@ void Box::Update() {
 
 
 		//行列更新
-		worldTransform_.UpdateMatrix();
+		UpdateMatrix();
 	}
+}
+
+void Box::UpdateMatrix() {
+	//行列更新
+	worldTransform_.UpdateMatrix();
 }
 
 void Box::Draw() {

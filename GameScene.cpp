@@ -43,7 +43,7 @@ void GameScene::Initialize() {
 
 	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_, maxMapNum_,mapPassNum_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
@@ -142,6 +142,7 @@ void GameScene::StageInitialize(int stageNum)
 	if (mapPassNum_ >= 6) {
 		//mapPassNum_ = 0;
 	}
+	sceneAnime_ = SceneAnimation::kInGame;
 
 	map_->StageInitialize(stageNum);
 	player_->StageInitialize(map_->GetPlayerW());
@@ -170,39 +171,68 @@ void GameScene::StageInitialize(int stageNum)
 
 
 void GameScene::InGameUpdate() {
-	if (input_->TriggerKey(DIK_P)) {
-		sceneRequest_ = Scene::Title;
-	}
-
-	if (input_->TriggerKey(DIK_2)) {
-		isStageChange_ = true;
-	}
 
 
-	map_->Update();
-	map_->MapEditor(viewProjection_);
 
-	clearBox_->Update();
+	switch (sceneAnime_) {
+	case GameScene::SceneAnimation::kStart:
+		if (map_->StartAnimation()) {
+			sceneAnime_ = SceneAnimation::kInGame;
+		}
+		map_->UpdateMatrix();
+		player_->UpdateMatiries();
+		clearBox_->UpdateMatirx();
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				box->UpdateMatrix();
+			}
+		}
+		break;
+	case GameScene::SceneAnimation::kInGame:
+		map_->Update();
+		map_->MapEditor(viewProjection_);
 
-	player_->Update();
+		clearBox_->Update();
 
-	for (auto& box : boxes_) {
-		box->Update();
-	}
+		player_->Update();
 
-	//マップが回転していないときのみコリジョン処理
-	if (!Map::isRotating) {
-		AllCollision();
-		AllCollisionPrePosUpdate();
-	}
+		for (auto& box : boxes_) {
+			box->Update();
+		}
+
+		//マップが回転していないときのみコリジョン処理
+		if (!Map::isRotating) {
+			AllCollision();
+			AllCollisionPrePosUpdate();
+		}
 
 	playerAnimation_->Update();
 
 	//ボックスの枠外落下処理
 	CheckBoxDead();
 
-	//条件を満たしている場合のシーンチェンジ
-	InGameSceneChange();
+		//条件を満たしている場合のシーンチェンジ
+		InGameSceneChange();
+		break;
+	case GameScene::SceneAnimation::kEnd:
+		if (map_->EndAnimation()) {
+			NextScene();
+		}
+		map_->UpdateMatrix();
+		player_->UpdateMatiries();
+		clearBox_->UpdateMatirx();
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				box->UpdateMatrix();
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	
+
+
 }
 
 
@@ -444,18 +474,40 @@ void GameScene::CheckBoxDead() {
 void GameScene::InGameSceneChange() {
 
 	if (isStageChange_) {
-		if (mapPassNum_ < maxMapNum_) {
-			StageInitialize(mapPassNum_);
-			isStageChange_ = false;
-		}
-		else {
-			sceneRequest_ = Scene::Clear;
-		}
+		sceneAnime_ = SceneAnimation::kEnd;
+		map_->SetAnimeRZ(map_->GetWorldTransform()->rotation_.z);
 	}
 
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		sceneRequest_ = Scene::Title;
 	}
+
+	if (input_->TriggerKey(DIK_P)) {
+		sceneRequest_ = Scene::Title;
+	}
+
+	if (input_->TriggerKey(DIK_2)) {
+		isStageChange_ = true;
+	}
+}
+
+void GameScene::NextScene() {
+	if (isStageChange_) {
+		if (mapPassNum_ < maxMapNum_) {
+			StageInitialize(mapPassNum_);
+			isStageChange_ = false;
+			isHitClearBox_ = false;
+		}
+		else {
+			//sceneRequest_ = Scene::Clear;
+			mapPassNum_ = 0;
+			StageInitialize(mapPassNum_);
+			isStageChange_ = false;
+			isHitClearBox_ = false;
+		}
+	}
+
+	sceneAnime_ = SceneAnimation::kStart;
 }
 
 void GameScene::ClearInitialize() {

@@ -104,7 +104,7 @@ Map::Map()
 	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
 }
 
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int maxMapNum,int num=0) {
 
 	input_ = Input::GetInstance();
 
@@ -113,8 +113,12 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	particleBox_->Initialize();
 	mapPassNumber_ = num;
 
+	for (int i = 0; i < maxMapNum; i++) {
+		allMapData_.push_back(LoadMapData(map1Pass[i]));
+	}
+
 	//マップデータを読み込み
-	mapData_ = LoadMapData(map1Pass[num]);
+	mapData_ = allMapData_[num];
 
 	MapPositioningInitialize();
 
@@ -174,7 +178,10 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 void Map::StageInitialize(int num)
 {
-	mapData_ = LoadMapData(map1Pass[num]);
+
+	//マップデータを読み込み
+	mapData_ = allMapData_[num];
+
 	worldTransform_ = iniData_;
 	MapPositioningInitialize();
 	state_ = State::kNormal;
@@ -201,6 +208,10 @@ void Map::Update() {
 	}
 
 
+	UpdateMatrix();
+}
+
+void Map::UpdateMatrix() {
 	//行列更新
 	worldTransform_.UpdateMatrix();
 	for (auto& world : WallWorlds_) {
@@ -209,7 +220,6 @@ void Map::Update() {
 	for (auto& collider : colliders_) {
 		collider->AdjustmentScale();
 	}
-
 
 	preIsRotating = isRotating;
 }
@@ -649,6 +659,43 @@ void Map::MapEditor(const ViewProjection& view) {
 #endif // _DEBUG
 
 
+}
+
+bool Map::StartAnimation() {
+	//進行度
+	float t = animecount_ / maxAnimeCount_;
+	//回転量計算
+	worldTransform_.rotation_.y = stRotatenum.x * (t)+stRotatenum.y * (1 - t);
+
+	//条件達成で終わり
+	if (animecount_++ >= maxAnimeCount_) {
+		worldTransform_.rotation_.y = stRotatenum.y;
+		animecount_ = 0;
+
+		return true;
+	}
+
+	
+	return false;
+}
+
+bool Map::EndAnimation() {
+	//進行度
+	float t = animecount_ / maxAnimeCount_;
+	
+	//回転量計算
+	worldTransform_.rotation_.y = edRotatenum.x * (t)+edRotatenum.y * (1 - t);
+
+	worldTransform_.rotation_.z = zrotate.x * (t)+zrotate.y * (1 - t);
+	
+	//条件達成で終わり
+	if (animecount_++ >= maxAnimeCount_) {
+		worldTransform_.rotation_.y = edRotatenum.y;
+		animecount_ = 0;
+		return true;
+	}
+
+	return false;
 }
 
 float EsingFloat(const float t, const float start, const float end) {

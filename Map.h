@@ -32,11 +32,13 @@ public:
 	Map();
 
 	//
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, int maxMapNum, int num);
 
 	void StageInitialize(int num);
 
 	void Update();
+
+	void UpdateMatrix();
 
 	void Draw();
 
@@ -44,13 +46,20 @@ public:
 
 	void Finalize();
 
+	void SetAnimeRZ(float z) { zrotate.z = z; }
+
 
 	void MapEditor(const ViewProjection& view);
 
+	bool StartAnimation();
+
+	bool EndAnimation();
 #pragma region ゲッター
 
 	// マップの壁
 	std::vector<std::unique_ptr<WorldTransform>>& GetSpikeWorld() { return WallWorlds_; }
+
+
 
 	// マップ中心座標取得
 	const Vector3 GetMapCenter() {
@@ -167,6 +176,8 @@ private:
 	//マップデータ格納場所
 	std::vector<std::vector<int>> mapData_;
 
+	std::vector< std::vector<std::vector<int>>>allMapData_;
+
 	// マップチップごとのワールド
 	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;
 
@@ -264,6 +275,17 @@ private:
 
 #pragma region 初期化用
 	WorldTransform iniData_;
+
+	float halfpi = (float)std::numbers::pi / 2.0f;
+	//回転量
+	const Vector2 stRotatenum = { halfpi * 4 * 4,0 };
+
+	const Vector2 edRotatenum = { 0, -halfpi * 4 * 4 };
+
+	Vector2 zrotate = { 0,0 };
+
+	const float maxAnimeCount_ = 30;
+	int animecount_ = 0;
 #pragma endregion
 
 };

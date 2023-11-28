@@ -59,6 +59,7 @@ private: //メンバ関数
 	//InGameでのシーンチェンジの管理
 	void InGameSceneChange();
 
+	void NextScene();
 #pragma endregion
 
 #pragma region クリア
@@ -119,6 +120,14 @@ private://メンバ関数
 	uint32_t bikkuri_;
 
 	const int maxMapNum_ = 10;
+
+	enum class SceneAnimation {
+		kStart,
+		kInGame,
+		kEnd
+	};
+
+	SceneAnimation sceneAnime_ = SceneAnimation::kInGame;
 
 
 	//playerAnimation]
