@@ -91,6 +91,9 @@ void Player::Update() {
 		}
 
 		//ジャンプ処理
+		if (velocisity_.y == 0.0f) {
+			isJump = false;
+		}
 		if (input_->TriggerKey(DIK_SPACE) && isJump == false) {
 			stateRequest_ = PlayerState::kJump;
 			isJump = true;
@@ -158,11 +161,6 @@ void Player::Collision(Collider& otherCollider) {
 
 		}
 		else {
-			Vector3 normalizeVector = Normalize(puchBackVector);
-			if (normalizeVector.x == 0.0f && normalizeVector.y >= 1.0f) {
- 				isJump = false;
-			}
-
 			puchBackVector = puchBackVector * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
 			worldTransform_.translation_ += puchBackVector;
 			worldTransform_.UpdateMatrix();
@@ -378,7 +376,7 @@ void Player::UpdateState() {
 			}
 
 			if (rectangleState_ == RectangleFacing::kLandscape) {
-				offset = { 0.0f,0.3f,0.0f };
+				offset = { 0.0f,0.5f,0.0f };
 				velocisity_ = offset;
 			}
 			break;

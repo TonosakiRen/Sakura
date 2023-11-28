@@ -26,9 +26,6 @@
     <Filter Include="Game\Player">
       <UniqueIdentifier>{75da011f-d7c9-4782-95aa-79956fd5dc14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\StageScene">
-      <UniqueIdentifier>{cc7f744e-86ad-4381-b6a7-4d7f11320ea6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -182,9 +179,6 @@
       <Filter>Game\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAnimation.cpp" />
-    <ClCompile Include="StageScene.cpp">
-      <Filter>Game\StageScene</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -347,9 +341,6 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAnimation.h" />
-    <ClInclude Include="StageScene.h">
-      <Filter>Game\StageScene</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Basic.hlsli">

@@ -139,7 +139,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="StageScene.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
@@ -195,7 +194,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="StageScene.h" />
     <ClInclude Include="States.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TextureManager.h" />
