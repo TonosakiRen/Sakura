@@ -17,7 +17,9 @@ enum class PlayerState {
 
 
 class Player :
-	public GameObject {
+	public GameObject
+{
+friend class PlayerAnimation;
 public:
 
 	//初期化
@@ -182,6 +184,19 @@ private:
 	RectangleFacing rectangleState_ = RectangleFacing::kPortrait;
 
 	WorldTransform animationTransform_;
+
+	Model slimeVerticalModel_;
+	Model slimeWideModel_;
+
+	public:
+	static const uint32_t slimeNum = 10;
+
+	WorldTransform* GetSlimeWorldTransform() {
+		return slimeTransform;
+	}
+	private:
+
+	WorldTransform slimeTransform[slimeNum];
 
 	//死んだか
 	bool isDead_ = false;

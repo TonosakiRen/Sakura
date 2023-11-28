@@ -13,6 +13,16 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 	animationTransform_.Initialize();
 	animationTransform_.SetParent(&worldTransform_);
 
+
+	for (int i = 0; i < slimeNum; i++) {
+		slimeTransform[i].Initialize();
+		slimeTransform[i].SetIsScaleParent(false);
+		slimeTransform[i].SetParent(&animationTransform_);
+		slimeTransform[i].translation_.y = 1.5f - (3.0f / slimeNum) * i;
+		slimeTransform[i].UpdateMatrix();
+	}
+
+
 	//座標系処理
 	worldTransform_ = pWorld;
 	worldTransform_.scale_ = portraitScale;
@@ -29,6 +39,9 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 
 	//ライティング無効化
 	material_.enableLighting_ = false;
+
+	slimeVerticalModel_.Initialize("Slime");
+	slimeWideModel_.Initialize("SlimeWide");
 }
 
 void Player::StageInitialize(const WorldTransform& pWorld)
@@ -360,7 +373,16 @@ void Player::Draw() {
 	underCollider_.Draw();
 	upCollider_.Draw();
 	animationTransform_.UpdateMatrix();
-	model_.Draw(animationTransform_, *viewProjection_, *directionalLight_,material_);
+	for (int i = 0; i < slimeNum;i++) {
+		slimeTransform[i].UpdateMatrix();
+		if (rectangleState_ == RectangleFacing::kPortrait) {
+			slimeVerticalModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+		}
+		else {
+			slimeWideModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+		}
+	}
+	//model_.Draw(animationTransform_, *viewProjection_, *directionalLight_,material_);
 }
 
 

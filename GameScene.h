@@ -13,6 +13,7 @@
 #include "Map.h"
 #include"Box.h"
 #include"ClearBox.h"
+#include "PlayerAnimation.h"
 
 #include "DeadLineParticle.h"
 
@@ -118,5 +119,9 @@ private://メンバ関数
 	uint32_t bikkuri_;
 
 	const int maxMapNum_ = 10;
+
+
+	//playerAnimation]
+	std::unique_ptr<PlayerAnimation> playerAnimation_;
 };
 

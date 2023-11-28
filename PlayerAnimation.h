@@ -1,8 +1,20 @@
 #pragma once
-class Player;
+#include "Player.h"
 class PlayerAnimation
 {
 public:
-	PlayerAnimation();
+
+	
+	void Update();
+
+	void SetPlayer(Player* player) {
+		player_ = player;
+		slimeWorldTrasnform_ = player->GetSlimeWorldTransform();
+	}
+
+	Player* player_;
+	WorldTransform* slimeWorldTrasnform_;
+
+	RectangleFacing savePlayerRectAngele = RectangleFacing::kPortrait;
 };
 
