@@ -94,6 +94,11 @@ void Player::Update() {
 		if (velocisity_.y == 0.0f) {
 			isJump = false;
 		}
+
+		if (velocisity_.y < 0.0f) {
+			isJump = true;
+		}
+
 		if (input_->TriggerKey(DIK_SPACE) && isJump == false) {
 			stateRequest_ = PlayerState::kJump;
 			isJump = true;
@@ -111,8 +116,6 @@ void Player::Update() {
 
 	}
 
-
-
 	//行列更新
 	worldTransform_.UpdateMatrix();
 
@@ -128,8 +131,11 @@ void Player::Update() {
 		}
 	}
 
+	Vector3 pos = MakeTranslation(worldTransform_.matWorld_);
+
+	const float deadLine = 50.0f;
 	//死亡判定
-	if (MakeTranslation(worldTransform_.matWorld_).y <= -50.0f) {
+	if (pos.y <= -deadLine || pos.y >= deadLine || pos.x <= -deadLine || pos.x >= deadLine) {
 		isDead_ = true;
 	}
 	

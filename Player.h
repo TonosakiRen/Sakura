@@ -130,6 +130,10 @@ public:
 		return isDead_;
 	}
 
+	bool GetIsJump() const {
+		return isJump;
+	}
+
 public:
 	//本体のコライダー
 	Collider collider_;

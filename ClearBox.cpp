@@ -24,6 +24,13 @@ void ClearBox::StageInitialize(WorldTransform gWorld)
 	worldTransform_ = gWorld;
 	worldTransform_.UpdateMatrix();
 
+	if (rectangleState_ == RectangleFacing::kPortrait) {
+		worldTransform_.scale_ = portraitScale;
+	}
+	else {
+		worldTransform_.scale_ = landScapeScale;
+	}
+
 }
 
 void ClearBox::Update() {
