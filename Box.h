@@ -60,6 +60,7 @@ public:
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 
 	
+	void SetStartData(const WorldTransform& world);
 public://ゲッター
 
 	Collider* GetCollider(){ return collider_.get(); }

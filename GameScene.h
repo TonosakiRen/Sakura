@@ -127,5 +127,8 @@ private://メンバ関数
 	};
 
 	SceneAnimation sceneAnime_ = SceneAnimation::kInGame;
+
+	int spawnBoxNum = 0;
+
 };
 

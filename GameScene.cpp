@@ -51,15 +51,25 @@ void GameScene::Initialize() {
 
 	map_->SetPlayer(player_.get());
 
-	//箱の初期化
-	int managementNum = 0;
-	for (auto& world : map_->GetBoxWorldTransform()) {
+
+	for (int i = 0; i < map_->GetMaxTile(); i++) {
+		WorldTransform world;
 		std::unique_ptr<Box>box = std::make_unique<Box>();
-		box->Initialize("box", &viewProjection_, &directionalLight_, *world.get(), managementNum);
-
+		box->Initialize("box", &viewProjection_, &directionalLight_, world, i);
+		box->SetIsDead(true);
 		boxes_.emplace_back(std::move(box));
+	}
 
-		managementNum++;
+	spawnBoxNum = 0;
+	//ボックスの配置
+	for (auto& world : map_->GetBoxWorldTransform()) {
+		for (auto& box : boxes_) {
+			if (box->GetIsDead()) {
+				box->SetStartData(*world);
+				spawnBoxNum++;
+				break;
+			}
+		}
 	}
 
 	mapPassNum_++;
@@ -149,16 +159,23 @@ void GameScene::StageInitialize(int stageNum)
 	map_->StageInitialize(stageNum);
 	player_->StageInitialize(map_->GetPlayerW());
 	clearBox_->StageInitialize(map_->GetClearW(), stageNum);
-	boxes_.clear();
-	int managementNum = 0;
-	for (auto& world : map_->GetBoxWorldTransform()) {
-		std::unique_ptr<Box>box = std::make_unique<Box>();
-		box->Initialize("box", &viewProjection_, &directionalLight_, *world.get(), managementNum);
 
-		boxes_.emplace_back(std::move(box));
-
-		managementNum++;
+	for (auto& box : boxes_) {
+		box->SetIsDead(true);
 	}
+
+	spawnBoxNum = 0;
+	//ボックスの配置
+	for (auto& world : map_->GetBoxWorldTransform()) {
+		for (auto& box : boxes_) {
+			if (box->GetIsDead()) {
+				box->SetStartData(*world);
+				spawnBoxNum++;
+				break;
+			}
+		}
+	}
+
 
 	//次イニシャライズするときに
 	if (stageNum == mapPassNum_ - 1) {
@@ -192,14 +209,16 @@ void GameScene::InGameUpdate() {
 		break;
 	case GameScene::SceneAnimation::kInGame:
 		map_->Update();
-		map_->MapEditor(viewProjection_);
+		//map_->MapEditor(viewProjection_);
 
 		clearBox_->Update();
 
 		player_->Update();
 
 		for (auto& box : boxes_) {
-			box->Update();
+			if (!box->GetIsDead()) {
+				box->Update();
+			}
 		}
 
 		//マップが回転していないときのみコリジョン処理
@@ -262,34 +281,38 @@ void GameScene::AllCollision() {
 
 			//二個目のボックス処理
 			for (auto& box2 : boxes_) {
-				//一個目をもとに押し戻し処理
-				if (box2->GetMaagementNum() != box->GetMaagementNum()) {
-					box2->Collision(*box->GetCollider());
+				if (!box2->GetIsDead()) {
+					//一個目をもとに押し戻し処理
+					if (box2->GetMaagementNum() != box->GetMaagementNum()) {
+						box2->Collision(*box->GetCollider());
 
 
-					//押し出しによって壁に埋まったら押し出す
-					for (auto& wall : map_->GetWallCollider()) {
-						box2->Collision(*wall);
-					}
-
-
-					for (auto& box3 : boxes_) {
-						if (box3->GetMaagementNum() != box2->GetMaagementNum()) {
-							box3->Collision(*box2->GetCollider());
-
-							//押し出しによって壁に埋まったら押し出す
-							for (auto& wall : map_->GetWallCollider()) {
-								box3->Collision(*wall);
-							}
-
-							//押し出された箱２に押し戻された処理
-							box2->Collision(*box3->GetCollider());
+						//押し出しによって壁に埋まったら押し出す
+						for (auto& wall : map_->GetWallCollider()) {
+							box2->Collision(*wall);
 						}
+
+
+						for (auto& box3 : boxes_) {
+							if (!box3->GetIsDead()) {
+								if (box3->GetMaagementNum() != box2->GetMaagementNum()) {
+									box3->Collision(*box2->GetCollider());
+
+									//押し出しによって壁に埋まったら押し出す
+									for (auto& wall : map_->GetWallCollider()) {
+										box3->Collision(*wall);
+									}
+
+									//押し出された箱２に押し戻された処理
+									box2->Collision(*box3->GetCollider());
+								}
+							}
+						}
+
+
+						//押し出された箱２に押し戻された処理
+						box->Collision(*box2->GetCollider());
 					}
-
-
-					//押し出された箱２に押し戻された処理
-					box->Collision(*box2->GetCollider());
 				}
 			}
 
@@ -374,29 +397,14 @@ void GameScene::AllCollision() {
 #pragma region ボックスの状態変化
 	//
 	for (auto& box : boxes_) {
-
-		bool isBoxHit = false;
-		for (auto& wall : map_->GetWallCollider()) {
-			//ボックスの下にあるコライダーが浮いているか否か
-			if (box->CollisionUnderCollider(*wall)) {
-
-				if (!isBoxHit) {
-					if (box->IsSetPerfect(*wall)) {
-						//状態を変更
-						box->SetState(kStay);
-						isBoxHit = true;
-					}
-				}
-			}
-		}
-
-		for (auto& box2 : boxes_) {
-			if (!box2->GetIsDead()) {
+		if (!box->GetIsDead()) {
+			bool isBoxHit = false;
+			for (auto& wall : map_->GetWallCollider()) {
 				//ボックスの下にあるコライダーが浮いているか否か
-				if (box->CollisionUnderCollider(*box2->GetCollider())) {
+				if (box->CollisionUnderCollider(*wall)) {
 
 					if (!isBoxHit) {
-						if (box->IsSetPerfect(*box2->GetCollider())) {
+						if (box->IsSetPerfect(*wall)) {
 							//状態を変更
 							box->SetState(kStay);
 							isBoxHit = true;
@@ -404,14 +412,29 @@ void GameScene::AllCollision() {
 					}
 				}
 			}
+
+			for (auto& box2 : boxes_) {
+				if (!box2->GetIsDead()) {
+					//ボックスの下にあるコライダーが浮いているか否か
+					if (box->CollisionUnderCollider(*box2->GetCollider())) {
+
+						if (!isBoxHit) {
+							if (box->IsSetPerfect(*box2->GetCollider())) {
+								//状態を変更
+								box->SetState(kStay);
+								isBoxHit = true;
+							}
+						}
+					}
+				}
+			}
+
+			//当たっていなかったので変更
+			if (!isBoxHit) {
+				box->SetState(kFall);
+			}
+
 		}
-
-		//当たっていなかったので変更
-		if (!isBoxHit) {
-			box->SetState(kFall);
-		}
-
-
 	}
 #pragma endregion
 
@@ -441,7 +464,9 @@ void GameScene::AllCollisionPrePosUpdate()
 	}
 	player_->collider_.prePosUpdate();
 	for (auto& box : boxes_) {
-		box->GetCollider()->prePosUpdate();
+		if(box->GetIsDead() ){
+			box->GetCollider()->prePosUpdate();
+		}
 	}
 
 }
@@ -451,12 +476,14 @@ void GameScene::CheckBoxDead() {
 	float deadLine = 50.0f;
 
 	//死んだ数チェック
-	int deadNum_ = 0;
+	int alliveNum_ = 0;
 
 	for (auto& box : boxes_) {
 		if (box->GetIsDead()) {
-			deadNum_++;
+			
 		}else{
+			alliveNum_++;
+
 			Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
 			if (pos.y <= -deadLine) {
 				//死亡判定渡し
@@ -466,7 +493,7 @@ void GameScene::CheckBoxDead() {
 	}
 
 	//すべて死んでいる場合
-	if (deadNum_ == boxes_.size()) {
+	if (alliveNum_ == 0) {
 		isHitClearBox_ = true;
 	}
 }
