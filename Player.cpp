@@ -41,6 +41,7 @@ void Player::StageInitialize(const WorldTransform& pWorld)
 	rectangleState_ = RectangleFacing::kPortrait;
 	isDead_ = false;
 	isJump = false;
+	rectangleState_ = RectangleFacing::kPortrait;
 }
 
 void Player::Update() {
