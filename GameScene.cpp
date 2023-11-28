@@ -122,8 +122,16 @@ void GameScene::TitleInitialize() {
 }
 void GameScene::TitleUpdate() {
 
+
+	//シーン移動
 	if (input_->TriggerKey(DIK_P)) {
 		sceneRequest_ = Scene::InGame;
+		mapPassNum_ = 0;
+	}
+
+	//ゲームループを抜ける
+	if (input_->TriggerKey(DIK_ESCAPE)) {
+		
 	}
 
 }
@@ -444,6 +452,10 @@ void GameScene::InGameSceneChange() {
 			sceneRequest_ = Scene::Clear;
 		}
 	}
+
+	if (input_->TriggerKey(DIK_ESCAPE)) {
+		sceneRequest_ = Scene::Title;
+	}
 }
 
 void GameScene::ClearInitialize() {
@@ -452,6 +464,11 @@ void GameScene::ClearInitialize() {
 
 void GameScene::ClearUpdate() {
 
+
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		sceneRequest_ = Scene::Title;
+	}
 }
 
 void GameScene::ModelDraw() {
