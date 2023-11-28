@@ -38,6 +38,7 @@ void Player::StageInitialize(const WorldTransform& pWorld)
 	worldTransform_ = pWorld;
 	worldTransform_.scale_ = portraitScale;
 	worldTransform_.UpdateMatrix();
+	rectangleState_ = RectangleFacing::kPortrait;
 	isDead_ = false;
 	isJump = false;
 }

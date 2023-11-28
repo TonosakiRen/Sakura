@@ -104,7 +104,7 @@ Map::Map()
 	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
 }
 
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num) {
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int maxMapNum,int num=0) {
 
 	input_ = Input::GetInstance();
 
@@ -113,8 +113,12 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	particleBox_->Initialize();
 	mapPassNumber_ = num;
 
+	for (int i = 0; i < maxMapNum; i++) {
+		allMapData_.push_back(LoadMapData(map1Pass[i]));
+	}
+
 	//マップデータを読み込み
-	mapData_ = LoadMapData(map1Pass[num]);
+	mapData_ = allMapData_[num];
 
 	MapPositioningInitialize();
 
@@ -174,7 +178,9 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 void Map::StageInitialize(int num)
 {
-	mapData_ = LoadMapData(map1Pass[num]);
+	//マップデータを読み込み
+	mapData_ = allMapData_[num];
+
 	worldTransform_ = iniData_;
 	MapPositioningInitialize();
 	state_ = State::kNormal;

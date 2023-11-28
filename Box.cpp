@@ -9,6 +9,8 @@ void Box::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	//worldとか初期化
 	GameObject::Initialize(name, viewProjection, directionalLight);
 	
+
+
 	//設定したワールド渡し
 	worldTransform_ = world;
 

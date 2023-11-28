@@ -32,7 +32,7 @@ public:
 	Map();
 
 	//
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, int maxMapNum, int num);
 
 	void StageInitialize(int num);
 
@@ -51,6 +51,8 @@ public:
 
 	// マップの壁
 	std::vector<std::unique_ptr<WorldTransform>>& GetSpikeWorld() { return WallWorlds_; }
+
+
 
 	// マップ中心座標取得
 	const Vector3 GetMapCenter() {
@@ -166,6 +168,8 @@ private:
 
 	//マップデータ格納場所
 	std::vector<std::vector<int>> mapData_;
+
+	std::vector< std::vector<std::vector<int>>>allMapData_;
 
 	// マップチップごとのワールド
 	std::vector<std::unique_ptr<WorldTransform>> WallWorlds_;
