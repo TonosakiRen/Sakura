@@ -22,7 +22,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	win->CreateGameWindow();
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
-	dxCommon->Initialize();
+	dxCommon->Initialize(WinApp::kWindowWidth,WinApp::kWindowHeight);
 	// 汎用機能
 #pragma region 汎用機能初期化
 	input = Input::GetInstance();
@@ -88,6 +88,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		imguiManager->Draw();
 
 		dxCommon->SwapChainPostDraw();
+
+		if (GameScene::shutDown == true) {
+			break;
+		}
+
 	}
 
 

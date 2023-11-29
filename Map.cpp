@@ -120,7 +120,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	mapData_ = allMapData_[num];
 
 	playerWorld_.Initialize();
-
+	goalW_.Initialize();
 
 	MapPositioningInitialize();
 
@@ -323,6 +323,7 @@ void Map::MapPositioningInitialize() {
 	WallWorlds_.clear();
 	colliders_.clear();
 	boxWorlds_.clear();
+	stageSelctWorlds_.clear();
 
 	//Collider初期化のための変数
 	uint32_t colliderAcceces = 0;
@@ -409,6 +410,26 @@ void Map::MapPositioningInitialize() {
 				goalW_.translation_ = subPos;
 
 				goalW_.UpdateMatrix();
+			}
+			else if (mapDataX == StageSelectBox) {
+				std::unique_ptr<WorldTransform>ssWorld;
+				ssWorld = std::make_unique<WorldTransform>();
+
+				ssWorld->Initialize();
+				ssWorld->translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
+
+				// 親子関係設定
+				ssWorld->SetParent(&worldTransform_);
+
+				// ベクトル差分を代入
+				Vector3 subPos = Subtract(ssWorld->translation_, worldTransform_.translation_);
+
+				// 座標代入
+				ssWorld->translation_ = subPos;
+
+				ssWorld->UpdateMatrix();
+
+				stageSelctWorlds_.emplace_back(std::move(ssWorld));
 			}
 
 			containerNumberX++;
@@ -684,7 +705,7 @@ void Map::InitializeStateLeftRotation() {
 
 void Map::UpdateStateNormal() {
 
-	if (input_->PushKey(DIK_E) && player_->GetIsJump() == false) {
+	if ((input_->PushKey(DIK_E) || input_->TriggerButton(XINPUT_GAMEPAD_RIGHT_SHOULDER)) && player_->GetIsJump() == false) {
 		stateRequest_ = State::kRightRotation;
 		
 	}

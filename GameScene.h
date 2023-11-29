@@ -17,10 +17,15 @@
 
 #include "DeadLineParticle.h"
 
+#include"SelectStage.h"
+
 #include <optional>
 class GameScene {
 
 public:
+
+	static bool shutDown;
+
 	GameScene();
 	~GameScene();
 
@@ -31,6 +36,7 @@ public:
 	void ParticleBoxDraw();
 	void PreSpriteDraw();
 	void PostSpriteDraw();
+	void PostUIDraw();
 	void Draw(CommandContext& commandContext);
 	void UIDraw(CommandContext& commandContext);
 
@@ -90,7 +96,10 @@ private://メンバ関数
 	std::vector<std::unique_ptr<Box>>boxes_;
 
 	//クリアボックス
-	std::unique_ptr<ClearBox>clearBox_;
+	std::unique_ptr<ClearBox>clearBox_=nullptr;
+
+	//シーンセレクトボックス
+	std::vector<std::unique_ptr<SelectStage>>selectStage_;
 
 	std::unique_ptr<DeadLineParticle> deadParticle_;
 
@@ -148,5 +157,21 @@ private://メンバ関数
 	std::unique_ptr<GameObject> title_;
 
 	Vector3 aa;
+
+
+	bool isStageSelect_ = false;
+
+	std::optional<int> nextmapPass_ = std::nullopt;
+	std::unique_ptr<Sprite> halfBlack_;
+
+	bool isPause_ = false;
+	int pauseSelectNum_ = 0;
+
+	bool isBackTitle = false;
+
+	std::unique_ptr<Sprite> gameCloseSprite_;
+	std::unique_ptr<Sprite> stageSelectSprite_;
+	std::unique_ptr<Sprite> titleSelectSprite_;
+	std::unique_ptr<Sprite> selectSprite_;
 };
 
