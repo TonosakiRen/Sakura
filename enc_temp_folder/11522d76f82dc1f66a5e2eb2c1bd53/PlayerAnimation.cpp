@@ -62,6 +62,8 @@ void PlayerAnimation::Update()
 
 		}
 	}
+	ImGui::DragFloat3("pl", &sigaWorldTransform_[0].translation_.x,0.01f);
+	ImGui::DragFloat3("pr", &sigaWorldTransform_[0].rotation_.x, 0.01f);
 
 	pos = MakeTranslation(player_->GetWorldTransform()->matWorld_);
 
