@@ -1034,6 +1034,9 @@ void GameScene::PostSpriteDraw() {
 		switch (inGameScene)
 		{
 		case GameScene::Title:
+			if (!isTitleCameraMove) {
+				pushASprite_->Draw();
+			}
 			break;
 		case GameScene::InGame:
 			map_->DrawSprite();
