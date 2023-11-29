@@ -274,7 +274,12 @@ void GameScene::StageInitialize(int stageNum)
 	
 	isHitClearBox_ = false;
 
-	
+	if (mapPassNum_ != 0) {
+		isStageSelect_ = false;
+	}
+	else {
+		isStageSelect_ = true;
+	}
 
 }
 
@@ -297,7 +302,7 @@ void GameScene::InGameUpdate() {
 		if (input_->TriggerKey(DIK_UP) || input_->UpLStick()) {
 			pauseSelectNum_--;
 		}
-		pauseSelectNum_ = clamp(pauseSelectNum_, 0, 2);
+		pauseSelectNum_ = (int)clamp((float)pauseSelectNum_, 0, 2);
 
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
 			if (pauseSelectNum_ == 0) {
@@ -614,17 +619,11 @@ void GameScene::AllCollision() {
 		}
 #pragma endregion
 
-
-
+#pragma region シーン切り替え関係
 		//ボックスがすべてない状態の時
 		if (isHitClearBox_) {
-			//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
-			if (clearBox_->IsHitCollision(player_->collider_) && player_->GetRectangle() == clearBox_->GetRectangle()) {
-				//シーン変更フラグをON
-				player_->isGoal_ = true;
-			}
 
-
+			//ステージセレクト時のコリジョン
 			if (isStageSelect_) {
 				for (auto& stage : selectStage_) {
 					//ゴールにあったらシーン転換
@@ -638,6 +637,13 @@ void GameScene::AllCollision() {
 					}
 				}
 			}
+			else {
+				//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
+				if (clearBox_->IsHitCollision(player_->collider_) && player_->GetRectangle() == clearBox_->GetRectangle()) {
+					//シーン変更フラグをON
+					player_->isGoal_ = true;
+				}
+			}
 
 		}
 
@@ -647,6 +653,7 @@ void GameScene::AllCollision() {
 			StageInitialize(mapPassNum_ - 1);
 		}
 
+#pragma endregion	
 	}
 }
 
