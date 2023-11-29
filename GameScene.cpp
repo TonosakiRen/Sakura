@@ -190,6 +190,8 @@ void GameScene::Update() {
 			break;
 		case GameScene::InGame:
 			viewProjection_.target_.x = 0.0f;
+			break;
+
 		default:
 			break;
 		}
