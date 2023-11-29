@@ -45,7 +45,7 @@ void GameScene::Initialize() {
 
 	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_, maxMapNum_,mapPassNum_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_,mapPassNum_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
@@ -564,7 +564,7 @@ void GameScene::InGameSceneChange() {
 
 void GameScene::NextScene() {
 	if (isStageChange_) {
-		if (mapPassNum_ < maxMapNum_) {
+		if (mapPassNum_ < Map::maxMapNum_) {
 			StageInitialize(mapPassNum_);
 			isStageChange_ = false;
 			isHitClearBox_ = false;

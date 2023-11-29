@@ -17,8 +17,7 @@ std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 	//ファイルの読み込み
 	FILE* fp;
 	int err = fopen_s(&fp, fileName, "r");
-
-
+	
 	//読み込めなかったら返す
 	if (err != 0) {
 
@@ -104,7 +103,7 @@ Map::Map()
 	particleBox_ = std::make_unique<ParticleBox>(kBoxNum);
 }
 
-void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int maxMapNum,int num=0) {
+void Map::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,int num=0) {
 
 	input_ = Input::GetInstance();
 
@@ -113,7 +112,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	particleBox_->Initialize();
 	mapPassNumber_ = num;
 
-	for (int i = 0; i < maxMapNum; i++) {
+	for (int i = 0; i < maxMapNum_; i++) {
 		allMapData_.push_back(LoadMapData(map1Pass[i]));
 	}
 
@@ -125,56 +124,7 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 	MapPositioningInitialize();
 
-	/*
-	// マップタイルによる座標設定
-	for (int tileY = 0; tileY < mapTileNumY_; tileY++) {
-		for (int tileX = 0; tileX < mapTileNumX_; tileX++) {
-			if (mapTile_[tileY][tileX] == Block) {
-				std::unique_ptr<WorldTransform> world;
-				world = std::make_unique<WorldTransform>();
-				world->Initialize();
-				world->translation_ = { tileWide_ * tileX, -tileWide_ * tileY, 0 };
-
-				// 親子関係設定
-				world->SetParent(&worldTransform_);
-
-				// ベクトル差分を代入
-				Vector3 subPos = Subtract(world->translation_, worldTransform_.translation_);
-
-				// 座標代入
-				world->translation_ = subPos;
-
-				world->UpdateMatrix();
-
-				//Collider
-				std::unique_ptr<Collider> collider;
-				collider = std::make_unique<Collider>();
-
-				WallWorlds_.emplace_back(std::move(world));
-				collider->Initialize(WallWorlds_[colliderAcceces].get(), "blockTile", viewProjection_, directionalLight_);
-				colliders_.push_back(std::move(collider));
-				colliderAcceces++;
-			}
-
-			if (mapTile_[tileY][tileX] == Player) {
-
-				playerWorld_.Initialize();
-
-				playerWorld_.translation_ = { tileWide_ * tileX, -tileWide_ * tileY, 0 };
-				playerWorld_.SetParent(&worldTransform_);
-
-				playerWorld_.UpdateMatrix();
-				// ベクトル差分を代入
-				Vector3 subPos = Subtract(playerWorld_.translation_, worldTransform_.translation_);
-
-				// 座標代入
-				playerWorld_.translation_ = subPos;
-
-				playerWorld_.UpdateMatrix();
-			}
-		}
-	}
-	*/
+	
 
 	iniData_ = worldTransform_;
 }
