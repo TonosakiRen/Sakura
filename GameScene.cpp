@@ -63,6 +63,7 @@ void GameScene::Initialize() {
 		box->SetIsDead(true);
 		boxes_.emplace_back(std::move(box));
 	}
+	isStageSelect_ = true;
 
 	spawnBoxNum = 0;
 	//ボックスの配置
@@ -74,6 +75,25 @@ void GameScene::Initialize() {
 				break;
 			}
 		}
+	}
+
+	int SelectBoxCreatingCount = 0;
+	int flystageNum = Map::maxMapNum_-1;
+	for (auto& stageW : map_->GetStageSelectBox()) {
+		std::unique_ptr<SelectStage>ssnew = std::make_unique<SelectStage>();
+
+		if (SelectBoxCreatingCount <= 5) {
+			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum);
+			flystageNum--;
+		}
+		else {
+			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum-3);
+			flystageNum++;
+		}
+
+		selectStage_.emplace_back(std::move(ssnew));
+
+		SelectBoxCreatingCount++;
 	}
 
 	mapPassNum_++;
@@ -242,9 +262,12 @@ void GameScene::InGameUpdate() {
 			map_->UpdateMatrix();
 			player_->UpdateMatiries();
 
-			if (clearBox_->GetWorldTransform()) {
+			if (!isStageSelect_) {
 				clearBox_->UpdateMatirx();
 			}
+
+			
+
 			for (auto& box : boxes_) {
 				if (!box->GetIsDead()) {
 					box->UpdateMatrix();
@@ -311,7 +334,12 @@ void GameScene::InGameUpdate() {
 		break;
 	}
 
-
+	//セレクトシーンだけ更新
+	if (isStageSelect_) {
+		for (auto& stagesele : selectStage_) {
+			stagesele->Update();
+		}
+	}
 }
 
 
@@ -509,6 +537,22 @@ void GameScene::AllCollision() {
 			//シーン変更フラグをON
 			player_->isGoal_ = true;
 		}
+
+
+		if (isStageSelect_) {
+			for (auto& stage : selectStage_) {
+				//ゴールにあったらシーン転換
+				if (stage->IsHitCollision(player_->collider_)) {
+					//シーン変更フラグをON
+					player_->isGoal_=true;
+					nextmapPass_ = stage->GetFlyingStageNum();
+					player_->goalPos_ = stage->GetWorldTransform()->translation_;
+
+					break;
+				}
+			}
+		}
+
 	}
 
 	//プレイヤーが死んだら初期化
@@ -582,10 +626,22 @@ void GameScene::InGameSceneChange() {
 
 void GameScene::NextScene() {
 	if (isStageChange_) {
+		if (nextmapPass_) {
+			mapPassNum_ = nextmapPass_.value();
+			nextmapPass_ = std::nullopt;
+		}
+
 		if (mapPassNum_ < Map::maxMapNum_) {
 			StageInitialize(mapPassNum_);
 			isStageChange_ = false;
 			isHitClearBox_ = false;
+
+			if (mapPassNum_ != 0) {
+				isStageSelect_ = false;
+			}
+			else {
+				isStageSelect_ = true;
+			}
 		}
 		else {
 			//sceneRequest_ = Scene::Clear;
@@ -618,12 +674,19 @@ void GameScene::ModelDraw() {
 		break;
 	case GameScene::Scene::InGame:
 		title_->Draw();
-		if (mapPassNum_-1!=0) {
+		if (!isStageSelect_) {
 			clearBox_->Draw();
 		}
 		player_->Draw();
 		for (auto& box : boxes_) {
 			box->Draw();
+		}
+
+		//セレクトシーンだけ更新
+		if (isStageSelect_) {
+			for (auto& stagesele : selectStage_) {
+				stagesele->Draw();
+			}
 		}
 		break;
 	default:

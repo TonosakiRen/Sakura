@@ -138,6 +138,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RootSignature.cpp" />
+    <ClCompile Include="SelectStage.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -193,6 +194,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Player.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RootSignature.h" />
+    <ClInclude Include="SelectStage.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="States.h" />
     <ClInclude Include="SwapChain.h" />
