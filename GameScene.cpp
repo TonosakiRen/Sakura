@@ -236,7 +236,10 @@ void GameScene::InGameUpdate() {
 			}
 			map_->UpdateMatrix();
 			player_->UpdateMatiries();
-			clearBox_->UpdateMatirx();
+
+			if (clearBox_->GetWorldTransform()) {
+				clearBox_->UpdateMatirx();
+			}
 			for (auto& box : boxes_) {
 				if (!box->GetIsDead()) {
 					box->UpdateMatrix();
@@ -600,7 +603,9 @@ void GameScene::ModelDraw() {
 		break;
 	case GameScene::Scene::InGame:
 		title_->Draw();
-		clearBox_->Draw();
+		if (mapPassNum_-1!=0) {
+			clearBox_->Draw();
+		}
 		player_->Draw();
 		for (auto& box : boxes_) {
 			box->Draw();
