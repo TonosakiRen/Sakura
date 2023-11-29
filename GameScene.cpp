@@ -725,7 +725,7 @@ void GameScene::AllCollision() {
 
 								break;
 							}
-
+							
 						}
 					}
 				}
