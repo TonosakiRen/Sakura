@@ -274,11 +274,11 @@ void GameScene::StageInitialize(int stageNum)
 	
 	isHitClearBox_ = false;
 
-	if (mapPassNum_ != 0) {
-		isStageSelect_ = false;
+	if (stageNum == 0) {
+		isStageSelect_ = true;
 	}
 	else {
-		isStageSelect_ = true;
+		isStageSelect_ = false;
 	}
 
 }
@@ -622,7 +622,6 @@ void GameScene::AllCollision() {
 #pragma region シーン切り替え関係
 		//ボックスがすべてない状態の時
 		if (isHitClearBox_) {
-
 			//ステージセレクト時のコリジョン
 			if (isStageSelect_) {
 				for (auto& stage : selectStage_) {
@@ -723,11 +722,11 @@ void GameScene::NextScene() {
 			isStageChange_ = false;
 			isHitClearBox_ = false;
 
-			if (mapPassNum_ != 0) {
-				isStageSelect_ = false;
+			if (mapPassNum_ == 0) {
+				isStageSelect_ = true;
 			}
 			else {
-				isStageSelect_ = true;
+				isStageSelect_ = false;
 			}
 		}
 		else {
