@@ -189,6 +189,7 @@ private://メンバ関数
 
 	std::unique_ptr<Sprite> pauseSprite_;
 
+	std::unique_ptr<Sprite> oneSprite_;
 	std::unique_ptr<Sprite> twoSprite_;
 	std::unique_ptr<Sprite> threeSprite_;
 	std::unique_ptr<Sprite> fourSprite_;

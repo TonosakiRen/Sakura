@@ -152,28 +152,65 @@ void GameScene::Initialize() {
 	audio_->SetValume(bgmPlayHandle, 0.1f);
 
 	uint32_t numHandle = TextureManager::Load("1.png");
-	twoSprite_.reset(Sprite::Create(numHandle));
+	oneSprite_.reset(Sprite::Create(numHandle));
 	numHandle = TextureManager::Load("2.png");
+	twoSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("3.png");
 	threeSprite_.reset(Sprite::Create(numHandle));
-	 numHandle = TextureManager::Load("3.png");
+	numHandle = TextureManager::Load("4.png");
 	fourSprite_.reset(Sprite::Create(numHandle));
-	 numHandle = TextureManager::Load("4.png");
+	numHandle = TextureManager::Load("5.png");
 	fiveSprite_.reset(Sprite::Create(numHandle));
-	 numHandle = TextureManager::Load("5.png");
-	sixSprite_.reset(Sprite::Create(numHandle));
 	 numHandle = TextureManager::Load("6.png");
-	sevenSprite_.reset(Sprite::Create(numHandle));
+	sixSprite_.reset(Sprite::Create(numHandle));
 	 numHandle = TextureManager::Load("7.png");
-	eightSprite_.reset(Sprite::Create(numHandle));
+	sevenSprite_.reset(Sprite::Create(numHandle));
 	 numHandle = TextureManager::Load("8.png");
+	eightSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("9.png");
 	nineSprite_.reset(Sprite::Create(numHandle));
 	 numHandle = TextureManager::Load("10.png");
 	tenSprite_.reset(Sprite::Create(numHandle));
+
+	
+	for (int i = 0; i < 10;i++) {
+		if (i == 0) {
+			oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 1) {
+			twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 2) {
+			threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 3) {
+			fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 4) {
+			fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 5) {
+			sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 6) {
+			sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 7) {
+			eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 8) {
+			nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 9) {
+			tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		
+	}
+	
 }
 
 void GameScene::Update() {
 
-	ImGui::DragFloat3("v",&pauseSprite_->position_.x);
 
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		shutDown = true;
@@ -944,10 +981,56 @@ void GameScene::AllCollision() {
 			map_->DrawSprite();
 
 
-			if (mapPassNum_ == 1) {
+			if (isStageSelect_ == true) {
 				rotateSprite_->Draw();
 				moveSprite_->Draw();
 				jumpSprite_->Draw();
+
+				for (int i = 0; i < 10; i++) {
+					if (selectStage_[i]->GetFlyingStageNum() == 1) {
+						oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 2) {
+						twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 3) {
+						threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 4) {
+						fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 5) {
+						fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 6) {
+						sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 7) {
+						sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 8) {
+						eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 9) {
+						nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 10) {
+						tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+
+				}
+
+				oneSprite_->Draw();
+				twoSprite_->Draw();
+				threeSprite_->Draw();
+				fourSprite_->Draw();
+				threeSprite_->Draw();
+				fiveSprite_->Draw();
+				sixSprite_->Draw();
+				sevenSprite_->Draw();
+				eightSprite_->Draw();
+				nineSprite_->Draw();
+				tenSprite_->Draw();
 			}
 			if (mapPassNum_ == 2) {
 				dropSprite_->Draw();
