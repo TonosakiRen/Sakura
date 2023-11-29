@@ -247,7 +247,7 @@ void GameScene::Update() {
 			titleAnimeT_ -= (float)std::numbers::pi * 2.0f;
 		}
 
-		float a = 1 * std::sinf(titleAnimeT_);
+		float a = 0.2f * std::sinf(titleAnimeT_);
 
 		ChangeY_ = title_->GetWorldTransform()->translation_.z +a ;
 
