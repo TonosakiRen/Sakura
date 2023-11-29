@@ -2,6 +2,7 @@
 #include "externals/imgui/imgui.h"
 #include <cassert>
 #include "Easing.h"
+#include "Audio.h"
 
 using namespace DirectX;
 
@@ -27,6 +28,7 @@ GameScene::~GameScene() {};
 void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	viewProjection_.Initialize();
 	viewProjection_.translation_.y = 7.0f;
@@ -289,9 +291,15 @@ void GameScene::StageInitialize(int stageNum)
 void GameScene::InGameUpdate() {
 
 	if ((input_->TriggerKey(DIK_P)|| input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == false) {
+		size_t handle = audio_->SoundLoadWave("Select.wav");
+		size_t selectHandle = audio_->SoundPlayWave(handle);
+		audio_->SetValume(selectHandle, 0.1f);
 		isPause_ = true;
 	}else
 	if ((input_->TriggerKey(DIK_P) || input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == true) {
+		size_t handle = audio_->SoundLoadWave("Select.wav");
+		size_t selectHandle = audio_->SoundPlayWave(handle);
+		audio_->SetValume(selectHandle, 0.1f);
 		isPause_ = false;
 	}
 	ImGui::Text("%d", pauseSelectNum_);
@@ -300,13 +308,22 @@ void GameScene::InGameUpdate() {
 
 		if (input_->TriggerKey(DIK_DOWN) || input_->DownLStick()) {
 			pauseSelectNum_++;
+			size_t handle = audio_->SoundLoadWave("Select.wav");
+			size_t selectHandle = audio_->SoundPlayWave(handle);
+			audio_->SetValume(handle, 0.1f);
 		}
 		if (input_->TriggerKey(DIK_UP) || input_->UpLStick()) {
 			pauseSelectNum_--;
+			size_t handle = audio_->SoundLoadWave("Select.wav");
+			size_t selectHandle = audio_->SoundPlayWave(handle);
+			audio_->SetValume(handle, 0.1f);
 		}
 		pauseSelectNum_ = (int)clamp((float)pauseSelectNum_, 0, 2);
 
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
+			size_t handle = audio_->SoundLoadWave("Select.wav");
+			size_t selectHandle = audio_->SoundPlayWave(handle);
+			audio_->SetValume(handle, 0.1f);
 			if (pauseSelectNum_ == 0) {
 				if (inGameScene == InGame) {
 					isBackTitle = true;
@@ -563,6 +580,11 @@ void GameScene::AllCollision() {
 								isActivate_ = true;
 								player_->SetIsChangeRectAnimation(true);
 								player_->SetBoxState(RectangleFacing::kLandscape);
+
+								size_t handle = audio_->SoundLoadWave("Crush.wav");
+								size_t crushHandle = audio_->SoundPlayWave(handle);
+								audio_->SetValume(crushHandle, 0.1f);
+
 								break;
 							}
 						}

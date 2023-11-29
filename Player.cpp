@@ -2,10 +2,12 @@
 #include "ImGuiManager.h"
 #include "Map.h"
 #include "Easing.h"
+#include "Audio.h"
 
 void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,const WorldTransform& pWorld) {
 	//初期化
 	GameObject::Initialize(name, viewProjection, directionalLight);
+	audio_ = Audio::GetInstance();
 	input_ = Input::GetInstance();
 	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 	underCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
@@ -99,9 +101,22 @@ void Player::Update() {
 #pragma region キーボード入力
 		//入力による移動
 		if (input_->PushKey(DIK_A) || input_->GetLStick().x < -10000) {
+			if (isMoveSound_ == true) {
+				isMoveSound_ = false;
+				size_t handle = audio_->SoundLoadWave("purunn.wav");
+				size_t purunnHandle = audio_->SoundPlayWave(handle);
+				audio_->SetValume(purunnHandle, 0.1f);
+			}
+
 			move_.x -= spd_;
 		}
 		if (input_->PushKey(DIK_D) || input_->GetLStick().x > 10000) {
+			if (isMoveSound_ == false) {
+				isMoveSound_ = true;
+				size_t handle = audio_->SoundLoadWave("purunn.wav");
+				size_t purunnHandle = audio_->SoundPlayWave(handle);
+				audio_->SetValume(purunnHandle, 0.1f);
+			}
 			move_.x += spd_;
 		}
 
@@ -116,6 +131,17 @@ void Player::Update() {
 
 		if ((input_->TriggerKey(DIK_SPACE)|| input_->TriggerButton(XINPUT_GAMEPAD_A))&& isJump == false) {
 			stateRequest_ = PlayerState::kJump;
+			if (rectangleState_ == RectangleFacing::kPortrait) {
+				size_t jumpHandle = audio_->SoundLoadWave("Jump_Smart.wav");
+				size_t jumpPlayHandle = audio_->SoundPlayWave(jumpHandle);
+				audio_->SetValume(jumpPlayHandle, 0.1f);
+			}
+			else {
+				size_t jumpHandle = audio_->SoundLoadWave("Jump_Fat.wav");
+				size_t jumpPlayHandle = audio_->SoundPlayWave(jumpHandle);
+				audio_->SetValume(jumpPlayHandle, 0.1f);
+			}
+	
 			isJump = true;
 		}
 #pragma endregion

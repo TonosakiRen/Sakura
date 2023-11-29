@@ -31,5 +31,6 @@ public:
 	WorldTransform sigaWorldTransform_[Player::slimeNum];
 
 	RectangleFacing savePlayerRectangle = RectangleFacing::kPortrait;
+
 };
 

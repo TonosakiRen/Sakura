@@ -8,6 +8,7 @@
 #include "ParticleBox.h"
 #include "PostEffect.h"
 #include "GaussianBlur.h"
+#include "Audio.h"
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	WinApp* win = nullptr;
@@ -16,6 +17,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	GameScene* gameScene = nullptr;
 	Input* input = nullptr;
 	ImGuiManager* imguiManager;
+	Audio* audio;
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
@@ -30,6 +32,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win);
+
+	audio = Audio::GetInstance();
+	audio->Initialize();
+
 	// テクスチャマネージャの初期化
 	TextureManager::GetInstance()->Initialize();
 	TextureManager::Load("white1x1.png");
@@ -67,6 +73,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 入力関連の毎フレーム処理
 		input->Update();
+
+		//音フレーム処理
+		audio->Update();
 
 		// ゲームシーンの毎フレーム処理
 		gameScene->Update();
