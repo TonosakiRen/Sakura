@@ -129,7 +129,7 @@ bool ClearBox::IsHitCollision(Collider& otherCollider) {
 	return false;
 }
 
-void ClearBox::Draw() {
-	GameObject::Draw();
+void ClearBox::Draw(Vector4 color) {
+	GameObject::Draw(color);
 	collider_.Draw();
 }

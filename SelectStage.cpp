@@ -18,8 +18,8 @@ void SelectStage::Update() {
 	
 }
 
-void SelectStage::Draw() {
-	GameObject::Draw();
+void SelectStage::Draw(const Vector4& color) {
+	GameObject::Draw(color);
 	collider_.Draw();
 }
 
