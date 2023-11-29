@@ -119,8 +119,7 @@ private://メンバ関数
 
 	uint32_t bikkuri_;
 
-	const int maxMapNum_ = 10;
-
+	
 	enum class SceneAnimation {
 		kStart,
 		kInGame,

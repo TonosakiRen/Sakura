@@ -32,7 +32,7 @@ public:
 	Map();
 
 	//
-	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, int maxMapNum, int num);
+	void Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight, int num);
 
 	void StageInitialize(int num);
 
@@ -156,14 +156,17 @@ public:
 		Box,	//動く箱
 		Goal	//ゴール
 	};
+
+	static const int maxMapNum_ = 11;
+
 private:
 
 	int mapPassNumber_;
 
-
 	
 	//マップのデータ情報格納場所
-	const char* map1Pass[10] = {
+	const char* map1Pass[maxMapNum_] = {
+		"Resources/mapChips/STSelect.txt",
 		"Resources/mapChips/Stage1.txt",
 		"Resources/mapChips/Stage2.txt",
 		"Resources/mapChips/Stage3.txt",
@@ -174,7 +177,6 @@ private:
 		"Resources/mapChips/Stage8.txt",
 		"Resources/mapChips/Stage9.txt",
 		"Resources/mapChips/Stage10.txt",
-
 	};
 
 	//マップデータ格納場所
