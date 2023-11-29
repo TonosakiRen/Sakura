@@ -10,6 +10,8 @@
 #include<cassert>
 #include "Player.h"
 
+bool Map::isRotationInput_ = true;
+
 std::vector<std::vector<int>> LoadMapData(const char* fileName) {
 	//返すデータの作成
 	std::vector<std::vector<int>>mapData;
@@ -145,18 +147,7 @@ void Map::StageInitialize(int num)
 void Map::Update() {
 	ImGuiDraw();
 
-	if (preIsRotating == !isRotating) {
-		isRotationInput_ = false;
-		rotateCooltime_ = 0;
-	}
 
-	if (++rotateCooltime_ >= maxRotateCooltime_) {
-		isRotationInput_ = true;
-	}
-
-	if (preIsRotating == isRotating) {
-		rotateComplete = false;
-	}
 	//編集モードがoffの時処理
 	if (!isEditOn_) {
 		// 状態リクエスト処理
@@ -169,7 +160,26 @@ void Map::Update() {
 		//MapEditor();
 	}
 
-	
+
+	if (preIsRotating == !isRotating) {
+		isRotationInput_ = false;
+		rotateCooltime_ = 0;
+	}
+
+	if (!isRotationInput_) {
+		if (++rotateCooltime_ >= maxRotateCooltime_) {
+			isRotationInput_ = true;
+		}
+	}
+
+	if (preIsRotating == isRotating) {
+		rotateComplete = false;
+		//isRotationInput_ = false;
+	}
+
+	if (isRotating) {
+		isRotationInput_ = false;
+	}
 
 	UpdateMatrix();
 }
