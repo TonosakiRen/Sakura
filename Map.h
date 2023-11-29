@@ -263,6 +263,15 @@ private:
 	int rotateCooltime_ = 0;
 #pragma endregion
 
+#pragma region 色
+	
+	Vector4 blockColor = { 1.0f,1.0f,1.0f,1.0f };
+
+	Vector4 blockNormalColor = { 0.0f,0.9f,0.0f,1.0f };
+	Vector4 blockRotateColor = { 0.0f,1.0f,0.0f,1.0f };
+
+#pragma endregion
+
 
 #pragma region Editor
 	bool isEditOn_ = false;
