@@ -55,6 +55,9 @@ private:
 	//横向きスケール
 	Vector3 landScapeScale = { 1.5f,0.8f,1.0f };
 
+	bool isRight = false;
+	bool isTop = false;
+
 
 	Collider collider_;
 

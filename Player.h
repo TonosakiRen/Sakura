@@ -130,10 +130,6 @@ public:
 		isDead_ = isdead;
 	}
 
-	void SetChangeRect(bool setChangeRect) {
-		isChangeRect_ = setChangeRect;
-	}
-
 	bool GetIsDead() {
 		return isDead_;
 	}
@@ -144,6 +140,10 @@ public:
 
 	void IncrementRotateNum() {
 		rotateNum_++;
+	}
+
+	void SetIsChangeRectAnimation(bool isChangeRectAnimation) {
+		isChangeAnimationRect_ = isChangeRectAnimation;
 	}
 
 public:
@@ -213,10 +213,21 @@ private:
 
 	bool isJump = false;
 
-	bool isChangeRect_ = false;
-
 
  public:
+
+	 bool isChangeAnimationRect_ = false;
+
+	 float changeRectT = 0.0f;
+
 	 //南海開店したか
 	 uint32_t rotateNum_ = 0;
+	 //ゴールの位置
+	 Vector3 goalPos_;
+
+	 bool isGoal_ = false;
+	 bool isFinishGoalAnimation_ = false;
+	 float goalT_ = 0.0f;
+
+	 bool isChangeScaled = false;
 };

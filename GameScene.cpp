@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 	playerAnimation_->SetPlayer(player_.get());
 
 	map_->SetPlayer(player_.get());
-
+	
 
 	for (int i = 0; i < map_->GetMaxTile(); i++) {
 		WorldTransform world;
@@ -83,7 +83,8 @@ void GameScene::Initialize() {
 
 
 	clearBox_ = std::make_unique<ClearBox>();
-	clearBox_->Initialize("clearBox", &viewProjection_, &directionalLight_, map_->GetClearW());
+	clearBox_->Initialize("gate", &viewProjection_, &directionalLight_, map_->GetClearW());
+	player_->goalPos_ = clearBox_->GetWorldTransform()->translation_;
 
 	bikkuri_ = TextureManager::Load("!.png");
 
@@ -191,6 +192,8 @@ void GameScene::StageInitialize(int stageNum)
 	map_->StageInitialize(stageNum);
 	player_->StageInitialize(map_->GetPlayerW());
 	clearBox_->StageInitialize(map_->GetClearW(), stageNum);
+	player_->goalPos_ = clearBox_->GetWorldTransform()->translation_;
+	playerAnimation_->Initialize();
 
 	for (auto& box : boxes_) {
 		box->SetIsDead(true);
@@ -218,6 +221,8 @@ void GameScene::StageInitialize(int stageNum)
 	}
 	
 	
+	isHitClearBox_ = false;
+
 }
 
 
@@ -244,26 +249,35 @@ void GameScene::InGameUpdate() {
 			}
 			break;
 		case GameScene::SceneAnimation::kInGame:
-			map_->Update();
-			map_->MapEditor(viewProjection_);
 
-			clearBox_->Update();
+			
+				map_->Update();
+				map_->MapEditor(viewProjection_);
 
-			player_->Update();
+				clearBox_->Update();
 
-		for (auto& box : boxes_) {
-			if (!box->GetIsDead()) {
-				box->Update();
-			}
-		}
+				player_->Update();
 
-			//マップが回転していないときのみコリジョン処理
-			if (!Map::isRotating) {
-				AllCollision();
-				AllCollisionPrePosUpdate();
-			}
+				for (auto& box : boxes_) {
+					if (!box->GetIsDead()) {
+						box->Update();
+					}
+				}
 
-			playerAnimation_->Update();
+				//マップが回転していないときのみコリジョン処理
+				if (!Map::isRotating && player_->isGoal_ == false) {
+					AllCollision();
+					AllCollisionPrePosUpdate();
+				}
+
+				if (player_->isFinishGoalAnimation_ == true) {
+					isStageChange_ = true;
+				}
+
+
+
+				playerAnimation_->Update();
+			
 
 			//ボックスの枠外落下処理
 			CheckBoxDead();
@@ -421,9 +435,10 @@ void GameScene::AllCollision() {
 
 
 							//状態変更
-							player_->SetBoxState(RectangleFacing::kLandscape);
+							//player_->SetBoxState(RectangleFacing::kLandscape);
 							isActivate_ = true;
-							player_->SetChangeRect(true);
+							player_->SetIsChangeRectAnimation(true);
+							player_->SetBoxState(RectangleFacing::kLandscape);
 							break;
 						}
 					}
@@ -489,7 +504,7 @@ void GameScene::AllCollision() {
 		//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
 		if (clearBox_->IsHitCollision(player_->collider_)&&player_->GetRectangle()==clearBox_->GetRectangle()) {
 			//シーン変更フラグをON
-			isStageChange_ = true;
+			player_->isGoal_ = true;
 		}
 	}
 
@@ -517,7 +532,7 @@ void GameScene::AllCollisionPrePosUpdate()
 
 void GameScene::CheckBoxDead() {
 	//仮で-50以下で消滅するように
-	float deadLine = 50.0f;
+	float deadLine = 35.0f;
 
 	//死んだ数チェック
 	int alliveNum_ = 0;

@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ImGuiManager.h"
 #include "Map.h"
+#include "Easing.h"
 
 void Player::Initialize(const std::string name, ViewProjection* viewProjection, DirectionalLight* directionalLight,const WorldTransform& pWorld) {
 	//初期化
@@ -12,6 +13,7 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 	upCollider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
 	animationTransform_.Initialize();
 	animationTransform_.SetParent(&worldTransform_);
+	animationTransform_.SetIsScaleParent(false);
 
 
 	for (int i = 0; i < slimeNum; i++) {
@@ -56,6 +58,9 @@ void Player::StageInitialize(const WorldTransform& pWorld)
 	isJump = false;
 	rectangleState_ = RectangleFacing::kPortrait;
 	rotateNum_ = 0;
+	isGoal_ = false;
+	isFinishGoalAnimation_ = false;
+	goalT_ = 0.0f;
 }
 
 void Player::Update() {
@@ -89,7 +94,7 @@ void Player::Update() {
 
 	move_ = { 0.0f,0.0f,0.0f };
 	// マップが動いていない時の処理
-	if (!Map::isRotating) {
+	if (!Map::isRotating && isGoal_ == false) {
 		
 #pragma region キーボード入力
 		//入力による移動
@@ -146,12 +151,19 @@ void Player::Update() {
 
 	Vector3 pos = MakeTranslation(worldTransform_.matWorld_);
 
-	const float deadLine = 50.0f;
+	const float deadLine = 35.0f;
 	//死亡判定
 	if (pos.y <= -deadLine) {
 		isDead_ = true;
 	}
-	
+	if (isGoal_ == true) {
+
+		worldTransform_.translation_ = Easing::easing(goalT_, worldTransform_.translation_, goalPos_, 0.03f);
+		
+		if (goalT_ >= 1.0f) {
+			isFinishGoalAnimation_ = true;
+		}
+	}
 
 }
 
@@ -380,17 +392,62 @@ void Player::Draw() {
 	collider_.Draw();
 	underCollider_.Draw();
 	upCollider_.Draw();
-	animationTransform_.UpdateMatrix();
-	for (int i = 0; i < slimeNum;i++) {
-		slimeTransform[i].UpdateMatrix();
+
+	uint32_t index = rotateNum_ % 4;
+	Matrix4x4 RotateZMatrix = MakeIdentity4x4();
+	RotateZMatrix = MakeRotateZMatrix(Radian(90.0f) * index);
+
+	bool isModelDraw = false;
+
+	//変形アニメーションここに書いちゃお
+	if (Map::isRotating && !isChangeScaled) {
+		isChangeScaled = true;
 		if (rectangleState_ == RectangleFacing::kPortrait) {
-			slimeVerticalModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+			animationTransform_.scale_ = portraitScale * RotateZMatrix;
 		}
 		else {
-			slimeWideModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+			animationTransform_.scale_ = landScapeScale * RotateZMatrix;
 		}
 	}
-	//model_.Draw(animationTransform_, *viewProjection_, *directionalLight_,material_);
+
+	if (Map::isRotating) {
+		isModelDraw = true;
+	}
+	else {
+		isChangeScaled = false;
+	}
+	
+	if (isChangeAnimationRect_ == true) {
+		animationTransform_.scale_ = Easing::easing(changeRectT, portraitScale, landScapeScale, 0.03f, Easing::easeOutElastic) * RotateZMatrix;
+		if (changeRectT >= 1.0f) {
+			isChangeAnimationRect_ = false;
+		}
+		isModelDraw = true;
+	}
+	else {
+		changeRectT = 0.0f;
+	}
+
+	if (!isModelDraw) {
+		animationTransform_.scale_ = { 1.0f,1.0f,1.0f };
+	}
+
+	animationTransform_.UpdateMatrix();
+	if (!isModelDraw) {
+		for (int i = 0; i < slimeNum; i++) {
+			slimeTransform[i].UpdateMatrix();
+			if (rectangleState_ == RectangleFacing::kPortrait) {
+				slimeVerticalModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+			}
+			else {
+				slimeWideModel_.Draw(slimeTransform[i], *viewProjection_, *directionalLight_, material_);
+			}
+		}
+	}
+	else {
+		model_.Draw(animationTransform_, *viewProjection_, *directionalLight_, material_);
+	}
+
 }
 
 

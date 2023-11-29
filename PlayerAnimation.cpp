@@ -1,17 +1,38 @@
 #include "PlayerAnimation.h"
 #include "ImGuiManager.h"
+#include "Map.h"
 
 void PlayerAnimation::Initialize()
 {
 	for (int i = 0; i < Player::slimeNum; i++) {
-		sigaWorldTransform_[i].UpdateMatrix();
+		sigaWorldTransform_[i].translation_ = { 0.0f,0.0f,0.0f };
+		sigaWorldTransform_[i].rotation_ = player_->GetWorldTransform()->GetParent()->rotation_;
+		sigaWorldTransform_[i].scale_ = { 1.0f,1.0f,1.0f };
+	}
+
+	if (savePlayerRectangle == RectangleFacing::kPortrait) {
+
+		for (int i = 0; i < Player::slimeNum; i++) {
+			sigaWorldTransform_[i].translation_.y = 0.8f - (1.6f / Player::slimeNum) * i - ((1.6f / Player::slimeNum) / 2.0f);
+		}
+
+		savePlayerRectangle = player_->GetRectangle();
+
+	}
+	else {
+
+		for (int i = 0; i < Player::slimeNum; i++) {
+			sigaWorldTransform_[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * i - ((3.0f / Player::slimeNum) / 2.0f);
+		}
+
+		savePlayerRectangle = player_->GetRectangle();
+
 	}
 	
 }
 
 void PlayerAnimation::Update()
 {
-	
 
 	//切り替えられたとき位置を初期化する
 	if (savePlayerRectangle != player_->GetRectangle()) {
@@ -43,64 +64,69 @@ void PlayerAnimation::Update()
 	ImGui::DragFloat3("pl", &sigaWorldTransform_[0].translation_.x,0.01f);
 	ImGui::DragFloat3("pr", &sigaWorldTransform_[0].rotation_.x, 0.01f);
 
+	pos = MakeTranslation(player_->GetWorldTransform()->matWorld_);
 
-	switch (player_->GetRectangle())
-	{
-	case RectangleFacing::kPortrait: //縦
+	if (!Map::isRotating || !player_->isChangeAnimationRect_) {
+		switch (player_->GetRectangle())
+		{
+		case RectangleFacing::kPortrait: //縦
 
-		pos = player_->GetWorldTransform()->translation_;;
 
-		for (int i = 0; i < Player::slimeNum; i++) {
-			
+			for (int i = 0; i < Player::slimeNum; i++) {
 
-			if (prePos.x != pos.x) {
-				if (softMax > soft) {
-					soft += softSpeed;
+
+				if (prePos.x != pos.x) {
+					if (softMax > soft) {
+						soft += softSpeed;
+					}
+
+					if (soft > softMax) {
+						soft = softMax;
+					}
+				}
+				else {
+					if (softMax < 0) {
+						soft -= softSpeed * 2.0f;
+					}
+
+					if (soft < 0) {
+						soft = 0;
+					}
 				}
 
-				if (soft > softMax) {
-					soft = softMax;
-				}
+				Vector3 slimePos = { 0.0f,0.0f,0.0f };
+
+				//下から生やす - 高さ調整
+				slimePos.y = (i * (playerHight / Player::slimeNum)) - ((playerHight - (playerHight / Player::slimeNum)) * 0.5f);
+
+				float distance = pos.x - prePos.x;
+
+				float t = ((float)i / (float)Player::slimeNum);
+
+				slimePos.x = -distance * t * t * soft * (float)Player::slimeNum;
+
+				sigaWorldTransform_[i].translation_ = slimePos;
 			}
-			else {
-				if (softMax < 0) {
-					soft -= softSpeed * 2.0f;
-				}
 
-				if (soft < 0) {
-					soft = 0;
-				}
-			}
 
-			Vector3 slimePos = { 0.0f,0.0f,0.0f };
+			break;
+		case RectangleFacing::kLandscape: //横
 
-			//下から生やす - 高さ調整
-			slimePos.y =  (i  * ( playerHight / Player::slimeNum)) - ((playerHight - (playerHight / Player::slimeNum)) * 0.5f);
 
-			float distance = pos.x - prePos.x ;
-
-			float t = ((float)i / (float)Player::slimeNum);
-
-			slimePos.x = -distance * t * t  * soft * (float)Player::slimeNum;
-
-			sigaWorldTransform_[i].translation_ = slimePos;
+			break;
+		default:
+			break;
 		}
-
-		prePos = pos;
-
-		break;
-	case RectangleFacing::kLandscape: //横
-
-		
-		break;
-	default:
-		break;
 	}
+	
+
+	prePos = pos;
+
+
 
 	uint32_t index = player_->rotateNum_ % 4;
 	Matrix4x4 RotateZMatrix = MakeIdentity4x4();
 	RotateZMatrix = MakeRotateZMatrix(Radian(90.0f) * index);
-
 
 	//xy変換
 	for (int i = 0; i < Player::slimeNum;i++) {

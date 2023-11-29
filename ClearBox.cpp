@@ -8,10 +8,9 @@ void ClearBox::Initialize(const std::string name, ViewProjection* viewProjection
 	//設定したワールドをコピー
 	worldTransform_ = gWorld;
 
-	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight);
+	collider_.Initialize(&worldTransform_, name, viewProjection, directionalLight, portraitScale);
 
 	rectangleState_ = RectangleFacing::kPortrait;
-	worldTransform_.scale_ = portraitScale;
 	worldTransform_.translation_.y += 0.5f;
 }
 
@@ -34,36 +33,46 @@ void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 		break;
 	case 3:
 		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = false;
 		break;
 	case 4:
 		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 5:
-		rectangleState_ = RectangleFacing::kPortrait;
+		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = true;
 		break;
 	case 6:
 		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = true;
 		break;
 	case 7:
-		rectangleState_ = RectangleFacing::kLandscape;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 8:
 		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = false;
 		break;
 	case 9:
 		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = true;
 		break;
 	default:
 		break;
 	}
 
 	if (rectangleState_ == RectangleFacing::kLandscape) {
-		worldTransform_.scale_ = landScapeScale;
-		worldTransform_.translation_.y -= 0.2f;
-		worldTransform_.translation_.x -= 0.5f;
+		//worldTransform_.scale_ = landScapeScale;
+		worldTransform_.rotation_.z = Radian(90.0f);
+		if (isRight) {
+			worldTransform_.translation_.x -= 0.5f;
+		}
+		else {
+			worldTransform_.translation_.x += 0.5f;
+		}
 	}
 	else {
-		worldTransform_.scale_ = portraitScale;
+		//worldTransform_.scale_ = portraitScale;
 		worldTransform_.translation_.y += 0.5f;
 	}
 
@@ -122,4 +131,5 @@ bool ClearBox::IsHitCollision(Collider& otherCollider) {
 
 void ClearBox::Draw() {
 	GameObject::Draw();
+	collider_.Draw();
 }
