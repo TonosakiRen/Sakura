@@ -74,8 +74,6 @@ void PlayerAnimation::Update()
 
 			for (int i = 0; i < Player::slimeNum; i++) {
 
-			
-
 				Vector3 slimePos = { 0.0f,0.0f,0.0f };
 
 				//下から生やす - 高さ調整
@@ -92,7 +90,7 @@ void PlayerAnimation::Update()
 
 				float t = ((float)i / (float)Player::slimeNum);
 
-				slimePos.x = t * t  * softVel * (float)Player::slimeNum;
+				slimePos.x = t * t  * softVel * (float)Player::slimeNum * softHight;
 				slimePos.y -= t * t * fabsf(softVel) * 5.0f;
 
 				sigaWorldTransform_[i].translation_ = slimePos;
@@ -102,6 +100,29 @@ void PlayerAnimation::Update()
 			break;
 		case RectangleFacing::kLandscape: //横
 
+			for (int i = 0; i < Player::slimeNum; i++) {
+
+				Vector3 slimePos = { 0.0f,0.0f,0.0f };
+
+				//下から生やす - 高さ調整
+				slimePos.y = (i * (playerWide / Player::slimeNum)) - ((playerWide - (playerWide / Player::slimeNum)) * 0.5f);
+
+				float distance = pos.x - prePos.x;
+
+				if (softVel > -distance) {
+					softVel -= softSpeed;
+				}
+				else if (softVel < -distance) {
+					softVel += softSpeed;
+				}
+
+				float t = ((float)i / (float)Player::slimeNum);
+
+				slimePos.x = t * t * softVel * (float)Player::slimeNum * softWide;
+				slimePos.y -= t * t * fabsf(softVel) * 5.0f;
+
+				sigaWorldTransform_[i].translation_ = slimePos;
+			}
 
 			break;
 		default:

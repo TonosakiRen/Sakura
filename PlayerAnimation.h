@@ -17,6 +17,10 @@ public:
 	Vector3 prePos;
 
 	float playerHight = 3.0f;
+	float playerWide = 1.6f;
+
+	float softHight = 0.9f;
+	float softWide = 0.45f;
 
 	float softSpeed = 0.002f;
 	float softVel = 0.0f;
