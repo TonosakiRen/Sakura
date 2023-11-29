@@ -159,6 +159,12 @@ private://メンバ関数
 
 	std::unique_ptr<GameObject> title_;
 
+	float titleAnimationYpos_=0;
+
+	float titleAnimeT_ = 0;
+
+	float ChangeY_ = 0;
+
 	Vector3 aa;
 
 
