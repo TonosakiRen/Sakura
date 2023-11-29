@@ -164,6 +164,9 @@ public:
 
 	static const int maxMapNum_ = 11;
 
+
+	static bool isRotationInput_;
+
 private:
 
 	int mapPassNumber_;
@@ -225,6 +228,7 @@ private:
 		kRightRotation, // 右回転
 		kLeftRotation   // 左回転
 	};
+
 private:
 
 	// 状態
@@ -257,8 +261,6 @@ private:
 	const int maxRotateCooltime_ = 5;
 
 	int rotateCooltime_ = 0;
-
-	bool isRotationInput_ = true;
 #pragma endregion
 
 

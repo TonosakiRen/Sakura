@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 
 	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_,mapPassNum_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
@@ -58,7 +58,7 @@ void GameScene::Initialize() {
 	playerAnimation_->SetPlayer(player_.get());
 
 	map_->SetPlayer(player_.get());
-	
+
 
 	for (int i = 0; i < map_->GetMaxTile(); i++) {
 		WorldTransform world;
@@ -82,7 +82,7 @@ void GameScene::Initialize() {
 	}
 
 	int SelectBoxCreatingCount = 0;
-	int flystageNum = Map::maxMapNum_-1;
+	int flystageNum = Map::maxMapNum_ - 1;
 	for (auto& stageW : map_->GetStageSelectBox()) {
 		std::unique_ptr<SelectStage>ssnew = std::make_unique<SelectStage>();
 
@@ -91,7 +91,7 @@ void GameScene::Initialize() {
 			flystageNum--;
 		}
 		else {
-			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum-3);
+			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum - 3);
 			flystageNum++;
 		}
 
@@ -196,11 +196,10 @@ void GameScene::Update() {
 		viewProjection_.translation_.z = -43.0f - (mostlength - 10.0f) * 2.0f;
 
 		title_->SetPosition(Vector3{ viewProjection_.translation_.x,viewProjection_.translation_.y + 10.0f,viewProjection_.translation_.z });
-		
+
 		title_->Update();
 
-		switch (inGameScene)
-		{
+		switch (inGameScene) {
 		case GameScene::Title:
 
 			if (!isPause_) {
@@ -233,7 +232,7 @@ void GameScene::Update() {
 					}
 				}
 			}
-			
+
 			break;
 		case GameScene::InGame:
 			viewProjection_.target_.x = 0.0f;
@@ -275,7 +274,7 @@ void GameScene::TitleUpdate() {
 
 	//ゲームループを抜ける
 	if (input_->TriggerKey(DIK_ESCAPE)) {
-		
+
 	}
 
 }
@@ -283,8 +282,7 @@ void GameScene::InGameInitialize() {
 
 }
 
-void GameScene::StageInitialize(int stageNum)
-{
+void GameScene::StageInitialize(int stageNum) {
 	if (mapPassNum_ >= 6) {
 		//mapPassNum_ = 0;
 	}
@@ -320,7 +318,7 @@ void GameScene::StageInitialize(int stageNum)
 	else {
 		mapPassNum_++;
 	}
-	
+
 	isHitClearBox_ = false;
 
 	if (stageNum == 0) {
@@ -376,28 +374,28 @@ void GameScene::InGameUpdate() {
 				inGameScene = Title;
 				StageInitialize(0);
 				isPause_ = false;
-			}else
-			if (pauseSelectNum_ == 1) {
-				if (inGameScene == Title) {
-					isTitleCameraMove = true;
-				}
-				else {
-					inGameScene = InGame;
-					StageInitialize(0);
-				}
-				isPause_ = false;
 			}
-			else if (pauseSelectNum_ == 2) {
-				shutDown = true;
-			}
-			
+			else
+				if (pauseSelectNum_ == 1) {
+					if (inGameScene == Title) {
+						isTitleCameraMove = true;
+					}
+					else {
+						inGameScene = InGame;
+						StageInitialize(0);
+					}
+					isPause_ = false;
+				}
+				else if (pauseSelectNum_ == 2) {
+					shutDown = true;
+				}
+
 		}
-		
+
 	}
 	else {
 		pauseSelectNum_ = 0;
-		switch (inGameScene)
-		{
+		switch (inGameScene) {
 		case GameScene::Title:
 			break;
 		case GameScene::InGame:
@@ -500,7 +498,7 @@ void GameScene::InGameUpdate() {
 void GameScene::AllCollision() {
 
 	//回転後の更新処理が完全に終わったら処理
-	if (!Map::rotateComplete&&!Map::isRotating) {
+	if (!Map::rotateComplete && !Map::isRotating && Map::isRotationInput_) {
 #pragma region 押し戻し処理
 		//ブロックとの押し出し処理
 		for (auto& wall : map_->GetWallCollider()) {
@@ -607,24 +605,39 @@ void GameScene::AllCollision() {
 						//状態変更（ノーマル
 						player_->SetState(PlayerState::kNormal);
 						isActivate_ = true;
-						break;
 					}
 				}
 
+
+				
+			}
+		}
+
+		if (!isActivate_) {
+			player_->SetStateNoInitialize(PlayerState::kJump);
+		}
+
+
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
 				if (!player_->CheckStateReqest()) {
 					//Boxが縦向きの時の処理
 					if (player_->CheckBoxStateSame(RectangleFacing::kPortrait)) {
-						//上のコライダーとの当たり判定
+						//上のコライダーとの当たり判定&&下のコライダー反応なし
 						if (player_->IsUpColliderCollision(*box->GetCollider())) {
+
+							bool statechange_ = false;
+
 							//ぴったりくっついている場合&&地面にいる場合
 							if (player_->IsSetPerfect(*box->GetCollider()) && player_->CheckStateSame(PlayerState::kNormal)) {
-
-
 								//状態変更
 								//player_->SetBoxState(RectangleFacing::kLandscape);
 								isActivate_ = true;
 								player_->SetIsChangeRectAnimation(true);
 								player_->SetBoxState(RectangleFacing::kLandscape);
+
+								statechange_ = true;
+
 
 								size_t handle = audio_->SoundLoadWave("Crush.wav");
 								size_t crushHandle = audio_->SoundPlayWave(handle);
@@ -632,16 +645,16 @@ void GameScene::AllCollision() {
 
 								break;
 							}
+
 						}
 					}
 				}
 			}
 		}
 
+		
 
-		if (!isActivate_) {
-			player_->SetStateNoInitialize(PlayerState::kJump);
-		}
+
 #pragma endregion
 
 #pragma region ボックスの状態変化
@@ -721,192 +734,199 @@ void GameScene::AllCollision() {
 		//プレイヤーが死んだら初期化
 		if (player_->GetIsDead()) {
 			//シーン変更フラグをON
-			StageInitialize(mapPassNum_ - 1);
+			isStageChange_ = true;
+			nextmapPass_ = mapPassNum_ - 1;
+			//StageInitialize(mapPassNum_ - 1);
 		}
 
 #pragma endregion	
+
 	}
+
 }
 
-void GameScene::AllCollisionPrePosUpdate()
-{
-	//ブロックとの押し出し処理
-	for (auto& wall : map_->GetWallCollider()) {
-		wall->prePosUpdate();
-	}
-	player_->collider_.prePosUpdate();
-	for (auto& box : boxes_) {
-		if(box->GetIsDead() ){
-			box->GetCollider()->prePosUpdate();
+	void GameScene::AllCollisionPrePosUpdate() {
+		//ブロックとの押し出し処理
+		for (auto& wall : map_->GetWallCollider()) {
+			wall->prePosUpdate();
 		}
-	}
-
-}
-
-void GameScene::CheckBoxDead() {
-	//仮で-50以下で消滅するように
-	float deadLine = 35.0f;
-
-	//死んだ数チェック
-	int alliveNum_ = 0;
-
-	for (auto& box : boxes_) {
-		if (box->GetIsDead()) {
-			
-		}else{
-			alliveNum_++;
-
-			Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
-			if (pos.y <= -deadLine) {
-				//死亡判定渡し
-				box->SetIsDead(true);
+		player_->collider_.prePosUpdate();
+		for (auto& box : boxes_) {
+			if (box->GetIsDead()) {
+				box->GetCollider()->prePosUpdate();
 			}
 		}
+
 	}
 
-	//すべて死んでいる場合
-	if (alliveNum_ == 0) {
-		isHitClearBox_ = true;
-	}
-}
+	void GameScene::CheckBoxDead() {
+		//仮で-50以下で消滅するように
+		float deadLine = 35.0f;
 
-void GameScene::InGameSceneChange() {
+		//死んだ数チェック
+		int alliveNum_ = 0;
 
-	if (isStageChange_) {
-		sceneAnime_ = SceneAnimation::kEnd;
-		map_->SetAnimeRZ(map_->GetWorldTransform()->rotation_.z);
-	}
+		for (auto& box : boxes_) {
+			if (box->GetIsDead()) {
 
-	if (input_->TriggerKey(DIK_2)) {
-		isStageChange_ = true;
-	}
-}
-
-void GameScene::NextScene() {
-	if (isStageChange_) {
-		if (nextmapPass_) {
-			mapPassNum_ = nextmapPass_.value();
-			nextmapPass_ = std::nullopt;
-		}
-
-		if (mapPassNum_ < Map::maxMapNum_) {
-			StageInitialize(mapPassNum_);
-			isStageChange_ = false;
-			isHitClearBox_ = false;
-
-			if (mapPassNum_ == 0) {
-				isStageSelect_ = true;
 			}
 			else {
-				isStageSelect_ = false;
+				alliveNum_++;
+
+				Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
+				if (pos.y <= -deadLine) {
+					//死亡判定渡し
+					box->SetIsDead(true);
+				}
 			}
 		}
-		else {
-			//sceneRequest_ = Scene::Clear;
-			mapPassNum_ = 0;
-			StageInitialize(mapPassNum_);
-			isStageChange_ = false;
-			isHitClearBox_ = false;
-			isStageSelect_ = true;
+
+		//すべて死んでいる場合
+		if (alliveNum_ == 0) {
+			isHitClearBox_ = true;
 		}
 	}
 
-	sceneAnime_ = SceneAnimation::kStart;
-}
+	void GameScene::InGameSceneChange() {
 
-void GameScene::ClearInitialize() {
-
-}
-
-void GameScene::ClearUpdate() {
-
-}
-
-void GameScene::ModelDraw() {
-	switch (scene_) {
-	case GameScene::Scene::Title:
-		break;
-	case GameScene::Scene::InGame:
-		title_->Draw();
-		if (!isStageSelect_) {
-			clearBox_->Draw();
-		}
-		player_->Draw();
-		for (auto& box : boxes_) {
-			box->Draw();
+		if (isStageChange_) {
+			sceneAnime_ = SceneAnimation::kEnd;
+			map_->SetAnimeRZ(map_->GetWorldTransform()->rotation_.z);
 		}
 
-		//セレクトシーンだけ更新
-		if (isStageSelect_) {
-			for (auto& stagesele : selectStage_) {
-				stagesele->Draw();
+		if (input_->TriggerKey(DIK_2)) {
+			isStageChange_ = true;
+		}
+	}
+
+	void GameScene::NextScene() {
+		if (isStageChange_) {
+			if (nextmapPass_) {
+				mapPassNum_ = nextmapPass_.value();
+				nextmapPass_ = std::nullopt;
+			}
+
+			if (mapPassNum_ < Map::maxMapNum_) {
+				StageInitialize(mapPassNum_);
+				isStageChange_ = false;
+				isHitClearBox_ = false;
+
+				if (mapPassNum_ == 0) {
+					isStageSelect_ = true;
+				}
+				else {
+					isStageSelect_ = false;
+				}
+			}
+			else {
+				//sceneRequest_ = Scene::Clear;
+				mapPassNum_ = 0;
+				StageInitialize(mapPassNum_);
+				isStageChange_ = false;
+				isHitClearBox_ = false;
+				isStageSelect_ = true;
 			}
 		}
-		break;
-	default:
-		break;
+
+		sceneAnime_ = SceneAnimation::kStart;
 	}
 
-}
+	void GameScene::ClearInitialize() {
 
-void GameScene::ParticleDraw() {
-	switch (scene_) {
-	case GameScene::Scene::Title:
-		break;
-	case GameScene::Scene::InGame:
-		deadParticle_->SetIsEmit(true);
-		/*deadParticle_->emitterWorldTransform_.translation_.x = map_->GetMapCenter().x;
-		deadParticle_->emitterWorldTransform_.translation_.y = 8.0f;*/
-
-		/*deadParticle_->emitterWorldTransform_.translation_.y = -27.0f;*/
-		deadParticle_->emitterWorldTransform_.scale_ = { 1.5f,1.5f,1.5f };
-		deadParticle_->Draw(&viewProjection_,{1.0f,1.0f,1.0f,1.0f}, bikkuri_);
-		break;
-	default:
-		break;
 	}
-}
 
-void GameScene::ParticleBoxDraw() {
-	switch (scene_) {
-	case GameScene::Scene::Title:
-		break;
-	case GameScene::Scene::InGame:
-		map_->Draw();
-		break;
-	default:
-		break;
+	void GameScene::ClearUpdate() {
+
 	}
-}
 
-void GameScene::PreSpriteDraw() {
-	switch (scene_) {
-	case GameScene::Scene::Title:
-		break;
-	case GameScene::Scene::InGame:
-		break;
-	default:
-		break;
-	}
-}
+	void GameScene::ModelDraw() {
+		switch (scene_) {
+		case GameScene::Scene::Title:
+			break;
+		case GameScene::Scene::InGame:
+			title_->Draw();
+			if (!isStageSelect_) {
+				clearBox_->Draw();
+			}
 
-void GameScene::PostSpriteDraw()
-{
-	if (isPause_) {
-		halfBlack_->Draw();
-		gameCloseSprite_->Draw();
-		stageSelectSprite_->Draw();
-		titleSelectSprite_->Draw();
-		if (pauseSelectNum_ == 0) {
-			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, titleSelectSprite_->position_.y };
+			if (!player_->GetIsDead()) {
+				player_->Draw();
+			}
+
+			for (auto& box : boxes_) {
+				box->Draw();
+			}
+
+			//セレクトシーンだけ更新
+			if (isStageSelect_) {
+				for (auto& stagesele : selectStage_) {
+					stagesele->Draw();
+				}
+			}
+			break;
+		default:
+			break;
 		}
-		else if (pauseSelectNum_ == 1) {
-			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, stageSelectSprite_->position_.y };
+
+	}
+
+	void GameScene::ParticleDraw() {
+		switch (scene_) {
+		case GameScene::Scene::Title:
+			break;
+		case GameScene::Scene::InGame:
+			deadParticle_->SetIsEmit(true);
+			/*deadParticle_->emitterWorldTransform_.translation_.x = map_->GetMapCenter().x;
+			deadParticle_->emitterWorldTransform_.translation_.y = 8.0f;*/
+
+			/*deadParticle_->emitterWorldTransform_.translation_.y = -27.0f;*/
+			deadParticle_->emitterWorldTransform_.scale_ = { 1.5f,1.5f,1.5f };
+			deadParticle_->Draw(&viewProjection_, { 1.0f,1.0f,1.0f,1.0f }, bikkuri_);
+			break;
+		default:
+			break;
 		}
-		else {
-			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, gameCloseSprite_->position_.y };
+	}
+
+	void GameScene::ParticleBoxDraw() {
+		switch (scene_) {
+		case GameScene::Scene::Title:
+			break;
+		case GameScene::Scene::InGame:
+			map_->Draw();
+			break;
+		default:
+			break;
 		}
-		selectSprite_->Draw();
+	}
+
+	void GameScene::PreSpriteDraw() {
+		switch (scene_) {
+		case GameScene::Scene::Title:
+			break;
+		case GameScene::Scene::InGame:
+			break;
+		default:
+			break;
+		}
+	}
+
+	void GameScene::PostSpriteDraw() {
+		if (isPause_) {
+			halfBlack_->Draw();
+			gameCloseSprite_->Draw();
+			stageSelectSprite_->Draw();
+			titleSelectSprite_->Draw();
+			if (pauseSelectNum_ == 0) {
+				selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, titleSelectSprite_->position_.y };
+			}
+			else if (pauseSelectNum_ == 1) {
+				selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, stageSelectSprite_->position_.y };
+			}
+			else {
+				selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, gameCloseSprite_->position_.y };
+			}
+			selectSprite_->Draw();
 
 	}
 	switch (scene_) {
@@ -954,38 +974,38 @@ void GameScene::PostUIDraw() {
 	}
 }
 
-void GameScene::Draw(CommandContext& commandContext) {
-	// 背景スプライト描画
-	Sprite::PreDraw(commandContext);
-	PreSpriteDraw();
-	Sprite::PostDraw();
+	void GameScene::Draw(CommandContext & commandContext) {
+		// 背景スプライト描画
+		Sprite::PreDraw(commandContext);
+		PreSpriteDraw();
+		Sprite::PostDraw();
 
-	DirectXCommon::GetInstance()->ClearMainDepthBuffer();
+		DirectXCommon::GetInstance()->ClearMainDepthBuffer();
 
-	//3Dオブジェクト描画
-	Model::PreDraw(commandContext);
-	ModelDraw();
-	Model::PostDraw();
+		//3Dオブジェクト描画
+		Model::PreDraw(commandContext);
+		ModelDraw();
+		Model::PostDraw();
 
-	//Particle描画
-	Particle::PreDraw(commandContext);
-	ParticleDraw();
-	Particle::PostDraw();
+		//Particle描画
+		Particle::PreDraw(commandContext);
+		ParticleDraw();
+		Particle::PostDraw();
 
-	//Particle描画
-	ParticleBox::PreDraw(commandContext);
-	ParticleBoxDraw();
-	ParticleBox::PostDraw();
+		//Particle描画
+		ParticleBox::PreDraw(commandContext);
+		ParticleBoxDraw();
+		ParticleBox::PostDraw();
 
-	// 背景スプライト描画
-	Sprite::PreDraw(commandContext);
-	PostSpriteDraw();
-	Sprite::PostDraw();
-}
+		// 背景スプライト描画
+		Sprite::PreDraw(commandContext);
+		PostSpriteDraw();
+		Sprite::PostDraw();
+	}
 
-void GameScene::UIDraw(CommandContext& commandContext) {
-	// 前景スプライト描画
-	Sprite::PreDraw(commandContext);
-	PostUIDraw();
-	Sprite::PostDraw();
-}
+	void GameScene::UIDraw(CommandContext & commandContext) {
+		// 前景スプライト描画
+		Sprite::PreDraw(commandContext);
+		PostUIDraw();
+		Sprite::PostDraw();
+	}

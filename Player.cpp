@@ -93,7 +93,6 @@ void Player::Update() {
 	//コリジョン処理を行ったかのフラグを初期化
 	isBuried_ = false;
 
-
 	move_ = { 0.0f,0.0f,0.0f };
 	// マップが動いていない時の処理
 	if (!Map::isRotating && isGoal_ == false) {
@@ -348,7 +347,7 @@ bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 	if (underCollider_.Collision(otherCollider, puchBackVector)) {
 
 		//誤差
-		float ErrorNum = 0.001f;
+		float ErrorNum = 0.01f;
 
 		//誤差レベルの数字は0にする
 		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {
@@ -361,11 +360,12 @@ bool Player::IsUnderColliderCollision(Collider& otherCollider) {
 			puchBackVector.z = 0;
 		}
 
-
+		//ぴったりはゆるしまへん
 		if (puchBackVector.x == 0 && puchBackVector.y == 0 && puchBackVector.z == 0) {
 			return false;
 		}
 		else {
+			//ぴったりじゃないのでOK
 			return true;
 		}
 	}
