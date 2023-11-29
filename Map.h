@@ -258,7 +258,7 @@ private:
 	//回転処理に使う
 	RotationEasing rotateE_;
 
-	const int maxRotateCooltime_ = 5;
+	const int maxRotateCooltime_ = 2;
 
 	int rotateCooltime_ = 0;
 #pragma endregion

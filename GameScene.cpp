@@ -530,6 +530,7 @@ void GameScene::InGameUpdate() {
 			stagesele->Update();
 		}
 	}
+
 }
 
 
