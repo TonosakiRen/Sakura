@@ -172,11 +172,33 @@ private://メンバ関数
 
 	bool isBackTitle = false;
 
+	Audio* audio_ = nullptr;
+
 	std::unique_ptr<Sprite> gameCloseSprite_;
 	std::unique_ptr<Sprite> stageSelectSprite_;
 	std::unique_ptr<Sprite> titleSelectSprite_;
 	std::unique_ptr<Sprite> selectSprite_;
+	std::unique_ptr<Sprite> pushASprite_;
 
-	Audio* audio_ = nullptr;
+	
+
+	std::unique_ptr<Sprite> rotateSprite_;
+	std::unique_ptr<Sprite> moveSprite_;
+	std::unique_ptr<Sprite> jumpSprite_;
+	std::unique_ptr<Sprite> dropSprite_;
+
+	std::unique_ptr<Sprite> pauseSprite_;
+
+	std::unique_ptr<Sprite> oneSprite_;
+	std::unique_ptr<Sprite> twoSprite_;
+	std::unique_ptr<Sprite> threeSprite_;
+	std::unique_ptr<Sprite> fourSprite_;
+	std::unique_ptr<Sprite> fiveSprite_;
+	std::unique_ptr<Sprite> sixSprite_;
+	std::unique_ptr<Sprite> sevenSprite_;
+	std::unique_ptr<Sprite> eightSprite_;
+	std::unique_ptr<Sprite> nineSprite_;
+	std::unique_ptr<Sprite> tenSprite_;
+
 };
 

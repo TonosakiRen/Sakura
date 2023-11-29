@@ -36,6 +36,8 @@ public:
 	
 	//飛ぶステージ番号取得
 	const int GetFlyingStageNum()const { return flyingStageNum_; }
+
+
 private:
 	//飛ぶステージ番号
 	int flyingStageNum_;

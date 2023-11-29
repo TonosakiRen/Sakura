@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 
 	//マップの壁
 	map_ = std::make_unique<Map>();
-	map_->Initialize("stage", &viewProjection_, &directionalLight_,mapPassNum_);
+	map_->Initialize("stage", &viewProjection_, &directionalLight_, mapPassNum_);
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize("player", &viewProjection_, &directionalLight_, map_->GetPlayerW());
@@ -58,7 +58,7 @@ void GameScene::Initialize() {
 	playerAnimation_->SetPlayer(player_.get());
 
 	map_->SetPlayer(player_.get());
-	
+
 
 	for (int i = 0; i < map_->GetMaxTile(); i++) {
 		WorldTransform world;
@@ -82,7 +82,7 @@ void GameScene::Initialize() {
 	}
 
 	int SelectBoxCreatingCount = 0;
-	int flystageNum = Map::maxMapNum_-1;
+	int flystageNum = Map::maxMapNum_ - 1;
 	for (auto& stageW : map_->GetStageSelectBox()) {
 		std::unique_ptr<SelectStage>ssnew = std::make_unique<SelectStage>();
 
@@ -91,7 +91,7 @@ void GameScene::Initialize() {
 			flystageNum--;
 		}
 		else {
-			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum-3);
+			ssnew->Initialize("gate", &viewProjection_, &directionalLight_, *stageW, flystageNum - 3);
 			flystageNum++;
 		}
 
@@ -129,9 +129,88 @@ void GameScene::Initialize() {
 	stageSelectSprite_.reset(Sprite::Create(stageSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f + 108.0f }));
 	titleSelectSprite_.reset(Sprite::Create(titleSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
 	selectSprite_.reset(Sprite::Create(selectHandle, { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
+
+	uint32_t pushAHandle = TextureManager::Load("pushA.png");
+
+	uint32_t moveHandle = TextureManager::Load("move.png");
+	uint32_t jumpHandle = TextureManager::Load("jump.png");
+	uint32_t rotateHandle = TextureManager::Load("rotate.png");
+	uint32_t dropHandle = TextureManager::Load("drop.png");
+
+	pushASprite_.reset(Sprite::Create(pushAHandle, { WinApp::kWindowWidth / 2.0f, 900.0f}));
+
+	rotateSprite_.reset(Sprite::Create(rotateHandle, { 1636.0f,244.0f }));
+	moveSprite_.reset(Sprite::Create(moveHandle, { 272.0f,222.0f }));
+	jumpSprite_.reset(Sprite::Create(jumpHandle, { 272.0f,611.0f }));
+	dropSprite_.reset(Sprite::Create(dropHandle, { 1006.0f,244.0f }));
+
+	uint32_t pauseHandle = TextureManager::Load("pause.png");
+	pauseSprite_.reset(Sprite::Create(pauseHandle,{1862.0f,1015.0f}));
+
+	size_t bgmHandle = audio_->SoundLoadWave("music.wav");
+	size_t bgmPlayHandle = audio_->SoundPlayLoopStart(bgmHandle);
+	audio_->SetValume(bgmPlayHandle, 0.1f);
+
+	uint32_t numHandle = TextureManager::Load("1.png");
+	oneSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("2.png");
+	twoSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("3.png");
+	threeSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("4.png");
+	fourSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("5.png");
+	fiveSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("6.png");
+	sixSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("7.png");
+	sevenSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("8.png");
+	eightSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("9.png");
+	nineSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("10.png");
+	tenSprite_.reset(Sprite::Create(numHandle));
+
+	
+	for (int i = 0; i < 10;i++) {
+		if (i == 0) {
+			oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 1) {
+			twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 2) {
+			threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 3) {
+			fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 4) {
+			fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 5) {
+			sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 6) {
+			sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 7) {
+			eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 8) {
+			nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		else if (i == 9) {
+			tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+		}
+		
+	}
+	
 }
 
 void GameScene::Update() {
+
 
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		shutDown = true;
@@ -154,17 +233,19 @@ void GameScene::Update() {
 		viewProjection_.translation_.z = -43.0f - (mostlength - 10.0f) * 2.0f;
 
 		title_->SetPosition(Vector3{ viewProjection_.translation_.x,viewProjection_.translation_.y + 10.0f,viewProjection_.translation_.z });
-		
+
 		title_->Update();
 
-		switch (inGameScene)
-		{
+		switch (inGameScene) {
 		case GameScene::Title:
 
 			if (!isPause_) {
 				if (!isBackTitle) {
 					if (input_->TriggerKey(DIK_T) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
 						isTitleCameraMove = true;
+						size_t handle = audio_->SoundLoadWave("Select.wav");
+						size_t selectHandle = audio_->SoundPlayWave(handle);
+						audio_->SetValume(selectHandle, 0.1f);
 					}
 
 					if (isTitleCameraMove) {
@@ -188,7 +269,7 @@ void GameScene::Update() {
 					}
 				}
 			}
-			
+
 			break;
 		case GameScene::InGame:
 			viewProjection_.target_.x = 0.0f;
@@ -230,7 +311,7 @@ void GameScene::TitleUpdate() {
 
 	//ゲームループを抜ける
 	if (input_->TriggerKey(DIK_ESCAPE)) {
-		
+
 	}
 
 }
@@ -238,8 +319,7 @@ void GameScene::InGameInitialize() {
 
 }
 
-void GameScene::StageInitialize(int stageNum)
-{
+void GameScene::StageInitialize(int stageNum) {
 	if (mapPassNum_ >= 6) {
 		//mapPassNum_ = 0;
 	}
@@ -275,7 +355,7 @@ void GameScene::StageInitialize(int stageNum)
 	else {
 		mapPassNum_++;
 	}
-	
+
 	isHitClearBox_ = false;
 
 	if (stageNum == 0) {
@@ -290,18 +370,19 @@ void GameScene::StageInitialize(int stageNum)
 
 void GameScene::InGameUpdate() {
 
-	if ((input_->TriggerKey(DIK_P)|| input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == false) {
+	if ((input_->TriggerKey(DIK_P) || input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == false) {
 		size_t handle = audio_->SoundLoadWave("Select.wav");
 		size_t selectHandle = audio_->SoundPlayWave(handle);
 		audio_->SetValume(selectHandle, 0.1f);
 		isPause_ = true;
-	}else
-	if ((input_->TriggerKey(DIK_P) || input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == true) {
-		size_t handle = audio_->SoundLoadWave("Select.wav");
-		size_t selectHandle = audio_->SoundPlayWave(handle);
-		audio_->SetValume(selectHandle, 0.1f);
-		isPause_ = false;
 	}
+	else
+		if ((input_->TriggerKey(DIK_P) || input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == true) {
+			size_t handle = audio_->SoundLoadWave("Select.wav");
+			size_t selectHandle = audio_->SoundPlayWave(handle);
+			audio_->SetValume(selectHandle, 0.1f);
+			isPause_ = false;
+		}
 	ImGui::Text("%d", pauseSelectNum_);
 
 	if (isPause_) {
@@ -310,20 +391,20 @@ void GameScene::InGameUpdate() {
 			pauseSelectNum_++;
 			size_t handle = audio_->SoundLoadWave("Select.wav");
 			size_t selectHandle = audio_->SoundPlayWave(handle);
-			audio_->SetValume(handle, 0.1f);
+			audio_->SetValume(selectHandle, 0.1f);
 		}
 		if (input_->TriggerKey(DIK_UP) || input_->UpLStick()) {
 			pauseSelectNum_--;
 			size_t handle = audio_->SoundLoadWave("Select.wav");
 			size_t selectHandle = audio_->SoundPlayWave(handle);
-			audio_->SetValume(handle, 0.1f);
+			audio_->SetValume(selectHandle, 0.1f);
 		}
 		pauseSelectNum_ = (int)clamp((float)pauseSelectNum_, 0, 2);
 
 		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
 			size_t handle = audio_->SoundLoadWave("Select.wav");
 			size_t selectHandle = audio_->SoundPlayWave(handle);
-			audio_->SetValume(handle, 0.1f);
+			audio_->SetValume(selectHandle, 0.1f);
 			if (pauseSelectNum_ == 0) {
 				if (inGameScene == InGame) {
 					isBackTitle = true;
@@ -331,28 +412,28 @@ void GameScene::InGameUpdate() {
 				inGameScene = Title;
 				StageInitialize(0);
 				isPause_ = false;
-			}else
-			if (pauseSelectNum_ == 1) {
-				if (inGameScene == Title) {
-					isTitleCameraMove = true;
-				}
-				else {
-					inGameScene = InGame;
-					StageInitialize(0);
-				}
-				isPause_ = false;
 			}
-			else if (pauseSelectNum_ == 2) {
-				shutDown = true;
-			}
-			
+			else
+				if (pauseSelectNum_ == 1) {
+					if (inGameScene == Title) {
+						isTitleCameraMove = true;
+					}
+					else {
+						inGameScene = InGame;
+						StageInitialize(0);
+					}
+					isPause_ = false;
+				}
+				else if (pauseSelectNum_ == 2) {
+					shutDown = true;
+				}
+
 		}
-		
+
 	}
 	else {
 		pauseSelectNum_ = 0;
-		switch (inGameScene)
-		{
+		switch (inGameScene) {
 		case GameScene::Title:
 			break;
 		case GameScene::InGame:
@@ -455,7 +536,7 @@ void GameScene::InGameUpdate() {
 void GameScene::AllCollision() {
 
 	//回転後の更新処理が完全に終わったら処理
-	if (!Map::rotateComplete&&!Map::isRotating) {
+	if (!Map::rotateComplete && !Map::isRotating) {
 #pragma region 押し戻し処理
 		//ブロックとの押し出し処理
 		for (auto& wall : map_->GetWallCollider()) {
@@ -562,24 +643,39 @@ void GameScene::AllCollision() {
 						//状態変更（ノーマル
 						player_->SetState(PlayerState::kNormal);
 						isActivate_ = true;
-						break;
 					}
 				}
 
+
+
+			}
+		}
+
+		if (!isActivate_) {
+			player_->SetStateNoInitialize(PlayerState::kJump);
+		}
+
+
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
 				if (!player_->CheckStateReqest()) {
 					//Boxが縦向きの時の処理
 					if (player_->CheckBoxStateSame(RectangleFacing::kPortrait)) {
-						//上のコライダーとの当たり判定
+						//上のコライダーとの当たり判定&&下のコライダー反応なし
 						if (player_->IsUpColliderCollision(*box->GetCollider())) {
+
+							bool statechange_ = false;
+
 							//ぴったりくっついている場合&&地面にいる場合
 							if (player_->IsSetPerfect(*box->GetCollider()) && player_->CheckStateSame(PlayerState::kNormal)) {
-
-
 								//状態変更
 								//player_->SetBoxState(RectangleFacing::kLandscape);
 								isActivate_ = true;
 								player_->SetIsChangeRectAnimation(true);
 								player_->SetBoxState(RectangleFacing::kLandscape);
+
+								statechange_ = true;
+
 
 								size_t handle = audio_->SoundLoadWave("Crush.wav");
 								size_t crushHandle = audio_->SoundPlayWave(handle);
@@ -587,6 +683,7 @@ void GameScene::AllCollision() {
 
 								break;
 							}
+
 						}
 					}
 				}
@@ -594,9 +691,8 @@ void GameScene::AllCollision() {
 		}
 
 
-		if (!isActivate_) {
-			player_->SetStateNoInitialize(PlayerState::kJump);
-		}
+
+
 #pragma endregion
 
 #pragma region ボックスの状態変化
@@ -665,6 +761,9 @@ void GameScene::AllCollision() {
 				if (clearBox_->IsHitCollision(player_->collider_) && player_->GetRectangle() == clearBox_->GetRectangle()) {
 					//シーン変更フラグをON
 					player_->isGoal_ = true;
+					/*size_t handle = audio_->SoundLoadWave("Clear.wav");
+					size_t clearHandle = audio_->SoundPlayWave(handle);
+					audio_->SetValume(clearHandle, 0.1f);*/
 				}
 			}
 
@@ -673,22 +772,25 @@ void GameScene::AllCollision() {
 		//プレイヤーが死んだら初期化
 		if (player_->GetIsDead()) {
 			//シーン変更フラグをON
-			StageInitialize(mapPassNum_ - 1);
+			isStageChange_ = true;
+			nextmapPass_ = mapPassNum_ - 1;
+			//StageInitialize(mapPassNum_ - 1);
 		}
 
 #pragma endregion	
+
 	}
+
 }
 
-void GameScene::AllCollisionPrePosUpdate()
-{
+void GameScene::AllCollisionPrePosUpdate() {
 	//ブロックとの押し出し処理
 	for (auto& wall : map_->GetWallCollider()) {
 		wall->prePosUpdate();
 	}
 	player_->collider_.prePosUpdate();
 	for (auto& box : boxes_) {
-		if(box->GetIsDead() ){
+		if (box->GetIsDead()) {
 			box->GetCollider()->prePosUpdate();
 		}
 	}
@@ -704,8 +806,9 @@ void GameScene::CheckBoxDead() {
 
 	for (auto& box : boxes_) {
 		if (box->GetIsDead()) {
-			
-		}else{
+
+		}
+		else {
 			alliveNum_++;
 
 			Vector3 pos = MakeTranslation(box->GetWorldTransform()->matWorld_);
@@ -783,7 +886,11 @@ void GameScene::ModelDraw() {
 		if (!isStageSelect_) {
 			clearBox_->Draw();
 		}
-		player_->Draw();
+
+		if (!player_->GetIsDead()) {
+			player_->Draw();
+		}
+
 		for (auto& box : boxes_) {
 			box->Draw();
 		}
@@ -812,7 +919,7 @@ void GameScene::ParticleDraw() {
 
 		/*deadParticle_->emitterWorldTransform_.translation_.y = -27.0f;*/
 		deadParticle_->emitterWorldTransform_.scale_ = { 1.5f,1.5f,1.5f };
-		deadParticle_->Draw(&viewProjection_,{1.0f,1.0f,1.0f,1.0f}, bikkuri_);
+		deadParticle_->Draw(&viewProjection_, { 1.0f,1.0f,1.0f,1.0f }, bikkuri_);
 		break;
 	default:
 		break;
@@ -842,8 +949,7 @@ void GameScene::PreSpriteDraw() {
 	}
 }
 
-void GameScene::PostSpriteDraw()
-{
+void GameScene::PostSpriteDraw() {
 	if (isPause_) {
 		halfBlack_->Draw();
 		gameCloseSprite_->Draw();
@@ -863,9 +969,77 @@ void GameScene::PostSpriteDraw()
 	}
 	switch (scene_) {
 	case GameScene::Scene::Title:
+		if (!isTitleCameraMove) {
+			pushASprite_->Draw();
+		}
 		break;
 	case GameScene::Scene::InGame:
-		map_->DrawSprite();
+		switch (inGameScene)
+		{
+		case GameScene::Title:
+			break;
+		case GameScene::InGame:
+			map_->DrawSprite();
+
+
+			if (isStageSelect_ == true) {
+				rotateSprite_->Draw();
+				moveSprite_->Draw();
+				jumpSprite_->Draw();
+
+				for (int i = 0; i < 10; i++) {
+					if (selectStage_[i]->GetFlyingStageNum() == 1) {
+						oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 2) {
+						twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 3) {
+						threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 4) {
+						fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 5) {
+						fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 6) {
+						sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 7) {
+						sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 8) {
+						eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 9) {
+						nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+					else if (selectStage_[i]->GetFlyingStageNum() == 10) {
+						tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+					}
+
+				}
+
+				oneSprite_->Draw();
+				twoSprite_->Draw();
+				threeSprite_->Draw();
+				fourSprite_->Draw();
+				threeSprite_->Draw();
+				fiveSprite_->Draw();
+				sixSprite_->Draw();
+				sevenSprite_->Draw();
+				eightSprite_->Draw();
+				nineSprite_->Draw();
+				tenSprite_->Draw();
+			}
+			if (mapPassNum_ == 2) {
+				dropSprite_->Draw();
+			}
+			break;
+		default:
+			break;
+		}
 		break;
 	default:
 		break;
@@ -873,7 +1047,7 @@ void GameScene::PostSpriteDraw()
 }
 
 void GameScene::PostUIDraw() {
-	
+	pauseSprite_->Draw();
 	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
