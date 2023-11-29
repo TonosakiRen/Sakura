@@ -26,6 +26,9 @@
     <Filter Include="Game\Player">
       <UniqueIdentifier>{75da011f-d7c9-4782-95aa-79956fd5dc14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\SelectStage">
+      <UniqueIdentifier>{77ddbb87-b978-44cf-b43c-3542a68e2462}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -179,6 +182,9 @@
       <Filter>Game\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAnimation.cpp" />
+    <ClCompile Include="SelectStage.cpp">
+      <Filter>Game\SelectStage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -341,6 +347,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAnimation.h" />
+    <ClInclude Include="SelectStage.h">
+      <Filter>Game\SelectStage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Basic.hlsli">

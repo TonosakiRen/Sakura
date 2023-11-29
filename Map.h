@@ -77,6 +77,7 @@ public:
 	//クリアのワールド取得
 	const WorldTransform& GetClearW() { return goalW_; }
 
+
 	//すべてのコライダー取得
 	std::vector<std::unique_ptr<Collider>>& GetCollider() { return colliders_; }
 
@@ -85,6 +86,9 @@ public:
 
 	//箱のワールド取得
 	std::vector<std::unique_ptr<WorldTransform>>& GetBoxWorldTransform() { return boxWorlds_; }
+
+	//ステージセレクトボックス
+	std::vector<std::unique_ptr<WorldTransform>>& GetStageSelectBox() { return stageSelctWorlds_; }
 
 	//マップデータ格納場所
 	std::vector<std::vector<int>>& GetMapData_() { return mapData_; };
@@ -154,7 +158,8 @@ public:
 		Block,	//ブロック
 		Player,	//プレイヤー初期座標
 		Box,	//動く箱
-		Goal	//ゴール
+		Goal,	//ゴール
+		StageSelectBox //ステージセレクトの箱
 	};
 
 	static const int maxMapNum_ = 11;
@@ -190,6 +195,8 @@ private:
 	// マップチップ別のコライダー
 	std::vector<std::unique_ptr<Collider>> colliders_;
 
+	//ステージセレクトのボックス
+	std::vector<std::unique_ptr<WorldTransform>>stageSelctWorlds_;
 
 #pragma region 一時的な情報共
 	// プレイヤーのワールド

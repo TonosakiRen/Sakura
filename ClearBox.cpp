@@ -22,9 +22,6 @@ void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 
 	switch (stageNum)
 	{
-	case 0:
-		rectangleState_ = RectangleFacing::kPortrait;
-		break;
 	case 1:
 		rectangleState_ = RectangleFacing::kPortrait;
 		break;
