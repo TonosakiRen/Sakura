@@ -1,21 +1,30 @@
 #include "PlayerAnimation.h"
 #include "ImGuiManager.h"
 
+void PlayerAnimation::Initialize()
+{
+	for (int i = 0; i < Player::slimeNum; i++) {
+		sigaWorldTransform_[i].UpdateMatrix();
+	}
+	
+}
+
 void PlayerAnimation::Update()
 {
+	
+
 	//切り替えられたとき位置を初期化する
 	if (savePlayerRectangle != player_->GetRectangle()) {
 		for (int i = 0; i < Player::slimeNum; i++) {
-			slimeWorldTransform_[i].translation_ = { 0.0f,0.0f,0.0f };
-			slimeWorldTransform_[i].rotation_ = { 0.0f,0.0f,0.0f };
-			slimeWorldTransform_[i].scale_ = { 1.0f,1.0f,1.0f };
+			sigaWorldTransform_[i].translation_ = { 0.0f,0.0f,0.0f };
+			sigaWorldTransform_[i].rotation_ = player_->GetWorldTransform()->GetParent()->rotation_;
+			sigaWorldTransform_[i].scale_ = { 1.0f,1.0f,1.0f };
 		}
 
 		if (savePlayerRectangle == RectangleFacing::kPortrait) {
 
 			for (int i = 0; i < Player::slimeNum; i++) {
-				slimeWorldTransform_[i].translation_.x = 0.8f - (1.6f / Player::slimeNum) * i - ((1.6f / Player::slimeNum) / 2.0f);
-				slimeWorldTransform_[i].rotation_.z = Radian(90.0f);
+				sigaWorldTransform_[i].translation_.y = 0.8f - (1.6f / Player::slimeNum) * i - ((1.6f / Player::slimeNum) / 2.0f);
 			}
 
 			savePlayerRectangle = player_->GetRectangle();
@@ -24,15 +33,15 @@ void PlayerAnimation::Update()
 		else {
 
 			for (int i = 0; i < Player::slimeNum; i++) {
-				slimeWorldTransform_[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * i - ((3.0f / Player::slimeNum) / 2.0f);
+				sigaWorldTransform_[i].translation_.y = 1.5f - (3.0f / Player::slimeNum) * i - ((3.0f / Player::slimeNum) / 2.0f);
 			}
 
 			savePlayerRectangle = player_->GetRectangle();
 
 		}
 	}
-	ImGui::DragFloat3("pl", &slimeWorldTransform_[0].translation_.x,0.01f);
-	ImGui::DragFloat3("pr", &slimeWorldTransform_[0].rotation_.x, 0.01f);
+	ImGui::DragFloat3("pl", &sigaWorldTransform_[0].translation_.x,0.01f);
+	ImGui::DragFloat3("pr", &sigaWorldTransform_[0].rotation_.x, 0.01f);
 
 
 	switch (player_->GetRectangle())
@@ -73,19 +82,30 @@ void PlayerAnimation::Update()
 			float t = ((float)i / (float)Player::slimeNum);
 
 			slimePos.x = -distance * t * t  * soft * (float)Player::slimeNum;
-			
 
-			slimeWorldTransform_[i].translation_ = slimePos;
+			sigaWorldTransform_[i].translation_ = slimePos;
 		}
 
 		prePos = pos;
 
 		break;
-	case RectangleFacing::kLandscape: //横 x が縦　y が　横
+	case RectangleFacing::kLandscape: //横
 
+		
 		break;
 	default:
 		break;
 	}
-	
+
+	uint32_t index = player_->rotateNum_ % 4;
+	Matrix4x4 RotateZMatrix = MakeIdentity4x4();
+	RotateZMatrix = MakeRotateZMatrix(Radian(90.0f) * index);
+
+
+	//xy変換
+	for (int i = 0; i < Player::slimeNum;i++) {
+		slimeWorldTransform_[i].translation_ = sigaWorldTransform_[i].translation_ * RotateZMatrix;
+		slimeWorldTransform_[i].rotation_ = sigaWorldTransform_[i].rotation_;
+		slimeWorldTransform_[i].scale_ = sigaWorldTransform_[i].scale_;
+	}
 }

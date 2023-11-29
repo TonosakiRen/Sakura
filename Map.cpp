@@ -703,6 +703,8 @@ void Map::UpdateStateRightRotation() {
 		worldTransform_.rotation_.z = EsingFloat(t_, rotateE_.startT, rotateE_.endT);
 		// 状態変更
 		stateRequest_ = State::kNormal;
+
+		player_->IncrementRotateNum();
 	}
 }
 

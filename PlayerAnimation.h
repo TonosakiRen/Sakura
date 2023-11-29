@@ -4,7 +4,8 @@ class PlayerAnimation
 {
 public:
 
-	
+	void Initialize();
+
 	void Update();
 
 	void SetPlayer(Player* player) {
@@ -23,6 +24,8 @@ public:
 
 	Player* player_;
 	WorldTransform* slimeWorldTransform_;
+
+	WorldTransform sigaWorldTransform_[Player::slimeNum];
 
 	RectangleFacing savePlayerRectangle = RectangleFacing::kPortrait;
 };
