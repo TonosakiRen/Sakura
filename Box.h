@@ -99,7 +99,7 @@ private:
 	bool isBuried_ = false;
 	
 	//重力
-	const Vector3 gravity_ = { 0.0f,-0.5f,0.0f };
+	const Vector3 gravity_ = { 0.0f,-0.2f,0.0f };
 
 	//移動
 	Vector3 move_;

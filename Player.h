@@ -171,7 +171,7 @@ private:
 	Input* input_;
 
 	//移動速度
-	const float spd_ = 0.1f;
+	const float spd_ = 0.12f;
 
 public:
 	//縦向きスケール

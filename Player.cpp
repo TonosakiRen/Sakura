@@ -38,7 +38,7 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 	velocisity_ = { 0.0f,0.0f,0.0f };
 
 	//加速度初期
-	acceleration_ = { 0.0f,-0.05f,0.0f };
+	acceleration_ = { 0.0f,-0.04f,0.0f };
 	//acceleration_ = { 0.0f,0.00f,0.0f };
 
 	//ライティング無効化
@@ -51,7 +51,7 @@ void Player::Initialize(const std::string name, ViewProjection* viewProjection, 
 void Player::StageInitialize(const WorldTransform& pWorld)
 {
 	velocisity_ = { 0.0f,0.0f,0.0f };
-	acceleration_ = { 0.0f,-0.05f,0.0f };
+	acceleration_ = { 0.0f,-0.04f,0.0f };
 	worldTransform_ = pWorld;
 	worldTransform_.scale_ = portraitScale;
 	worldTransform_.UpdateMatrix();
@@ -485,7 +485,7 @@ void Player::UpdateState() {
 			break;
 		case PlayerState::kJump:
 			if (rectangleState_ == RectangleFacing::kPortrait) {
-				offset = { 0.0f,0.7f,0.0f };
+				offset = { 0.0f,0.65f,0.0f };
 				velocisity_ = offset;
 			}
 
@@ -505,7 +505,7 @@ void Player::UpdateState() {
 	case PlayerState::kNormal:
 		break;
 	case PlayerState::kJump:
-		velocisity_.y = clamp(velocisity_.y, -0.5f, 200.0f);
+		velocisity_.y = clamp(velocisity_.y, -0.3f, 200.0f);
 		velocisity_ += acceleration_;
 		break;
 	default:

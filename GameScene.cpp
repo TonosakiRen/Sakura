@@ -697,7 +697,7 @@ void GameScene::AllCollisionPrePosUpdate()
 
 void GameScene::CheckBoxDead() {
 	//仮で-50以下で消滅するように
-	float deadLine = 35.0f;
+	float deadLine = 32.0f;
 
 	//死んだ数チェック
 	int alliveNum_ = 0;
