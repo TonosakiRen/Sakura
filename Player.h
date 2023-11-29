@@ -142,6 +142,10 @@ public:
 		return isJump;
 	}
 
+	void IncrementRotateNum() {
+		rotateNum_++;
+	}
+
 public:
 	//本体のコライダー
 	Collider collider_;
@@ -210,4 +214,9 @@ private:
 	bool isJump = false;
 
 	bool isChangeRect_ = false;
+
+
+ public:
+	 //南海開店したか
+	 uint32_t rotateNum_ = 0;
 };

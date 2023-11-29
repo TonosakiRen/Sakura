@@ -89,7 +89,7 @@ public:
 	//マップデータ格納場所
 	std::vector<std::vector<int>>& GetMapData_() { return mapData_; };
 
-	void SetPlayer(const Player* player) {
+	void SetPlayer(Player* player) {
 		player_ = player;
 	}
 	
@@ -134,7 +134,7 @@ private://メンバ関数
 private://変数
 	Input* input_ = nullptr;
 
-	const Player* player_ = nullptr;
+	Player* player_ = nullptr;
 
 	
 	const int tileMax_=5;
