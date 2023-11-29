@@ -235,7 +235,7 @@ bool Player::IsSetPerfect(Collider& otherCollider) {
 	if (collider_.Collision(otherCollider, puchBackVector)) {
 
 		//誤差
-		float ErrorNum = 0.001f;
+		float ErrorNum = 0.00001f;
 
 		//誤差レベルの数字は0にする
 		if (puchBackVector.x<ErrorNum && puchBackVector.x>-ErrorNum) {

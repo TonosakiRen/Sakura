@@ -117,6 +117,7 @@ void GameScene::Initialize() {
 	title_->Initialize("title", &viewProjection_, &directionalLight_);
 	title_->SetRotation({ Radian(90.0f),Radian(180.0f),0.0f });
 
+	
 	uint32_t halfBlackHandle = TextureManager::Load("halfBlack.png");
 	halfBlack_.reset(Sprite::Create(halfBlackHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f }));
 	halfBlack_->size_ = { WinApp::kWindowWidth ,WinApp::kWindowHeight };
@@ -207,7 +208,7 @@ void GameScene::Initialize() {
 		}
 		
 	}
-
+	
 }
 
 void GameScene::Update() {
@@ -236,8 +237,38 @@ void GameScene::Update() {
 
 		title_->SetPosition(Vector3{ viewProjection_.translation_.x,viewProjection_.translation_.y + 10.0f,viewProjection_.translation_.z });
 
+		
+
+		float theta = (1.0f / 120.0f)*(float)std::numbers::pi*2.0f;
+
+
+		titleAnimeT_ += theta;
+
+		if (titleAnimeT_ >= (float)std::numbers::pi * 2.0f) {
+			titleAnimeT_ -= (float)std::numbers::pi * 2.0f;
+		}
+
+		float a = 1 * std::sinf(titleAnimeT_);
+
+		ChangeY_ = title_->GetWorldTransform()->translation_.z +a ;
+
+		title_->GetWorldTransform()->translation_.z = ChangeY_;
+
+#ifdef _DEBUG
+		ImGui::Begin("title");
+		ImGui::DragFloat3("pos", &title_->GetWorldTransform()->translation_.x);
+		ImGui::End();
+#endif // _DEBUG
+
+		
+
 		title_->Update();
 
+
+
+
+
+		
 		switch (inGameScene) {
 		case GameScene::Title:
 
@@ -297,14 +328,15 @@ void GameScene::Update() {
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
 
 	deadParticle_->SetMapCenter(map_->GetMapCenter());
+
 }
 
 void GameScene::TitleInitialize() {
-
+	
 }
 void GameScene::TitleUpdate() {
 
-
+	
 	//シーン移動
 	if (input_->TriggerKey(DIK_P)) {
 		sceneRequest_ = Scene::InGame;
@@ -315,6 +347,8 @@ void GameScene::TitleUpdate() {
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 
 	}
+
+
 
 }
 void GameScene::InGameInitialize() {
@@ -336,6 +370,7 @@ void GameScene::StageInitialize(int stageNum) {
 	for (auto& box : boxes_) {
 		box->SetIsDead(true);
 	}
+
 
 	spawnBoxNum = 0;
 	//ボックスの配置
@@ -436,8 +471,13 @@ void GameScene::InGameUpdate() {
 	}
 	else {
 		pauseSelectNum_ = 0;
+
+		
 		switch (inGameScene) {
 		case GameScene::Title:
+			
+
+			
 			break;
 		case GameScene::InGame:
 
@@ -533,6 +573,7 @@ void GameScene::InGameUpdate() {
 			stagesele->Update();
 		}
 	}
+
 }
 
 
@@ -686,7 +727,7 @@ void GameScene::AllCollision() {
 
 								break;
 							}
-
+							
 						}
 					}
 				}

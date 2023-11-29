@@ -126,7 +126,8 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 
 	MapPositioningInitialize();
 
-	
+
+	blockColor = blockNormalColor;
 
 	iniData_ = worldTransform_;
 }
@@ -215,7 +216,7 @@ void Map::Draw() {
 	}
 
 	if (!instancingBufferDatas.empty()) {
-		particleBox_->Draw(instancingBufferDatas, *viewProjection_, *directionalLight_,{1.0f,1.0f,1.0f,1.0f}, model_.GetUvHandle());
+		particleBox_->Draw(instancingBufferDatas, *viewProjection_, *directionalLight_, blockColor, model_.GetUvHandle());
 	}
 
 	// map中心点描画
@@ -737,6 +738,14 @@ void Map::UpdateStateRightRotation() {
 
 	// 回転量変更
 	worldTransform_.rotation_.z = EsingFloat(t_, rotateE_.startT, rotateE_.endT);
+
+	//色変更
+	blockColor.x = EsingFloat(t_, blockRotateColor.x, blockNormalColor.x);
+	blockColor.y = EsingFloat(t_, blockRotateColor.y, blockNormalColor.y);
+	blockColor.z = EsingFloat(t_, blockRotateColor.z, blockNormalColor.z);
+
+	//blockColor = blockRotateColor;
+	                      
 	// T加算
 	t_ += addT_;
 	// １以上で終了
@@ -746,6 +755,8 @@ void Map::UpdateStateRightRotation() {
 		worldTransform_.rotation_.z = EsingFloat(t_, rotateE_.startT, rotateE_.endT);
 		// 状態変更
 		stateRequest_ = State::kNormal;
+
+		blockColor = blockNormalColor;
 
 		player_->IncrementRotateNum();
 	}

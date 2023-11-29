@@ -258,9 +258,18 @@ private:
 	//回転処理に使う
 	RotationEasing rotateE_;
 
-	const int maxRotateCooltime_ = 5;
+	const int maxRotateCooltime_ = 2;
 
 	int rotateCooltime_ = 0;
+#pragma endregion
+
+#pragma region 色
+	
+	Vector4 blockColor = { 1.0f,1.0f,1.0f,1.0f };
+
+	Vector4 blockNormalColor = { 0.0f,0.9f,0.0f,1.0f };
+	Vector4 blockRotateColor = { 0.0f,1.0f,0.0f,1.0f };
+
 #pragma endregion
 
 
