@@ -32,28 +32,31 @@ void ClearBox::StageInitialize(WorldTransform gWorld,int stageNum)
 		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 3:
+		rectangleState_ = RectangleFacing::kPortrait;
+		break;
+	case 4:
 		rectangleState_ = RectangleFacing::kLandscape;
 		isRight = false;
 		break;
-	case 4:
-		rectangleState_ = RectangleFacing::kPortrait;
-		break;
 	case 5:
-		rectangleState_ = RectangleFacing::kLandscape;
-		isRight = true;
+		rectangleState_ = RectangleFacing::kPortrait;
 		break;
 	case 6:
 		rectangleState_ = RectangleFacing::kLandscape;
 		isRight = true;
 		break;
 	case 7:
-		rectangleState_ = RectangleFacing::kPortrait;
+		rectangleState_ = RectangleFacing::kLandscape;
+		isRight = true;
 		break;
 	case 8:
+		rectangleState_ = RectangleFacing::kPortrait;
+		break;
+	case 9:
 		rectangleState_ = RectangleFacing::kLandscape;
 		isRight = false;
 		break;
-	case 9:
+	case 10:
 		rectangleState_ = RectangleFacing::kLandscape;
 		isRight = true;
 		break;

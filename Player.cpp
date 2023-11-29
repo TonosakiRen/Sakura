@@ -98,21 +98,15 @@ void Player::Update() {
 		
 #pragma region キーボード入力
 		//入力による移動
-		if (input_->PushKey(DIK_A)) {
+		if (input_->PushKey(DIK_A) || input_->GetLStick().x < -10000) {
 			move_.x -= spd_;
 		}
-		if (input_->PushKey(DIK_D)) {
+		if (input_->PushKey(DIK_D) || input_->GetLStick().x > 10000) {
 			move_.x += spd_;
-		}
-		if (input_->PushKey(DIK_W)) {
-			move_.y += spd_;
-		}
-		if (input_->PushKey(DIK_S)) {
-			move_.y -= spd_;
 		}
 
 		//ジャンプ処理
-		if (velocisity_.y == 0.0f) {
+		if (velocisity_.y == 0.0f ) {
 			isJump = false;
 		}
 
@@ -120,7 +114,7 @@ void Player::Update() {
 			isJump = true;
 		}
 
-		if (input_->TriggerKey(DIK_SPACE) && isJump == false) {
+		if ((input_->TriggerKey(DIK_SPACE)|| input_->TriggerButton(XINPUT_GAMEPAD_A))&& isJump == false) {
 			stateRequest_ = PlayerState::kJump;
 			isJump = true;
 		}
