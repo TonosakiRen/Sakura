@@ -129,9 +129,51 @@ void GameScene::Initialize() {
 	stageSelectSprite_.reset(Sprite::Create(stageSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f + 108.0f }));
 	titleSelectSprite_.reset(Sprite::Create(titleSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
 	selectSprite_.reset(Sprite::Create(selectHandle, { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
+
+	uint32_t pushAHandle = TextureManager::Load("pushA.png");
+
+	uint32_t moveHandle = TextureManager::Load("move.png");
+	uint32_t jumpHandle = TextureManager::Load("jump.png");
+	uint32_t rotateHandle = TextureManager::Load("rotate.png");
+	uint32_t dropHandle = TextureManager::Load("drop.png");
+
+	pushASprite_.reset(Sprite::Create(pushAHandle, { WinApp::kWindowWidth / 2.0f, 900.0f}));
+
+	rotateSprite_.reset(Sprite::Create(rotateHandle, { 1636.0f,244.0f }));
+	moveSprite_.reset(Sprite::Create(moveHandle, { 272.0f,222.0f }));
+	jumpSprite_.reset(Sprite::Create(jumpHandle, { 272.0f,611.0f }));
+	dropSprite_.reset(Sprite::Create(dropHandle, { 1006.0f,244.0f }));
+
+	uint32_t pauseHandle = TextureManager::Load("pause.png");
+	pauseSprite_.reset(Sprite::Create(pauseHandle,{1862.0f,1015.0f}));
+
+	size_t bgmHandle = audio_->SoundLoadWave("music.wav");
+	size_t bgmPlayHandle = audio_->SoundPlayLoopStart(bgmHandle);
+	audio_->SetValume(bgmPlayHandle, 0.1f);
+
+	uint32_t numHandle = TextureManager::Load("1.png");
+	twoSprite_.reset(Sprite::Create(numHandle));
+	numHandle = TextureManager::Load("2.png");
+	threeSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("3.png");
+	fourSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("4.png");
+	fiveSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("5.png");
+	sixSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("6.png");
+	sevenSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("7.png");
+	eightSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("8.png");
+	nineSprite_.reset(Sprite::Create(numHandle));
+	 numHandle = TextureManager::Load("10.png");
+	tenSprite_.reset(Sprite::Create(numHandle));
 }
 
 void GameScene::Update() {
+
+	ImGui::DragFloat3("v",&pauseSprite_->position_.x);
 
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		shutDown = true;
@@ -165,6 +207,9 @@ void GameScene::Update() {
 				if (!isBackTitle) {
 					if (input_->TriggerKey(DIK_T) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
 						isTitleCameraMove = true;
+						size_t handle = audio_->SoundLoadWave("Select.wav");
+						size_t selectHandle = audio_->SoundPlayWave(handle);
+						audio_->SetValume(selectHandle, 0.1f);
 					}
 
 					if (isTitleCameraMove) {
@@ -665,6 +710,9 @@ void GameScene::AllCollision() {
 				if (clearBox_->IsHitCollision(player_->collider_) && player_->GetRectangle() == clearBox_->GetRectangle()) {
 					//シーン変更フラグをON
 					player_->isGoal_ = true;
+					/*size_t handle = audio_->SoundLoadWave("Clear.wav");
+					size_t clearHandle = audio_->SoundPlayWave(handle);
+					audio_->SetValume(clearHandle, 0.1f);*/
 				}
 			}
 
@@ -863,9 +911,31 @@ void GameScene::PostSpriteDraw()
 	}
 	switch (scene_) {
 	case GameScene::Scene::Title:
+		if (!isTitleCameraMove) {
+			pushASprite_->Draw();
+		}
 		break;
 	case GameScene::Scene::InGame:
-		map_->DrawSprite();
+		switch (inGameScene)
+		{
+		case GameScene::Title:
+			break;
+		case GameScene::InGame:
+			map_->DrawSprite();
+
+
+			if (mapPassNum_ == 1) {
+				rotateSprite_->Draw();
+				moveSprite_->Draw();
+				jumpSprite_->Draw();
+			}
+			if (mapPassNum_ == 2) {
+				dropSprite_->Draw();
+			}
+			break;
+		default:
+			break;
+		}
 		break;
 	default:
 		break;
@@ -873,7 +943,7 @@ void GameScene::PostSpriteDraw()
 }
 
 void GameScene::PostUIDraw() {
-	
+	pauseSprite_->Draw();
 	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
