@@ -9,12 +9,21 @@ public:
 
 	void SetPlayer(Player* player) {
 		player_ = player;
-		slimeWorldTrasnform_ = player->GetSlimeWorldTransform();
+		slimeWorldTransform_ = player->GetSlimeWorldTransform();
 	}
 
-	Player* player_;
-	WorldTransform* slimeWorldTrasnform_;
+	Vector3 pos;
+	Vector3 prePos;
 
-	RectangleFacing savePlayerRectAngele = RectangleFacing::kPortrait;
+	float playerHight = 3.0f;
+
+	float softMax = 1.0f;
+	float softSpeed = 0.01f;
+	float soft= 0.0f;
+
+	Player* player_;
+	WorldTransform* slimeWorldTransform_;
+
+	RectangleFacing savePlayerRectangle = RectangleFacing::kPortrait;
 };
 
