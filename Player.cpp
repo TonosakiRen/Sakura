@@ -123,9 +123,10 @@ void Player::Update() {
 		//状態更新
 		UpdateState();
 
+		
 		//移動量に合わせて更新
 		move_ += velocisity_;
-		move_ = move_ * NormalizeMakeRotateMatrix(Inverse(worldTransform_.matWorld_));
+		move_ = move_ * NormalizeMakeRotateMatrix(Inverse(worldTransform_.GetParent()->matWorld_));
 		//加算
 		worldTransform_.translation_ += move_;
 

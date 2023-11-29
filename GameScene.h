@@ -143,6 +143,9 @@ private://メンバ関数
 	//playerAnimation]
 	std::unique_ptr<PlayerAnimation> playerAnimation_;
 
+	int spawnBoxNum = 0;
+
+
 	std::unique_ptr<GameObject> title_;
 
 	Vector3 aa;
