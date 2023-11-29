@@ -145,6 +145,15 @@ void Map::StageInitialize(int num)
 void Map::Update() {
 	ImGuiDraw();
 
+	if (preIsRotating == !isRotating) {
+		isRotationInput_ = false;
+		rotateCooltime_ = 0;
+	}
+
+	if (++rotateCooltime_ >= maxRotateCooltime_) {
+		isRotationInput_ = true;
+	}
+
 	if (preIsRotating == isRotating) {
 		rotateComplete = false;
 	}
@@ -160,6 +169,7 @@ void Map::Update() {
 		//MapEditor();
 	}
 
+	
 
 	UpdateMatrix();
 }
@@ -704,10 +714,12 @@ void Map::InitializeStateLeftRotation() {
 #pragma region State更新
 
 void Map::UpdateStateNormal() {
+	//入力可能フラグがONの場合
+	if (isRotationInput_) {
+		if ((input_->PushKey(DIK_E) || input_->TriggerButton(XINPUT_GAMEPAD_RIGHT_SHOULDER)) && player_->GetIsJump() == false) {
+			stateRequest_ = State::kRightRotation;
 
-	if ((input_->PushKey(DIK_E) || input_->TriggerButton(XINPUT_GAMEPAD_RIGHT_SHOULDER)) && player_->GetIsJump() == false) {
-		stateRequest_ = State::kRightRotation;
-		
+		}
 	}
 }
 
