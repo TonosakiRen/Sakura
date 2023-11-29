@@ -705,7 +705,7 @@ void Map::InitializeStateLeftRotation() {
 
 void Map::UpdateStateNormal() {
 
-	if (input_->PushKey(DIK_E) && player_->GetIsJump() == false) {
+	if ((input_->PushKey(DIK_E) || input_->TriggerButton(XINPUT_GAMEPAD_RIGHT_SHOULDER)) && player_->GetIsJump() == false) {
 		stateRequest_ = State::kRightRotation;
 		
 	}

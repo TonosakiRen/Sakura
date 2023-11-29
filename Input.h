@@ -93,50 +93,58 @@ public:
 	}
 
 	bool DownLStick(SHORT deadZone = -20000) {
-		if (xInputState_.Gamepad.sThumbLY < deadZone) {
+		if (xInputState_.Gamepad.sThumbLY < deadZone && downCoolTime_<= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool UpLStick(SHORT deadZone = 20000) {
-		if (xInputState_.Gamepad.sThumbLY < deadZone) {
+		if (xInputState_.Gamepad.sThumbLY > deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool DownLeftLStick(SHORT deadZone = -20000) {
-		if (xInputState_.Gamepad.sThumbLX < deadZone) {
+		if (xInputState_.Gamepad.sThumbLX < deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool DownRightLStick(SHORT deadZone = 20000) {
-		if (xInputState_.Gamepad.sThumbLX < deadZone) {
+		if (xInputState_.Gamepad.sThumbLX < deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 
 	bool DownRStick(SHORT deadZone = -20000) {
-		if (xInputState_.Gamepad.sThumbRY < deadZone) {
+		if (xInputState_.Gamepad.sThumbRY < deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool UpRStick(SHORT deadZone = 20000) {
-		if (xInputState_.Gamepad.sThumbRY < deadZone) {
+		if (xInputState_.Gamepad.sThumbRY > deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool DownLeftRStick(SHORT deadZone = -20000) {
-		if (xInputState_.Gamepad.sThumbRX < deadZone) {
+		if (xInputState_.Gamepad.sThumbRX < deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
 	}
 	bool DownRightRStick(SHORT deadZone = 20000) {
-		if (xInputState_.Gamepad.sThumbRX < deadZone) {
+		if (xInputState_.Gamepad.sThumbRX > deadZone && downCoolTime_ <= 0) {
+			downCoolTime_ = coolTime;
 			return true;
 		}
 		return false;
@@ -156,6 +164,8 @@ private:
 	XINPUT_STATE xInputState_{};
 	XINPUT_STATE preXInputState_{};
 	bool isGamePadConnect = false;
+	int downCoolTime_ = 0;
+	const int coolTime = 10;
 
 private:
 	Input() = default;

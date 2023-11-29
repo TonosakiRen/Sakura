@@ -23,6 +23,9 @@
 class GameScene {
 
 public:
+
+	static bool shutDown;
+
 	GameScene();
 	~GameScene();
 
@@ -33,6 +36,7 @@ public:
 	void ParticleBoxDraw();
 	void PreSpriteDraw();
 	void PostSpriteDraw();
+	void PostUIDraw();
 	void Draw(CommandContext& commandContext);
 	void UIDraw(CommandContext& commandContext);
 
@@ -158,5 +162,16 @@ private://メンバ関数
 	bool isStageSelect_ = false;
 
 	std::optional<int> nextmapPass_ = std::nullopt;
+	std::unique_ptr<Sprite> halfBlack_;
+
+	bool isPause_ = false;
+	int pauseSelectNum_ = 0;
+
+	bool isBackTitle = false;
+
+	std::unique_ptr<Sprite> gameCloseSprite_;
+	std::unique_ptr<Sprite> stageSelectSprite_;
+	std::unique_ptr<Sprite> titleSelectSprite_;
+	std::unique_ptr<Sprite> selectSprite_;
 };
 

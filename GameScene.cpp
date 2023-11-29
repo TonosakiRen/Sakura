@@ -5,6 +5,8 @@
 
 using namespace DirectX;
 
+bool GameScene::shutDown = false;
+
 void (GameScene::* GameScene::SceneUpdateTable[])() = {
 	&GameScene::TitleUpdate,
 	&GameScene::InGameUpdate,
@@ -111,11 +113,31 @@ void GameScene::Initialize() {
 	title_ = std::make_unique<GameObject>();
 	title_->Initialize("title", &viewProjection_, &directionalLight_);
 	title_->SetRotation({ Radian(90.0f),Radian(180.0f),0.0f });
+
+	uint32_t halfBlackHandle = TextureManager::Load("halfBlack.png");
+	halfBlack_.reset(Sprite::Create(halfBlackHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f }));
+	halfBlack_->size_ = { WinApp::kWindowWidth ,WinApp::kWindowHeight };
+
+	uint32_t gameloseHandle = TextureManager::Load("game_close.png");
+	uint32_t titleSelectHandle = TextureManager::Load("titleSelect.png");
+	uint32_t stageSelectHandle = TextureManager::Load("stageselect.png");
+	uint32_t selectHandle = TextureManager::Load("select.png");
+
+	gameCloseSprite_.reset(Sprite::Create(gameloseHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f + 216.0f }));
+	stageSelectSprite_.reset(Sprite::Create(stageSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f + 108.0f }));
+	titleSelectSprite_.reset(Sprite::Create(titleSelectHandle, { WinApp::kWindowWidth / 2.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
+	selectSprite_.reset(Sprite::Create(selectHandle, { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f ,WinApp::kWindowHeight / 2.0f + 150.0f }));
 }
 
 void GameScene::Update() {
+
+	if (input_->TriggerKey(DIK_ESCAPE)) {
+		shutDown = true;
+	}
+
 	//camera light
 	{
+
 		//カメラの座標をマップの中心点に合わせる
 		Vector3 mapCenterV3 = map_->GetMapCenter();
 		viewProjection_.translation_.x = mapCenterV3.x;
@@ -131,32 +153,43 @@ void GameScene::Update() {
 
 		title_->SetPosition(Vector3{ viewProjection_.translation_.x,viewProjection_.translation_.y + 10.0f,viewProjection_.translation_.z });
 		
-
 		title_->Update();
 
 		switch (inGameScene)
 		{
 		case GameScene::Title:
-			if (input_->TriggerKey(DIK_T)) {
-				isTitleCameraMove = true;
-			}
 
-			if (isTitleCameraMove) {
-				viewProjection_.target_.x = Easing::easing(titleCameraT, Radian(-90.0f),0.0f,0.02f);
-			}
-			else {
-				viewProjection_.target_.x = Radian(-90.0f);
-			}
+			if (!isPause_) {
+				if (!isBackTitle) {
+					if (input_->TriggerKey(DIK_T) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
+						isTitleCameraMove = true;
+					}
 
-			if (titleCameraT >= 1.0f) {
-				inGameScene = InGame;
-				isTitleCameraMove = false;
-				titleCameraT = 0.0f;
+					if (isTitleCameraMove) {
+						viewProjection_.target_.x = Easing::easing(titleCameraT, Radian(-90.0f), 0.0f, 0.02f);
+					}
+					else {
+						viewProjection_.target_.x = Radian(-90.0f);
+					}
+
+					if (titleCameraT >= 1.0f) {
+						inGameScene = InGame;
+						isTitleCameraMove = false;
+						titleCameraT = 0.0f;
+					}
+				}
+				else {
+					viewProjection_.target_.x = Easing::easing(titleCameraT, 0.0f, Radian(-90.0f), 0.02f);
+					if (titleCameraT >= 1.0f) {
+						isBackTitle = false;
+						titleCameraT = 0.0f;
+					}
+				}
 			}
 			
 			break;
 		case GameScene::InGame:
-			
+			viewProjection_.target_.x = 0.0f;
 		default:
 			break;
 		}
@@ -177,7 +210,6 @@ void GameScene::Update() {
 	(this->*SceneUpdateTable[static_cast<size_t>(scene_)])();
 
 	deadParticle_->SetMapCenter(map_->GetMapCenter());
-	deadParticle_->Update();
 }
 
 void GameScene::TitleInitialize() {
@@ -240,27 +272,74 @@ void GameScene::StageInitialize(int stageNum)
 		mapPassNum_++;
 	}
 	
-	
 	isHitClearBox_ = false;
+
+	
 
 }
 
 
 void GameScene::InGameUpdate() {
 
-	switch (inGameScene)
-	{
-	case GameScene::Title:
-		break;
-	case GameScene::InGame:
+	if ((input_->TriggerKey(DIK_P)|| input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == false) {
+		isPause_ = true;
+	}else
+	if ((input_->TriggerKey(DIK_P) || input_->TriggerButton(XINPUT_GAMEPAD_START)) && isPause_ == true) {
+		isPause_ = false;
+	}
+	ImGui::Text("%d", pauseSelectNum_);
 
-		switch (sceneAnime_) {
-		case GameScene::SceneAnimation::kStart:
-			if (map_->StartAnimation()) {
-				sceneAnime_ = SceneAnimation::kInGame;
+	if (isPause_) {
+
+		if (input_->TriggerKey(DIK_DOWN) || input_->DownLStick()) {
+			pauseSelectNum_++;
+		}
+		if (input_->TriggerKey(DIK_UP) || input_->UpLStick()) {
+			pauseSelectNum_--;
+		}
+		pauseSelectNum_ = clamp(pauseSelectNum_, 0, 2);
+
+		if (input_->TriggerKey(DIK_SPACE) || input_->TriggerButton(XINPUT_GAMEPAD_A)) {
+			if (pauseSelectNum_ == 0) {
+				if (inGameScene == InGame) {
+					isBackTitle = true;
+				}
+				inGameScene = Title;
+				StageInitialize(0);
+				isPause_ = false;
+			}else
+			if (pauseSelectNum_ == 1) {
+				if (inGameScene == Title) {
+					isTitleCameraMove = true;
+				}
+				else {
+					inGameScene = InGame;
+					StageInitialize(0);
+				}
+				isPause_ = false;
 			}
-			map_->UpdateMatrix();
-			player_->UpdateMatiries();
+			else if (pauseSelectNum_ == 2) {
+				shutDown = true;
+			}
+			
+		}
+		
+	}
+	else {
+		pauseSelectNum_ = 0;
+		switch (inGameScene)
+		{
+		case GameScene::Title:
+			break;
+		case GameScene::InGame:
+
+			switch (sceneAnime_) {
+			case GameScene::SceneAnimation::kStart:
+				if (map_->StartAnimation()) {
+					sceneAnime_ = SceneAnimation::kInGame;
+				}
+				map_->UpdateMatrix();
+				player_->UpdateMatiries();
 
 			if (!isStageSelect_) {
 				clearBox_->UpdateMatirx();
@@ -275,8 +354,18 @@ void GameScene::InGameUpdate() {
 			}
 			break;
 		case GameScene::SceneAnimation::kInGame:
+				if (clearBox_->GetWorldTransform()) {
+					clearBox_->UpdateMatirx();
+				}
+				for (auto& box : boxes_) {
+					if (!box->GetIsDead()) {
+						box->UpdateMatrix();
+					}
+				}
+				break;
+			case GameScene::SceneAnimation::kInGame:
 
-			
+
 				map_->Update();
 				map_->MapEditor(viewProjection_);
 
@@ -303,10 +392,12 @@ void GameScene::InGameUpdate() {
 
 
 				playerAnimation_->Update();
-			
 
-			//ボックスの枠外落下処理
-			CheckBoxDead();
+				deadParticle_->Update();
+
+
+				//ボックスの枠外落下処理
+				CheckBoxDead();
 
 			//条件を満たしている場合のシーンチェンジ
 			InGameSceneChange();
@@ -329,10 +420,7 @@ void GameScene::InGameUpdate() {
 		}
 
 
-		break;
-	default:
-		break;
-	}
+	
 
 	//セレクトシーンだけ更新
 	if (isStageSelect_) {
@@ -614,14 +702,6 @@ void GameScene::InGameSceneChange() {
 		map_->SetAnimeRZ(map_->GetWorldTransform()->rotation_.z);
 	}
 
-	if (input_->TriggerKey(DIK_ESCAPE)) {
-		sceneRequest_ = Scene::Title;
-	}
-
-	if (input_->TriggerKey(DIK_P)) {
-		sceneRequest_ = Scene::Title;
-	}
-
 	if (input_->TriggerKey(DIK_2)) {
 		isStageChange_ = true;
 	}
@@ -665,11 +745,6 @@ void GameScene::ClearInitialize() {
 
 void GameScene::ClearUpdate() {
 
-
-
-	if (input_->TriggerKey(DIK_SPACE)) {
-		sceneRequest_ = Scene::Title;
-	}
 }
 
 void GameScene::ModelDraw() {
@@ -740,12 +815,42 @@ void GameScene::PreSpriteDraw() {
 	}
 }
 
-void GameScene::PostSpriteDraw() {
+void GameScene::PostSpriteDraw()
+{
+	if (isPause_) {
+		halfBlack_->Draw();
+		gameCloseSprite_->Draw();
+		stageSelectSprite_->Draw();
+		titleSelectSprite_->Draw();
+		if (pauseSelectNum_ == 0) {
+			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, titleSelectSprite_->position_.y };
+		}
+		else if (pauseSelectNum_ == 1) {
+			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, stageSelectSprite_->position_.y };
+		}
+		else {
+			selectSprite_->position_ = { WinApp::kWindowWidth / 2.0f - 226.0f - 30.0f, gameCloseSprite_->position_.y };
+		}
+		selectSprite_->Draw();
+
+	}
 	switch (scene_) {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
 		map_->DrawSprite();
+		break;
+	default:
+		break;
+	}
+}
+
+void GameScene::PostUIDraw() {
+	
+	switch (scene_) {
+	case GameScene::Scene::Title:
+		break;
+	case GameScene::Scene::InGame:
 		break;
 	default:
 		break;
@@ -774,11 +879,16 @@ void GameScene::Draw(CommandContext& commandContext) {
 	ParticleBox::PreDraw(commandContext);
 	ParticleBoxDraw();
 	ParticleBox::PostDraw();
+
+	// 背景スプライト描画
+	Sprite::PreDraw(commandContext);
+	PostSpriteDraw();
+	Sprite::PostDraw();
 }
 
 void GameScene::UIDraw(CommandContext& commandContext) {
 	// 前景スプライト描画
 	Sprite::PreDraw(commandContext);
-	PostSpriteDraw();
+	PostUIDraw();
 	Sprite::PostDraw();
 }

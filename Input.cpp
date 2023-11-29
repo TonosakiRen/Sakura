@@ -35,6 +35,7 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 }
 
 void Input::Update() {
+	downCoolTime_--;
 	devKeyboard_->Acquire();
 	devMouse_->Acquire();
 
