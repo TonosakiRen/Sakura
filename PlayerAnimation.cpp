@@ -36,6 +36,7 @@ void PlayerAnimation::Update()
 
 	//切り替えられたとき位置を初期化する
 	if (savePlayerRectangle != player_->GetRectangle()) {
+		softVel = 0.0f;
 		for (int i = 0; i < Player::slimeNum; i++) {
 			sigaWorldTransform_[i].translation_ = { 0.0f,0.0f,0.0f };
 			sigaWorldTransform_[i].rotation_ = player_->GetWorldTransform()->GetParent()->rotation_;
@@ -66,7 +67,10 @@ void PlayerAnimation::Update()
 
 	pos = MakeTranslation(player_->GetWorldTransform()->matWorld_);
 
+	
+
 	if (!Map::isRotating || !player_->isChangeAnimationRect_) {
+
 		switch (player_->GetRectangle())
 		{
 		case RectangleFacing::kPortrait: //縦
@@ -80,7 +84,7 @@ void PlayerAnimation::Update()
 				slimePos.y = (i * (playerHight / Player::slimeNum)) - ((playerHight - (playerHight / Player::slimeNum)) * 0.5f);
 
 				float distance = pos.x - prePos.x;
-				
+
 				if (softVel > -distance) {
 					softVel -= softSpeed;
 				}
@@ -90,7 +94,7 @@ void PlayerAnimation::Update()
 
 				float t = ((float)i / (float)Player::slimeNum);
 
-				slimePos.x = t * t  * softVel * (float)Player::slimeNum * softHight;
+				slimePos.x = t * t * softVel * (float)Player::slimeNum * softHight;
 				slimePos.y -= t * t * fabsf(softVel) * 5.0f;
 
 				sigaWorldTransform_[i].translation_ = slimePos;

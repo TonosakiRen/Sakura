@@ -123,7 +123,7 @@ size_t Audio::SoundLoadWave(const char* filename) {
 
 #pragma region ファイルオープン
     //directryPass
-    std::string directryPass = "Resources/Sounds/";
+    std::string directryPass = "Resources/sounds/";
     // ファイル入出ストリームのインスタンス
     std::ifstream file;
     // wavファイルをバイナリモードで開く

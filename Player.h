@@ -15,6 +15,7 @@ enum class PlayerState {
 };
 
 
+class Audio;
 
 class Player :
 	public GameObject
@@ -180,6 +181,8 @@ public:
 
 private:
 
+	Audio* audio_ = nullptr;
+
 
 	//状態変数
 	PlayerState state_ = PlayerState::kNormal;
@@ -230,4 +233,6 @@ private:
 	 float goalT_ = 0.0f;
 
 	 bool isChangeScaled = false;
+
+	 bool isMoveSound_ = false;
 };

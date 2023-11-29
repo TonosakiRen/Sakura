@@ -11,15 +11,18 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "Map.h"
-#include"Box.h"
-#include"ClearBox.h"
+#include "Box.h"
+#include "ClearBox.h"
 #include "PlayerAnimation.h"
 
 #include "DeadLineParticle.h"
 
 #include"SelectStage.h"
 
+
 #include <optional>
+class Audio;
+
 class GameScene {
 
 public:
@@ -173,5 +176,7 @@ private://メンバ関数
 	std::unique_ptr<Sprite> stageSelectSprite_;
 	std::unique_ptr<Sprite> titleSelectSprite_;
 	std::unique_ptr<Sprite> selectSprite_;
+
+	Audio* audio_ = nullptr;
 };
 
