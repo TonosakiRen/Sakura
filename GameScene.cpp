@@ -686,7 +686,9 @@ void GameScene::AllCollision() {
 		//プレイヤーが死んだら初期化
 		if (player_->GetIsDead()) {
 			//シーン変更フラグをON
-			StageInitialize(mapPassNum_ - 1);
+			isStageChange_ = true;
+			nextmapPass_ = mapPassNum_ - 1;
+			//StageInitialize(mapPassNum_ - 1);
 		}
 
 #pragma endregion	
@@ -798,7 +800,11 @@ void GameScene::AllCollision() {
 			if (!isStageSelect_) {
 				clearBox_->Draw();
 			}
-			player_->Draw();
+
+			if (!player_->GetIsDead()) {
+				player_->Draw();
+			}
+
 			for (auto& box : boxes_) {
 				box->Draw();
 			}

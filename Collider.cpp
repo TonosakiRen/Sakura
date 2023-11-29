@@ -29,6 +29,8 @@ void Collider::Initialize(WorldTransform* objectWorldTransform, const std::strin
 	cube_.SetEnableLighting(false);
 	name_ = name;
 	cube_.Initialize(viewProjection, directionalLight);
+
+
 }
 
 void Collider::AdjustmentScale()
