@@ -130,6 +130,10 @@ public:
 		isDead_ = isdead;
 	}
 
+	void SetChangeRect(bool setChangeRect) {
+		isChangeRect_ = setChangeRect;
+	}
+
 	bool GetIsDead() {
 		return isDead_;
 	}
@@ -204,4 +208,6 @@ private:
 	bool isDead_ = false;
 
 	bool isJump = false;
+
+	bool isChangeRect_ = false;
 };

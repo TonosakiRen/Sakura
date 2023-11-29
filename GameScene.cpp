@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "externals/imgui/imgui.h"
 #include <cassert>
+#include "Easing.h"
 
 using namespace DirectX;
 
@@ -28,6 +29,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_.y = 7.0f;
 	viewProjection_.translation_.z = -43.0f;
+	viewProjection_.target_.x = -90.0f;
 
 
 	directionalLight_.Initialize();
@@ -74,6 +76,10 @@ void GameScene::Initialize() {
 	clearBox_->Initialize("clearBox", &viewProjection_, &directionalLight_, map_->GetClearW());
 
 	bikkuri_ = TextureManager::Load("!.png");
+
+	title_ = std::make_unique<GameObject>();
+	title_->Initialize("title", &viewProjection_, &directionalLight_);
+	title_->SetRotation({ Radian(90.0f),Radian(180.0f),0.0f });
 }
 
 void GameScene::Update() {
@@ -92,13 +98,41 @@ void GameScene::Update() {
 		}
 		viewProjection_.translation_.z = -43.0f - (mostlength - 10.0f) * 2.0f;
 
+		title_->SetPosition(Vector3{ viewProjection_.translation_.x,viewProjection_.translation_.y + 10.0f,viewProjection_.translation_.z });
+		
+
+		title_->Update();
+
+		switch (inGameScene)
+		{
+		case GameScene::Title:
+			if (input_->TriggerKey(DIK_T)) {
+				isTitleCameraMove = true;
+			}
+
+			if (isTitleCameraMove) {
+				viewProjection_.target_.x = Easing::easing(titleCameraT, Radian(-90.0f),0.0f,0.02f);
+			}
+			else {
+				viewProjection_.target_.x = Radian(-90.0f);
+			}
+
+			if (titleCameraT >= 1.0f) {
+				inGameScene = InGame;
+				isTitleCameraMove = false;
+				titleCameraT = 0.0f;
+			}
+			
+			break;
+		case GameScene::InGame:
+			
+		default:
+			break;
+		}
+
 		// camera
 		viewProjection_.DebugMove();
 		viewProjection_.UpdateMatrix();
-
-		// light
-		directionalLight_.direction_ = Normalize(directionalLight_.direction_);
-		directionalLight_.UpdateDirectionalLight();
 	}
 	Collider::SwitchIsDrawCollider();
 
@@ -172,65 +206,74 @@ void GameScene::StageInitialize(int stageNum)
 
 void GameScene::InGameUpdate() {
 
-
-
-	switch (sceneAnime_) {
-	case GameScene::SceneAnimation::kStart:
-		if (map_->StartAnimation()) {
-			sceneAnime_ = SceneAnimation::kInGame;
-		}
-		map_->UpdateMatrix();
-		player_->UpdateMatiries();
-		clearBox_->UpdateMatirx();
-		for (auto& box : boxes_) {
-			if (!box->GetIsDead()) {
-				box->UpdateMatrix();
-			}
-		}
+	switch (inGameScene)
+	{
+	case GameScene::Title:
 		break;
-	case GameScene::SceneAnimation::kInGame:
-		map_->Update();
-		map_->MapEditor(viewProjection_);
+	case GameScene::InGame:
 
-		clearBox_->Update();
-
-		player_->Update();
-
-		for (auto& box : boxes_) {
-			box->Update();
-		}
-
-		//マップが回転していないときのみコリジョン処理
-		if (!Map::isRotating) {
-			AllCollision();
-			AllCollisionPrePosUpdate();
-		}
-
-	playerAnimation_->Update();
-
-	//ボックスの枠外落下処理
-	CheckBoxDead();
-
-		//条件を満たしている場合のシーンチェンジ
-		InGameSceneChange();
-		break;
-	case GameScene::SceneAnimation::kEnd:
-		if (map_->EndAnimation()) {
-			NextScene();
-		}
-		map_->UpdateMatrix();
-		player_->UpdateMatiries();
-		clearBox_->UpdateMatirx();
-		for (auto& box : boxes_) {
-			if (!box->GetIsDead()) {
-				box->UpdateMatrix();
+		switch (sceneAnime_) {
+		case GameScene::SceneAnimation::kStart:
+			if (map_->StartAnimation()) {
+				sceneAnime_ = SceneAnimation::kInGame;
 			}
+			map_->UpdateMatrix();
+			player_->UpdateMatiries();
+			clearBox_->UpdateMatirx();
+			for (auto& box : boxes_) {
+				if (!box->GetIsDead()) {
+					box->UpdateMatrix();
+				}
+			}
+			break;
+		case GameScene::SceneAnimation::kInGame:
+			map_->Update();
+			map_->MapEditor(viewProjection_);
+
+			clearBox_->Update();
+
+			player_->Update();
+
+			for (auto& box : boxes_) {
+				box->Update();
+			}
+
+			//マップが回転していないときのみコリジョン処理
+			if (!Map::isRotating) {
+				AllCollision();
+				AllCollisionPrePosUpdate();
+			}
+
+			playerAnimation_->Update();
+
+			//ボックスの枠外落下処理
+			CheckBoxDead();
+
+			//条件を満たしている場合のシーンチェンジ
+			InGameSceneChange();
+			break;
+		case GameScene::SceneAnimation::kEnd:
+			if (map_->EndAnimation()) {
+				NextScene();
+			}
+			map_->UpdateMatrix();
+			player_->UpdateMatiries();
+			clearBox_->UpdateMatirx();
+			for (auto& box : boxes_) {
+				if (!box->GetIsDead()) {
+					box->UpdateMatrix();
+				}
+			}
+			break;
+		default:
+			break;
 		}
+
+
 		break;
 	default:
 		break;
 	}
-	
 
 
 }
@@ -357,6 +400,7 @@ void GameScene::AllCollision() {
 							//状態変更
 							player_->SetBoxState(RectangleFacing::kLandscape);
 							isActivate_ = true;
+							player_->SetChangeRect(true);
 							break;
 						}
 					}
@@ -528,7 +572,7 @@ void GameScene::ModelDraw() {
 	case GameScene::Scene::Title:
 		break;
 	case GameScene::Scene::InGame:
-
+		title_->Draw();
 		clearBox_->Draw();
 		player_->Draw();
 		for (auto& box : boxes_) {

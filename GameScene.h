@@ -127,10 +127,24 @@ private://メンバ関数
 		kEnd
 	};
 
-	SceneAnimation sceneAnime_ = SceneAnimation::kInGame;
+	//これがホントのシーンってな
+	enum InGameScene {
+		Title,
+		InGame
+	};
 
+	InGameScene inGameScene = InGameScene::Title;
+	bool isTitleCameraMove = false;
+	float titleCameraT = 0.0f;
+
+
+	SceneAnimation sceneAnime_ = SceneAnimation::kInGame;
 
 	//playerAnimation]
 	std::unique_ptr<PlayerAnimation> playerAnimation_;
+
+	std::unique_ptr<GameObject> title_;
+
+	Vector3 aa;
 };
 

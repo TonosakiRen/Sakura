@@ -85,7 +85,7 @@ public:
 	/// <param name="mode">イージングモード</param>
 	/// <param name="isAdd">tを加算するか</param>
 	/// <returns></returns>
-	static float easing(float& t, float start, float end, float speed, EasingMode easingMode, bool isAdd = true);
+	static float easing(float& t, float start, float end, float speed, EasingMode easingMode = easeNormal, bool isAdd = true);
 
 	/// <summary>
 	/// イージングで数がほしいとき
@@ -106,7 +106,7 @@ public:
 	/// <param name="mode">イージングモード</param>
 	/// <param name="isAdd">tを加算するか</param>
 	/// <returns></returns>
-	static Vector2 easing(float& t, Vector2 start, Vector2 end, float speed, EasingMode easingMode, bool isAdd = true);
+	static Vector2 easing(float& t, Vector2 start, Vector2 end, float speed, EasingMode easingMode = easeNormal , bool isAdd = true);
 
 	/// <summary>
 	/// イージング
@@ -118,11 +118,11 @@ public:
 	/// <param name="mode">イージングモード</param>
 	/// <param name="isAdd">tを加算するか</param>
 	/// <returns></returns>
-	static Vector3 easing(float& t, Vector3 start, Vector3 end, float speed, EasingMode easingMode, bool isAdd = true);
+	static Vector3 easing(float& t, Vector3 start, Vector3 end, float speed, EasingMode easingMode = easeNormal, bool isAdd = true);
 
-	static Vector2 Bezier(const Vector2& p0, const Vector2& p1, const Vector2& p2, float& t, float speed, EasingMode easingMode, bool isAdd = true);
+	static Vector2 Bezier(const Vector2& p0, const Vector2& p1, const Vector2& p2, float& t, float speed, EasingMode easingMode = easeNormal, bool isAdd = true);
 
-	static Vector2 Bezier(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Vector2& p3, float& t, float speed, EasingMode easingMode, bool isAdd = true);
+	static Vector2 Bezier(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Vector2& p3, float& t, float speed, EasingMode easingMode = easeNormal, bool isAdd = true);
 
 
 private:
