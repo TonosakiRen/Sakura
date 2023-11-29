@@ -18,9 +18,11 @@ public:
 
 	float playerHight = 3.0f;
 
-	float softMax = 1.0f;
-	float softSpeed = 0.01f;
-	float soft= 0.0f;
+	float softSpeed = 0.002f;
+	float softVel = 0.0f;
+
+	int direction = 0;
+	int preDirection = 0;
 
 	Player* player_;
 	WorldTransform* slimeWorldTransform_;

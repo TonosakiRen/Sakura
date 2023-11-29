@@ -74,25 +74,14 @@ void PlayerAnimation::Update()
 
 			for (int i = 0; i < Player::slimeNum; i++) {
 
-
-				if (prePos.x != pos.x) {
-					if (softMax > soft) {
-						soft += softSpeed;
-					}
-
-					if (soft > softMax) {
-						soft = softMax;
-					}
+				if (prePos.x > pos.x) {
+					direction = 1;
 				}
-				else {
-					if (softMax < 0) {
-						soft -= softSpeed * 2.0f;
-					}
-
-					if (soft < 0) {
-						soft = 0;
-					}
+				else if (prePos.x < pos.x) {
+					direction = 0;
 				}
+
+			
 
 				Vector3 slimePos = { 0.0f,0.0f,0.0f };
 
@@ -100,10 +89,18 @@ void PlayerAnimation::Update()
 				slimePos.y = (i * (playerHight / Player::slimeNum)) - ((playerHight - (playerHight / Player::slimeNum)) * 0.5f);
 
 				float distance = pos.x - prePos.x;
+				
+				if (softVel > -distance) {
+					softVel -= softSpeed;
+				}
+				else if (softVel < -distance) {
+					softVel += softSpeed;
+				}
 
 				float t = ((float)i / (float)Player::slimeNum);
 
-				slimePos.x = -distance * t * t * soft * (float)Player::slimeNum;
+				slimePos.x = t * t  * softVel * (float)Player::slimeNum;
+				slimePos.y -= t * t * fabsf(softVel) * 5.0f;
 
 				sigaWorldTransform_[i].translation_ = slimePos;
 			}
