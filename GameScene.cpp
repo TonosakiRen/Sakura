@@ -345,171 +345,157 @@ void GameScene::InGameUpdate() {
 
 void GameScene::AllCollision() {
 
-
+	//回転後の更新処理が完全に終わったら処理
+	if (!Map::rotateComplete&&!Map::isRotating) {
 #pragma region 押し戻し処理
-	//ブロックとの押し出し処理
-	for (auto& wall : map_->GetWallCollider()) {
-		player_->Collision(*wall);
+		//ブロックとの押し出し処理
+		for (auto& wall : map_->GetWallCollider()) {
+			player_->Collision(*wall);
 
 
-		for (auto& box : boxes_) {
-			if (!box->GetIsDead()) {
-				box->Collision(*wall);
-			}
-		}
-	}
-
-
-	//ボックス処理
-	for (auto& box : boxes_) {
-		if (!box->GetIsDead()) {
-			//先にプレイヤーにあわせて押し出し
-			box->Collision(player_->collider_);
-
-
-			//二個目のボックス処理
-			for (auto& box2 : boxes_) {
-				if (!box2->GetIsDead()) {
-					//一個目をもとに押し戻し処理
-					if (box2->GetMaagementNum() != box->GetMaagementNum()) {
-						box2->Collision(*box->GetCollider());
-
-
-						//押し出しによって壁に埋まったら押し出す
-						for (auto& wall : map_->GetWallCollider()) {
-							box2->Collision(*wall);
-						}
-
-
-						for (auto& box3 : boxes_) {
-							if (!box3->GetIsDead()) {
-								if (box3->GetMaagementNum() != box2->GetMaagementNum()) {
-									box3->Collision(*box2->GetCollider());
-
-									//押し出しによって壁に埋まったら押し出す
-									for (auto& wall : map_->GetWallCollider()) {
-										box3->Collision(*wall);
-									}
-
-									//押し出された箱２に押し戻された処理
-									box2->Collision(*box3->GetCollider());
-								}
-							}
-						}
-
-
-						//押し出された箱２に押し戻された処理
-						box->Collision(*box2->GetCollider());
-					}
+			for (auto& box : boxes_) {
+				if (!box->GetIsDead()) {
+					box->Collision(*wall);
 				}
 			}
-
-
-
-			//壁チップ検索
-			for (auto& wall : map_->GetWallCollider()) {
-				//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
-				box->Collision(*wall);
-			}
-
-
-			//押し戻しによって返された分プレイヤーも返す
-			player_->Collision(*box->GetCollider());
 		}
-	}
+
+
+		//ボックス処理
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				//先にプレイヤーにあわせて押し出し
+				box->Collision(player_->collider_);
+
+
+				//二個目のボックス処理
+				for (auto& box2 : boxes_) {
+					if (!box2->GetIsDead()) {
+						//一個目をもとに押し戻し処理
+						if (box2->GetMaagementNum() != box->GetMaagementNum()) {
+							box2->Collision(*box->GetCollider());
+
+
+							//押し出しによって壁に埋まったら押し出す
+							for (auto& wall : map_->GetWallCollider()) {
+								box2->Collision(*wall);
+							}
+
+
+							for (auto& box3 : boxes_) {
+								if (!box3->GetIsDead()) {
+									if (box3->GetMaagementNum() != box2->GetMaagementNum()) {
+										box3->Collision(*box2->GetCollider());
+
+										//押し出しによって壁に埋まったら押し出す
+										for (auto& wall : map_->GetWallCollider()) {
+											box3->Collision(*wall);
+										}
+
+										//押し出された箱２に押し戻された処理
+										box2->Collision(*box3->GetCollider());
+									}
+								}
+							}
+
+
+							//押し出された箱２に押し戻された処理
+							box->Collision(*box2->GetCollider());
+						}
+					}
+				}
+
+
+
+				//壁チップ検索
+				for (auto& wall : map_->GetWallCollider()) {
+					//プレイヤーで埋まっていたまたは元々埋まっていた場合押し出し処理
+					box->Collision(*wall);
+				}
+
+
+				//押し戻しによって返された分プレイヤーも返す
+				player_->Collision(*box->GetCollider());
+			}
+		}
 
 #pragma endregion
 
 #pragma region プレイヤーの状態変化
-	bool isActivate_ = false;
+		bool isActivate_ = false;
 
-	//壁との処理
-	for (auto& wall : map_->GetWallCollider()) {
-		//下のコライダーとの当たり判定処理
-		if (player_->IsUnderColliderCollision(*wall)) {
-
-			//ぴったりくっついている場合
-			if (player_->IsSetPerfect(*wall)) {
-
-				//状態変更（ノーマル
-				player_->SetState(PlayerState::kNormal);
-				isActivate_ = true;
-				break;
-			}
-
-		}
-	}
-
-	//ボックスとの処理
-	for (auto& box : boxes_) {
-		if (!box->GetIsDead()) {
+		//壁との処理
+		for (auto& wall : map_->GetWallCollider()) {
 			//下のコライダーとの当たり判定処理
-			if (player_->IsUnderColliderCollision(*box->GetCollider())) {
+			if (player_->IsUnderColliderCollision(*wall)) {
 
 				//ぴったりくっついている場合
-				if (player_->IsSetPerfect(*box->GetCollider())) {
+				if (player_->IsSetPerfect(*wall)) {
 
 					//状態変更（ノーマル
 					player_->SetState(PlayerState::kNormal);
 					isActivate_ = true;
 					break;
 				}
+
 			}
+		}
 
-			if (!player_->CheckStateReqest()) {
-				//Boxが縦向きの時の処理
-				if (player_->CheckBoxStateSame(RectangleFacing::kPortrait)) {
-					//上のコライダーとの当たり判定
-					if (player_->IsUpColliderCollision(*box->GetCollider())) {
-						//ぴったりくっついている場合&&地面にいる場合
-						if (player_->IsSetPerfect(*box->GetCollider()) && player_->CheckStateSame(PlayerState::kNormal)) {
+		//ボックスとの処理
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				//下のコライダーとの当たり判定処理
+				if (player_->IsUnderColliderCollision(*box->GetCollider())) {
+
+					//ぴったりくっついている場合
+					if (player_->IsSetPerfect(*box->GetCollider())) {
+
+						//状態変更（ノーマル
+						player_->SetState(PlayerState::kNormal);
+						isActivate_ = true;
+						break;
+					}
+				}
+
+				if (!player_->CheckStateReqest()) {
+					//Boxが縦向きの時の処理
+					if (player_->CheckBoxStateSame(RectangleFacing::kPortrait)) {
+						//上のコライダーとの当たり判定
+						if (player_->IsUpColliderCollision(*box->GetCollider())) {
+							//ぴったりくっついている場合&&地面にいる場合
+							if (player_->IsSetPerfect(*box->GetCollider()) && player_->CheckStateSame(PlayerState::kNormal)) {
 
 
-							//状態変更
-							//player_->SetBoxState(RectangleFacing::kLandscape);
-							isActivate_ = true;
-							player_->SetIsChangeRectAnimation(true);
-							player_->SetBoxState(RectangleFacing::kLandscape);
-							break;
+								//状態変更
+								//player_->SetBoxState(RectangleFacing::kLandscape);
+								isActivate_ = true;
+								player_->SetIsChangeRectAnimation(true);
+								player_->SetBoxState(RectangleFacing::kLandscape);
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 
 
-	if (!isActivate_) {
-		player_->SetStateNoInitialize(PlayerState::kJump);
-	}
+		if (!isActivate_) {
+			player_->SetStateNoInitialize(PlayerState::kJump);
+		}
 #pragma endregion
 
 #pragma region ボックスの状態変化
-	//
-	for (auto& box : boxes_) {
-		if (!box->GetIsDead()) {
-			bool isBoxHit = false;
-			for (auto& wall : map_->GetWallCollider()) {
-				//ボックスの下にあるコライダーが浮いているか否か
-				if (box->CollisionUnderCollider(*wall)) {
-
-					if (!isBoxHit) {
-						if (box->IsSetPerfect(*wall)) {
-							//状態を変更
-							box->SetState(kStay);
-							isBoxHit = true;
-						}
-					}
-				}
-			}
-
-			for (auto& box2 : boxes_) {
-				if (!box2->GetIsDead()) {
+		//
+		for (auto& box : boxes_) {
+			if (!box->GetIsDead()) {
+				bool isBoxHit = false;
+				for (auto& wall : map_->GetWallCollider()) {
 					//ボックスの下にあるコライダーが浮いているか否か
-					if (box->CollisionUnderCollider(*box2->GetCollider())) {
+					if (box->CollisionUnderCollider(*wall)) {
 
 						if (!isBoxHit) {
-							if (box->IsSetPerfect(*box2->GetCollider())) {
+							if (box->IsSetPerfect(*wall)) {
 								//状態を変更
 								box->SetState(kStay);
 								isBoxHit = true;
@@ -517,48 +503,65 @@ void GameScene::AllCollision() {
 						}
 					}
 				}
-			}
 
-			//当たっていなかったので変更
-			if (!isBoxHit) {
-				box->SetState(kFall);
-			}
+				for (auto& box2 : boxes_) {
+					if (!box2->GetIsDead()) {
+						//ボックスの下にあるコライダーが浮いているか否か
+						if (box->CollisionUnderCollider(*box2->GetCollider())) {
 
+							if (!isBoxHit) {
+								if (box->IsSetPerfect(*box2->GetCollider())) {
+									//状態を変更
+									box->SetState(kStay);
+									isBoxHit = true;
+								}
+							}
+						}
+					}
+				}
+
+				//当たっていなかったので変更
+				if (!isBoxHit) {
+					box->SetState(kFall);
+				}
+
+			}
 		}
-	}
 #pragma endregion
 
 
 
-	//ボックスがすべてない状態の時
-	if (isHitClearBox_) {
-		//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
-		if (clearBox_->IsHitCollision(player_->collider_)&&player_->GetRectangle()==clearBox_->GetRectangle()) {
-			//シーン変更フラグをON
-			player_->isGoal_ = true;
-		}
+		//ボックスがすべてない状態の時
+		if (isHitClearBox_) {
+			//クリアボックスとプレイヤーとの当たり判定&&長方形の向き状態が同じ
+			if (clearBox_->IsHitCollision(player_->collider_) && player_->GetRectangle() == clearBox_->GetRectangle()) {
+				//シーン変更フラグをON
+				player_->isGoal_ = true;
+			}
 
 
-		if (isStageSelect_) {
-			for (auto& stage : selectStage_) {
-				//ゴールにあったらシーン転換
-				if (stage->IsHitCollision(player_->collider_)) {
-					//シーン変更フラグをON
-					player_->isGoal_=true;
-					nextmapPass_ = stage->GetFlyingStageNum();
-					player_->goalPos_ = stage->GetWorldTransform()->translation_;
+			if (isStageSelect_) {
+				for (auto& stage : selectStage_) {
+					//ゴールにあったらシーン転換
+					if (stage->IsHitCollision(player_->collider_)) {
+						//シーン変更フラグをON
+						player_->isGoal_ = true;
+						nextmapPass_ = stage->GetFlyingStageNum();
+						player_->goalPos_ = stage->GetWorldTransform()->translation_;
 
-					break;
+						break;
+					}
 				}
 			}
+
 		}
 
-	}
+		//プレイヤーが死んだら初期化
+		if (player_->GetIsDead()) {
+			//シーン変更フラグをON
+			StageInitialize(mapPassNum_ - 1);
+		}
 
-	//プレイヤーが死んだら初期化
-	if (player_->GetIsDead()) {
-		//シーン変更フラグをON
-		StageInitialize(mapPassNum_ - 1);
 	}
 }
 
@@ -649,6 +652,7 @@ void GameScene::NextScene() {
 			StageInitialize(mapPassNum_);
 			isStageChange_ = false;
 			isHitClearBox_ = false;
+			isStageSelect_ = true;
 		}
 	}
 
