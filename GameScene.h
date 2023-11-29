@@ -132,5 +132,8 @@ private://メンバ関数
 
 	//playerAnimation]
 	std::unique_ptr<PlayerAnimation> playerAnimation_;
+
+	int spawnBoxNum = 0;
+
 };
 

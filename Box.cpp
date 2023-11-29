@@ -252,3 +252,11 @@ void Box::StateChange() {
 		state_ = kFall;
 	}
 }
+
+void Box::SetStartData(const WorldTransform& world) {
+	worldTransform_ = world;
+	state_ = kFall;
+	isAlreadyCollision_ = false;
+	isBuried_ = false;
+	isDead_ = false;
+}

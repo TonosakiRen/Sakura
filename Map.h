@@ -54,6 +54,8 @@ public:
 	bool StartAnimation();
 
 	bool EndAnimation();
+
+	int GetMaxTile()const { return tileMax_; }
 #pragma region ゲッター
 
 	// マップの壁
@@ -134,6 +136,8 @@ private://変数
 
 	const Player* player_ = nullptr;
 
+	
+	const int tileMax_=5;
 
 #pragma region マップの配置関係
 	// タイルサイズ(可変
@@ -278,9 +282,9 @@ private:
 
 	float halfpi = (float)std::numbers::pi / 2.0f;
 	//回転量
-	const Vector2 stRotatenum = { halfpi * 4 * 4,0 };
+	const Vector2 stRotatenum = { halfpi * 4 * 2,0 };
 
-	const Vector2 edRotatenum = { 0, -halfpi * 4 * 4 };
+	const Vector2 edRotatenum = { 0, -halfpi * 4 * 2 };
 
 	Vector2 zrotate = { 0,0 };
 

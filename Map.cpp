@@ -120,6 +120,9 @@ void Map::Initialize(const std::string name, ViewProjection* viewProjection, Dir
 	//マップデータを読み込み
 	mapData_ = allMapData_[num];
 
+	playerWorld_.Initialize();
+
+
 	MapPositioningInitialize();
 
 	/*
@@ -356,12 +359,13 @@ void Map::MapPositioningInitialize() {
 	}
 	mapTileNumY_ = (int)mapData_.size();
 
+	
 
 	// 回転中心点の検索
 	///（マップの数）ｘ（半径）の半分　-　位置ブロックの半径の半分
 	Vector3 centerPos = { (mapTileNumX_ * tileWide_) / 2 - (tileWide_ / 2), -(mapTileNumY_ * tileWide_) / 2 + (tileWide_ / 2), 0 };
 
-	worldTransform_.Initialize();
+	//worldTransform_.Initialize();
 	worldTransform_.translation_ = centerPos;
 	worldTransform_.UpdateMatrix();
 
@@ -427,8 +431,7 @@ void Map::MapPositioningInitialize() {
 				boxWorlds_.emplace_back(std::move(Bworld));
 			}else if (mapDataX == Player) {
 
-				playerWorld_.Initialize();
-
+				
 				playerWorld_.translation_ = { tileWide_ * containerNumberX, -tileWide_ * containerNumberY, 0 };
 				playerWorld_.SetParent(&worldTransform_);
 
