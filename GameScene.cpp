@@ -341,22 +341,12 @@ void GameScene::InGameUpdate() {
 				map_->UpdateMatrix();
 				player_->UpdateMatiries();
 
-			if (!isStageSelect_) {
-				clearBox_->UpdateMatirx();
-			}
-
-			
-
-			for (auto& box : boxes_) {
-				if (!box->GetIsDead()) {
-					box->UpdateMatrix();
-				}
-			}
-			break;
-		case GameScene::SceneAnimation::kInGame:
-				if (clearBox_->GetWorldTransform()) {
+				if (!isStageSelect_) {
 					clearBox_->UpdateMatirx();
 				}
+
+
+
 				for (auto& box : boxes_) {
 					if (!box->GetIsDead()) {
 						box->UpdateMatrix();
@@ -365,7 +355,14 @@ void GameScene::InGameUpdate() {
 				break;
 			case GameScene::SceneAnimation::kInGame:
 
-
+				if (clearBox_->GetWorldTransform()) {
+					clearBox_->UpdateMatirx();
+				}
+				for (auto& box : boxes_) {
+					if (!box->GetIsDead()) {
+						box->UpdateMatrix();
+					}
+				}
 				map_->Update();
 				map_->MapEditor(viewProjection_);
 
@@ -399,28 +396,28 @@ void GameScene::InGameUpdate() {
 				//ボックスの枠外落下処理
 				CheckBoxDead();
 
-			//条件を満たしている場合のシーンチェンジ
-			InGameSceneChange();
-			break;
-		case GameScene::SceneAnimation::kEnd:
-			if (map_->EndAnimation()) {
-				NextScene();
-			}
-			map_->UpdateMatrix();
-			player_->UpdateMatiries();
-			clearBox_->UpdateMatirx();
-			for (auto& box : boxes_) {
-				if (!box->GetIsDead()) {
-					box->UpdateMatrix();
+				//条件を満たしている場合のシーンチェンジ
+				InGameSceneChange();
+				break;
+			case GameScene::SceneAnimation::kEnd:
+				if (map_->EndAnimation()) {
+					NextScene();
 				}
+				map_->UpdateMatrix();
+				player_->UpdateMatiries();
+				clearBox_->UpdateMatirx();
+				for (auto& box : boxes_) {
+					if (!box->GetIsDead()) {
+						box->UpdateMatrix();
+					}
+				}
+				break;
+			default:
+				break;
 			}
-			break;
-		default:
-			break;
+
 		}
-
-
-	
+	}
 
 	//セレクトシーンだけ更新
 	if (isStageSelect_) {
