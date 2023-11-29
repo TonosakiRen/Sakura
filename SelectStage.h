@@ -24,7 +24,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(const Vector4& color);
 
 	/// <summary>
 	/// 当たってるか否かの判定のみ処理

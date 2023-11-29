@@ -14,9 +14,9 @@ public:
 	//modelを使わないInitialize
 	void Initialize(ViewProjection* viewProjection, DirectionalLight* directionalLight);
 	void Update();
-	void UpdateMaterial(Vector4 color = { 1.0f,1.0f,1.0f,1.0f });
-	void Draw(Vector4 color = { 1.0f,1.0f,1.0f,1.0f }, uint32_t textureHandle = 0);
-	void Draw(const WorldTransform& worldTransform, Vector4 color = { 1.0f,1.0f,1.0f,1.0f });
+	void UpdateMaterial(const Vector4& color = { 1.0f,1.0f,1.0f,1.0f });
+	void Draw(const Vector4& color = { 1.0f,1.0f,1.0f,1.0f }, uint32_t textureHandle = 0);
+	void Draw(const WorldTransform& worldTransform, const Vector4& color = { 1.0f,1.0f,1.0f,1.0f });
 
 	void SetViewProjection(ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;

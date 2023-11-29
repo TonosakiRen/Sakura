@@ -43,7 +43,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(Vector4 color);
 
 	/// <summary>
 	/// 向き取得

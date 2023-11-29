@@ -34,7 +34,7 @@ void GameObject::Update()
 	worldTransform_.UpdateMatrix();
 }
 
-void GameObject::Draw(Vector4 color, uint32_t textureHandle)
+void GameObject::Draw(const Vector4& color, uint32_t textureHandle)
 {
 	if (loadObj_ == true) {
 		material_.color_ = color;
@@ -49,7 +49,7 @@ void GameObject::Draw(Vector4 color, uint32_t textureHandle)
 
 }
 
-void GameObject::Draw(const WorldTransform& worldTransform, Vector4 color)
+void GameObject::Draw(const WorldTransform& worldTransform, const Vector4& color)
 {
 	if (loadObj_ == true) {
 		material_.color_ = color;
@@ -64,7 +64,7 @@ void GameObject::Draw(const WorldTransform& worldTransform, Vector4 color)
 	
 }
 
-void GameObject::UpdateMaterial(Vector4 color)
+void GameObject::UpdateMaterial(const Vector4& color)
 {
 	material_.color_ = color;
 	material_.UpdateMaterial();

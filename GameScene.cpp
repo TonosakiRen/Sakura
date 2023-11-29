@@ -7,6 +7,7 @@
 using namespace DirectX;
 
 bool GameScene::shutDown = false;
+int GameScene::spawnBoxNum = 0;
 
 void (GameScene::* GameScene::SceneUpdateTable[])() = {
 	&GameScene::TitleUpdate,
@@ -206,7 +207,7 @@ void GameScene::Initialize() {
 		}
 		
 	}
-	
+
 }
 
 void GameScene::Update() {
@@ -215,6 +216,7 @@ void GameScene::Update() {
 	if (input_->TriggerKey(DIK_ESCAPE)) {
 		shutDown = true;
 	}
+
 
 	//camera light
 	{
@@ -346,7 +348,8 @@ void GameScene::StageInitialize(int stageNum) {
 			}
 		}
 	}
-
+	maxBoxNum = spawnBoxNum;
+	saveBoxNum = spawnBoxNum;
 
 	//次イニシャライズするときに
 	if (stageNum == mapPassNum_ - 1) {
@@ -383,7 +386,7 @@ void GameScene::InGameUpdate() {
 			audio_->SetValume(selectHandle, 0.1f);
 			isPause_ = false;
 		}
-	ImGui::Text("%d", pauseSelectNum_);
+
 
 	if (isPause_) {
 
@@ -806,7 +809,7 @@ void GameScene::CheckBoxDead() {
 
 	for (auto& box : boxes_) {
 		if (box->GetIsDead()) {
-
+	
 		}
 		else {
 			alliveNum_++;
@@ -815,6 +818,7 @@ void GameScene::CheckBoxDead() {
 			if (pos.y <= -deadLine) {
 				//死亡判定渡し
 				box->SetIsDead(true);
+				spawnBoxNum--;
 			}
 		}
 	}
@@ -884,7 +888,19 @@ void GameScene::ModelDraw() {
 	case GameScene::Scene::InGame:
 		title_->Draw();
 		if (!isStageSelect_) {
-			clearBox_->Draw();
+			if (maxBoxNum != 0) {
+				if (saveBoxNum != spawnBoxNum && colorT >= 1.0f) {
+					colorT = 0.0f;
+				}
+				clearBox_->Draw({Easing::easing(colorT,float(saveBoxNum / maxBoxNum),float(spawnBoxNum / maxBoxNum),0.03f) ,1.0f,1.0f,});
+				if (colorT >= 1.0f) {
+					saveBoxNum = spawnBoxNum;
+				}
+			}
+			else {
+				clearBox_->Draw({ 0.0f,1.0f,1.0f });
+			}
+			
 		}
 
 		if (!player_->GetIsDead()) {
@@ -898,7 +914,7 @@ void GameScene::ModelDraw() {
 		//セレクトシーンだけ更新
 		if (isStageSelect_) {
 			for (auto& stagesele : selectStage_) {
-				stagesele->Draw();
+				stagesele->Draw({0.0f,1.0f,1.0f,1.0f});
 			}
 		}
 		break;
@@ -981,60 +997,65 @@ void GameScene::PostSpriteDraw() {
 		case GameScene::InGame:
 			map_->DrawSprite();
 
+			if (!isPause_) {
+				if (isStageSelect_ == true) {
 
-			if (isStageSelect_ == true) {
-				rotateSprite_->Draw();
-				moveSprite_->Draw();
-				jumpSprite_->Draw();
 
-				for (int i = 0; i < 10; i++) {
-					if (selectStage_[i]->GetFlyingStageNum() == 1) {
-						oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+
+					rotateSprite_->Draw();
+					moveSprite_->Draw();
+					jumpSprite_->Draw();
+
+					for (int i = 0; i < 10; i++) {
+						if (selectStage_[i]->GetFlyingStageNum() == 1) {
+							oneSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 2) {
+							twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 3) {
+							threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 4) {
+							fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 5) {
+							fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 6) {
+							sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 7) {
+							sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 8) {
+							eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 9) {
+							nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+						else if (selectStage_[i]->GetFlyingStageNum() == 10) {
+							tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
+						}
+
 					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 2) {
-						twoSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 3) {
-						threeSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 4) {
-						fourSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 5) {
-						fiveSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 6) {
-						sixSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 7) {
-						sevenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 8) {
-						eightSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 9) {
-						nineSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
-					else if (selectStage_[i]->GetFlyingStageNum() == 10) {
-						tenSprite_->position_ = viewProjection_.MakeScreenVector(MakeTranslation(selectStage_[i]->GetWorldTransform()->matWorld_));
-					}
+
+					oneSprite_->Draw();
+					twoSprite_->Draw();
+					threeSprite_->Draw();
+					fourSprite_->Draw();
+					threeSprite_->Draw();
+					fiveSprite_->Draw();
+					sixSprite_->Draw();
+					sevenSprite_->Draw();
+					eightSprite_->Draw();
+					nineSprite_->Draw();
+					tenSprite_->Draw();
 
 				}
-
-				oneSprite_->Draw();
-				twoSprite_->Draw();
-				threeSprite_->Draw();
-				fourSprite_->Draw();
-				threeSprite_->Draw();
-				fiveSprite_->Draw();
-				sixSprite_->Draw();
-				sevenSprite_->Draw();
-				eightSprite_->Draw();
-				nineSprite_->Draw();
-				tenSprite_->Draw();
-			}
-			if (mapPassNum_ == 2) {
-				dropSprite_->Draw();
+				if (mapPassNum_ == 2) {
+					dropSprite_->Draw();
+				}
 			}
 			break;
 		default:

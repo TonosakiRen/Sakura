@@ -154,7 +154,7 @@ private://メンバ関数
 	//playerAnimation]
 	std::unique_ptr<PlayerAnimation> playerAnimation_;
 
-	int spawnBoxNum = 0;
+	static int spawnBoxNum;
 
 
 	std::unique_ptr<GameObject> title_;
@@ -199,6 +199,11 @@ private://メンバ関数
 	std::unique_ptr<Sprite> eightSprite_;
 	std::unique_ptr<Sprite> nineSprite_;
 	std::unique_ptr<Sprite> tenSprite_;
+
+	uint32_t maxBoxNum = 0;
+
+	int saveBoxNum = 0;
+	float colorT = 0.0f;
 
 };
 
