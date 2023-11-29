@@ -74,13 +74,6 @@ void PlayerAnimation::Update()
 
 			for (int i = 0; i < Player::slimeNum; i++) {
 
-				if (prePos.x > pos.x) {
-					direction = 1;
-				}
-				else if (prePos.x < pos.x) {
-					direction = 0;
-				}
-
 			
 
 				Vector3 slimePos = { 0.0f,0.0f,0.0f };

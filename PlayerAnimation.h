@@ -21,9 +21,6 @@ public:
 	float softSpeed = 0.002f;
 	float softVel = 0.0f;
 
-	int direction = 0;
-	int preDirection = 0;
-
 	Player* player_;
 	WorldTransform* slimeWorldTransform_;
 
