@@ -930,12 +930,12 @@ void GameScene::ModelDraw() {
 		title_->Draw();
 		if (!isStageSelect_) {
 			if (maxBoxNum != 0) {
-				if (saveBoxNum != spawnBoxNum && colorT >= 1.0f) {
-					colorT = 0.0f;
+				if (spawnBoxNum <= 0) {
+					clearBox_->Draw({ Easing::easing(colorT,1.0f,0.0f,0.03f) ,1.0f,1.0f,1.0f });
 				}
-				clearBox_->Draw({Easing::easing(colorT,float(saveBoxNum / maxBoxNum),float(spawnBoxNum / maxBoxNum),0.03f) ,1.0f,1.0f,});
-				if (colorT >= 1.0f) {
-					saveBoxNum = spawnBoxNum;
+				else {
+					clearBox_->Draw({1.0f ,1.0f,1.0f,1.0f });
+					colorT = 0.0f;
 				}
 			}
 			else {

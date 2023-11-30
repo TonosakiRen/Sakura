@@ -16,7 +16,7 @@ public:
 public:
 	static WinApp* GetInstance();
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	void CreateGameWindow(const char* title = "DirextXGame");
+	void CreateGameWindow(const char* title = "2204_ぷるぐるりん");
 	bool ProcessMessage();
 	void TerminateGameWindow();
 	
